@@ -1,0 +1,52 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap");
+
+@layer base {
+  html {
+    font-family: "Overpass", sans-serif;
+  }
+}
+.container {
+  @apply max-w-containerWidth mx-auto;
+}
+.hero-background {
+  @apply bg-black w-heroWidth h-heroHeight pt-28 pl-20 relative;
+}
+.img-hero {
+  @apply w-HeroimgWidth;
+}
+.primary-header-text {
+  @apply text-white text-5xl tracking-wider max-w-primarytextWidth leading-relaxed;
+}
+.secondary-header-text {
+  @apply text-white opacity-60 text-lg max-w-secondarytextWidth tracking-wider;
+}
+.gradient-bar {
+  @apply absolute top-32 left-0 h-96 w-2 bg-gradient-to-b from-orange-300 via-pink-500 to-blue-500 transform rotate-180;
+}
+.btn-invite{
+  @apply text-white pt-10 tracking-widest
+}
+.stories-background{
+  @apply flex 
+}
+.stories-bg{
+  @apply pt-28 pl-20 
+}
+.stories-header-text{
+  @apply text-5xl tracking-wider max-w-primarytextWidth leading-relaxed
+}
+.stories-paragraph-text{
+  @apply text-black text-lg max-w-secondarytextWidth tracking-wider
+}
+.btn-stories{
+  @apply text-black text-xl font-bold pt-10
+}
+.stories-background2{
+  @apply flex justify-between
+}
+.storyimage2{
+  @apply w-StoriesImage2
+}
