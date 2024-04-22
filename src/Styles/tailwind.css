@@ -26,27 +26,137 @@
 .gradient-bar {
   @apply absolute top-32 left-0 h-96 w-2 bg-gradient-to-b from-orange-300 via-pink-500 to-blue-500 transform rotate-180;
 }
-.btn-invite{
-  @apply text-white pt-10 tracking-widest
+.btn-invite {
+  @apply text-white pt-10 tracking-widest;
 }
-.stories-background{
-  @apply flex 
+.stories-background {
+  @apply flex;
 }
-.stories-bg{
-  @apply pt-28 pl-20 
+.stories-bg {
+  @apply pt-28 pl-20;
 }
-.stories-header-text{
-  @apply text-5xl tracking-wider max-w-primarytextWidth leading-relaxed
+.stories-header-text {
+  @apply text-5xl tracking-wider max-w-primarytextWidth leading-relaxed;
 }
-.stories-paragraph-text{
-  @apply text-black text-lg max-w-secondarytextWidth tracking-wider
+.stories-paragraph-text {
+  @apply text-black text-lg max-w-secondarytextWidth tracking-wider;
 }
-.btn-stories{
-  @apply text-black text-xl font-bold pt-10
+.btn-stories {
+  @apply text-black text-xl font-bold pt-10;
 }
-.stories-background2{
-  @apply flex justify-between
+.stories-background2 {
+  @apply flex justify-between;
 }
-.storyimage2{
-  @apply w-StoriesImage2
+.storyimage2 {
+  @apply w-StoriesImage2;
+}
+.featured-desktop {
+  @apply flex relative z-20;
+}
+
+.img-featured {
+  @apply w-HeroimgWidth cursor-pointer;
+}
+
+.featured-details {
+  @apply absolute top-96 ml-10 z-50;
+}
+
+.featured-header {
+  @apply text-2xl text-white tracking-widest pb-1;
+}
+
+.featured-author {
+  @apply text-base text-white tracking-widest pb-1;
+}
+
+.overlay {
+  @apply absolute inset-0 bg-black opacity-10 z-20;
+}
+.horizontal-line {
+  @apply w-80 h-1 pb-4 mt-3 opacity-20;
+}
+.featured-btn {
+  @apply text-white text-lg mt-2 tracking-widest;
+}
+.flex-work {
+  @apply flex justify-evenly content-center self-center items-center mt-28;
+}
+.flex-header {
+  @apply text-2xl text-black font-bold text-center py-10;
+}
+section p {
+  @apply text-xl text-black opacity-50 max-w-64  text-center;
+}
+section img {
+  @apply w-28 text-center mx-auto;
+}
+.flex-apart {
+  @apply text-2xl text-black font-bold text-center pt-24;
+}
+.flex-paragraph {
+  @apply text-xl text-black opacity-50 max-w-64  text-center pt-10;
+}
+.footer {
+  @apply bg-black w-auto h-72 pt-11 mt-32;
+}
+main {
+  @apply flex gap-24;
+}
+.footer-flex {
+  @apply flex justify-around;
+}
+.footer-divs {
+  @apply flex gap-6;
+}
+.footer-links {
+  @apply text-white text-lg leading-10;
+}
+.footer-socials {
+  @apply text-white text-3xl pt-28;
+}
+.copyright {
+  @apply text-white text-xl pt-24 opacity-40 tracking-widest;
+}
+.background-header {
+  @apply text-white text-xl tracking-widest pb-6;
+}
+.background-name {
+  @apply text-white text-5xl tracking-widest max-w-backgroundStorytext leading-normal pb-4;
+}
+.background-date {
+  @apply text-white  text-xl opacity-60 pb-4;
+}
+.background-paragraph {
+  @apply text-white opacity-85 max-w-xl text-xl tracking-wider leading-relaxed font-light;
+}
+.btn-story {
+  @apply text-white text-xl mt-9 tracking-widest;
+}
+.stories-container {
+  @apply relative z-20;
+}
+.stories-page {
+  @apply relative flex flex-wrap justify-center;
+}
+.img-stories {
+  @apply w-storiesImages z-50;
+}
+.stories-details {
+  @apply absolute top-96 ml-10 z-50;
+}
+.stories-year {
+  @apply text-2xl text-white tracking-widest pb-2 ;
+}
+.stories-header {
+  @apply text-2xl text-white tracking-widest pb-2 ;
+}
+.stories-author {
+  @apply text-xl text-white tracking-widest;
+}
+.overlay-stories {
+  @apply absolute inset-0 bg-black opacity-5 w-auto h-auto ;
+}
+.flex-features{
+  @apply flex
 }

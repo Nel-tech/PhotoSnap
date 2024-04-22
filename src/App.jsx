@@ -1,18 +1,19 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./Pages/Home/home";
 import "./Styles/tailwind.css";
-// import "./Styles/Style.scss";
+import "./Styles/index.css"
+import Home from "./Pages/Home/home";
+import Stories from "./Pages/Stories/Stories";
+import Features from "./Pages/Features/Features";
 
 const App = () => {
     return (
       <Router>
        
           <Routes>
-            <Route path="/" element={<Home />} />
-            {/* <Route path="/headphones" element={<HeadPhones />} />
-            <Route path="/speakers" element={<Speakers />} />
-            <Route path="/earphones" element={<Earphones />} /> */}
-  
+            <Route path="/home" element={<Home />} />
+             <Route path="/stories" element={<Stories />} />
+             <Route path="/features" element={<Features />} />
+           
            
           </Routes>
      

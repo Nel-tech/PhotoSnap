@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Link } from "react-router-dom";
 function Nav() {
  
 
 const navigation = [
-  { name: 'STORIES', href: '#' },
-  { name: 'FEATURES', href: '#' },
-  { name: 'PRICING', href: '#' },
+  { name: 'STORIES', href: '/stories' },
+  { name: 'FEATURES',href: '/features' },
+  { name: 'PRICING', href: '/pricing' },
  
 ]
 
@@ -21,13 +22,13 @@ const navigation = [
      
        <nav className="flex justify-around p-6 lg:px-8" aria-label="Global">
        <div className="flex items-center"> {/* Add items-center to vertically center items */}
-         <a href="#" className="-m-1.5 p-1.5">
+         <Link to="/home" className="-m-1.5 p-1.5">
            <img
              className="w-logoWidth:"
              src="images/shared/desktop/logo.svg"
              alt=""
            />
-         </a>
+         </Link>
        </div>
        <div className="flex items-center lg:hidden"> {/* Add items-center */}
          <button
@@ -40,9 +41,9 @@ const navigation = [
        </div>
        <div className="flex items-center gap-x-12"> {/* Add items-center and gap-x */}
          {navigation.map((item) => (
-           <a key={item.name} href={item.href} className="text-base font-semibold leading-6 text-gray-900">
+           <Link key={item.name} to={item.href} className="text-base font-semibold leading-6 text-gray-900">
              {item.name}
-           </a>
+           </Link>
          ))}
        </div>
        <div className="flex items-center justify-end"> {/* Add items-center and justify-end */}

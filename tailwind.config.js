@@ -11,6 +11,7 @@ export default {
         containerWidth: "1250px",
         primarytextWidth: "25rem",
         secondarytextWidth: "30rem",
+        backgroundStorytext: "20rem",
       },
       lineHeigth: {
         Primaryline: "40px",
@@ -21,6 +22,7 @@ export default {
         heroWidth: "45rem",
         HeroimgWidth: "66rem",
         StoriesImage2: "61rem",
+        storiesImages:"26.33rem",
       },
       height: {
         heroHeight: "103.2vh",

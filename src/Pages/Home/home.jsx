@@ -3,6 +3,8 @@ import HeroSection from "../../Components/HeroSection";
 import Stories from "../../Components/stories";
 import Stories2 from "../../Components/Stories2";
 import FeaturedDesktop from "../../Components/FeaturedDesktop";
+import Flex from "../../Components/Flex"
+import Footer from "../../Components/Footer";
 function home() {
   return (
     <div>
@@ -24,6 +26,14 @@ function home() {
 
       <div>
         <FeaturedDesktop />
+      </div>
+
+      <div>
+        <Flex/>
+      </div>
+
+      <div>
+        <Footer/>
       </div>
     </div>
   );
