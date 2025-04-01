@@ -1,8 +1,9 @@
-import Nav from "@/components/ui/Nav";
+import HomePage from "./Pages/Landing/Home";
 export default function Home() {
   return (
     <div>
-      <Nav />
+      <HomePage />
+      
     </div>
   );
 }

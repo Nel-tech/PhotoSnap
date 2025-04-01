@@ -21,7 +21,7 @@ const pathname = usePathname()
   return (
     <div >
      
-       <nav className="flex justify-around p-6 lg:px-8" aria-label="Global">
+       <nav className="flex justify-around p-6 lg:px-1" aria-label="Global">
        <div className="flex items-center"> {/* Add items-center to vertically center items */}
          <Link href="/" className="-m-1.5 p-1.5">
          <Image src={Logo} alt="logo" width={150} height={150} />
