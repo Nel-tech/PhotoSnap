@@ -3,6 +3,20 @@ import MountainImage from "@/images/stories/desktop/mountains.jpg"
 import SunsetImage from "@/images/stories/desktop/cityscapes.jpg"
 import VoyageImage from "@/images/stories/desktop/18-days-voyage.jpg"
 import ArchitecturalsImage from "@/images/stories/desktop/architecturals.jpg"
+import WorldTourImage from "@/images/stories/desktop/world-tour.jpg"
+import UnforeseenCornersImage from "@/images/stories/desktop/unforeseen-corners.jpg"
+import KingOnAfricaImage from "@/images/stories/desktop/king-on-africa.jpg"
+import TheTripImage from "@/images/stories/desktop/trip-to-nowhere.jpg"
+import RangesImage from "@/images/stories/desktop/rage-of-the-sea.jpg"
+import RunningFreeImage from "@/images/stories/desktop/running-free.jpg"
+import BehindTheWavesImage from "@/images/stories/desktop/behind-the-waves.jpg"
+import CalmWatersImage from "@/images/stories/desktop/calm-waters.jpg"
+import MilkyWayImage from "@/images/stories/desktop/milky-way.jpg"
+import NightAtTheMuseumImage from "@/images/stories/desktop/dark-forest.jpg"
+import somwarpet from "@/images/stories/desktop/somwarpet.jpg"
+import LandofDreamsImage from "@/images/stories/desktop/land-of-dreams.jpg"
+
+
 
 
 import Responsive from '@/images/features/desktop/responsive.svg'
@@ -41,61 +55,73 @@ export const stories = [
         id: 5,
         title: "World Tour 2019",
         author: "by Timothy Wagner",
+        image: WorldTourImage,
     },
     {
         id: 6,
         title: "Unforeseen Corners",
         author: "by William Malcolm",
+        image: UnforeseenCornersImage,
     },
     {
         id: 7,
-        title: "The Upside",
+        title: "King on Africa: Part II",
         author: "by Sharon Schenk",
+        image: KingOnAfricaImage,
     },
     {
         id: 8,
-        title: "Trip 18",
+        title: "The Trip to Nowhere",
         author: "by Timothy Wagner",
+        image: TheTripImage,
     },
     {
         id: 9,
-        title: "Under the Sea",
+        title: "Rage of The Sea",
         author: "by Mahmud Ezzar",
+        image: RangesImage,
     },
     {
         id: 10,
-        title: "Shrove Tuesday",
-        author: "by Catherine Song",
+        title: "Running Free",
+        author: "by Michelle",
+        image: RunningFreeImage,
     },
     {
         id: 11,
-        title: "Runway",
+        title: "Behind the Waves",
         author: "by Daniel Krieger",
+        image:  BehindTheWavesImage,
     },
     {
         id: 12,
-        title: "Behind the Scenes",
+        title: "Calm Waters",
         author: "by Riccardo Beltrami",
+        image: CalmWatersImage,
     },
     {
         id: 13,
-        title: "Calm Waters",
-        author: "by Anisha",
+        title: "Milky Way",
+        author: "by Benjamin Cruz",
+        image: MilkyWayImage,
     },
     {
         id: 14,
-        title: "The Milky Way",
-        author: "by Benjamin Cruz",
+        title: "Night at The Dark Forest",
+        author: "by Mohammed Abdul",
+        image: NightAtTheMuseumImage,
     },
     {
         id: 15,
-        title: "Night at The Museum",
-        author: "by Romina Hadid",
+        title: "Somwarpet’s Beauty",
+        author: "by Michelle",
+        image: somwarpet,
     },
     {
         id: 16,
-        title: "Architecturals",
-        author: "by Samantha Brooke",   
+        title: "Land of Dreams",
+        author: "by William Malcolm",   
+        image: LandofDreamsImage,
     },     
 ]
 
