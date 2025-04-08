@@ -11,6 +11,7 @@ const compression = require('compression');
 const cors = require('cors');
 
 const userRouter = require('./routes/userRoutes');
+const storyRouter = require('./routes/storyRoutes');
 // const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -80,7 +81,7 @@ app.use((req, res, next) => {
 
 // 2️⃣0️⃣ ROUTES
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/stories', storyRouter);
 // 3️⃣0️⃣ Handle unknown routes
 // app.all('*', (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

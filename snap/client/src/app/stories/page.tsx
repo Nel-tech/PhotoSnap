@@ -7,7 +7,10 @@ function Stories() {
     <div>
     <Nav />
     <HeroSection />
+
+   
     <PostStories />
+   
     </div>
   )
 }

@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import HeroImageDesktop from "@/images/home/desktop/create-and-share.jpg";
-import HeroImageMobile from "@/images/home/mobile/create-and-share.jpg";
-import HeroImageTablet from "@/images/home/tablet/create-and-share.jpg";
+
+import HeroImageDesktop from "../../../public/images/home/desktop/create-and-share.jpg";
+import HeroImageMobile from "../../../public/images/home/mobile/create-and-share.jpg";
+import HeroImageTablet from "../../../public/images/home/tablet/create-and-share.jpg";
 import { Card } from "@/components/ui/card";
 
 

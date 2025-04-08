@@ -1,6 +1,6 @@
 
 import Image from 'next/image'
-import Story from '@/images/shared/desktop/bg-beta.jpg'
+import Story from '../../../public/images/shared/desktop/bg-beta.jpg'
 import Link from 'next/link'
 function FeaturedStory() {
     return (

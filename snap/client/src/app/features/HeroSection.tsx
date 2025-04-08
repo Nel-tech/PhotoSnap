@@ -1,9 +1,9 @@
 import React from 'react'
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
-import DesktopFeatureImage from '@/images/features/desktop/hero.jpg'
-import TabletFeatureImage from '@/images/features/tablet/hero.jpg'
-import MobileFeatureImage from '@/images/features/mobile/hero.jpg'
+import DesktopFeatureImage from '../../../public/images/features/desktop/hero.jpg'
+import TabletFeatureImage from '../../../public/images/features/tablet/hero.jpg'
+import MobileFeatureImage from '../../../public/images/features/mobile/hero.jpg'
 
 function HeroSection() {
     return (

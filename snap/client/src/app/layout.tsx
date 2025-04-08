@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "A photography storytelling platform.",
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,10 +31,10 @@ export default function RootLayout({
       <body className={`${poppins.variable} antialiased`}>
         <Providers>
           <AuthProvider>
-            <Toaster position="top-right" reverseOrder={false} />
             {children}
             <Footer />
           </AuthProvider>
+          <Toaster position="top-right" reverseOrder={false} />
         </Providers>
       </body>
     </html>

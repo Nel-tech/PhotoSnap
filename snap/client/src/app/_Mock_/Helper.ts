@@ -19,12 +19,12 @@
 
 
 
-import Responsive from '@/images/features/desktop/responsive.svg'
-import UploadLimit from '@/images/features/desktop/no-limit.svg'
-import Embed from '@/images/features/desktop/embed.svg'
-import Domain from '@/images/features/desktop/custom-domain.svg'
-import Exposure from '@/images/features/desktop/boost-exposure.svg'
-import Drag_Drop from '@/images/features/desktop/drag-drop.svg'
+import Responsive from '../../../public/images/features/desktop/responsive.svg'
+import UploadLimit from '../../../public/images/features/desktop/no-limit.svg'
+import Embed from '../../../public/images/features/desktop/embed.svg'
+import Domain from '../../../public/images/features/desktop/custom-domain.svg'
+import Exposure from '../../../public/images/features/desktop/boost-exposure.svg'
+import Drag_Drop from '../../../public/images/features/desktop/drag-drop.svg'
 
 // export const stories = [
 //     {

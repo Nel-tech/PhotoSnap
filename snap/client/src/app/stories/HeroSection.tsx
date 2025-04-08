@@ -1,5 +1,5 @@
 'use client'
-import BackgroundImage from '@/images/stories/desktop/moon-of-appalacia.jpg'
+import BackgroundImage from '../../../public/images/stories/desktop/moon-of-appalacia.jpg'
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'

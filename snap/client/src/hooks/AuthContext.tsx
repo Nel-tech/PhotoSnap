@@ -1,6 +1,8 @@
 'use client'
 import React, { createContext, useState, useEffect, useContext } from "react";
 import cookie from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { ReactNode } from "react";
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -8,10 +10,12 @@ interface AuthContextType {
     login: (token: string) => void;
     logout: () => void;
 }
-
+interface AuthProviderProps {
+    children: ReactNode;
+}
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<any>(null);
 
@@ -19,23 +23,23 @@ export const AuthProvider: React.FC = ({ children }) => {
     useEffect(() => {
         const token = cookie.get("token");
 
-        if (token) {
+        if (token && !isTokenExpired(token)) {
             setIsAuthenticated(true);
 
-            // You can decode the token here and get user info if needed
-            const decodedUser = decodeToken(token); 
+            // Decode the token and get user info
+            const decodedUser = jwtDecode(token);
             setUser(decodedUser);
         } else {
             setIsAuthenticated(false);
         }
-    }, []);
+    }, []); // Remove isAuthenticated from dependency array
 
     const login = (token: string) => {
         cookie.set("token", token, { expires: 7, path: "/" }); // Save token to cookies
         setIsAuthenticated(true);
 
         // Decode and set the user from the token
-        const decodedUser = decodeToken(token);
+        const decodedUser = jwtDecode(token);
         setUser(decodedUser);
     };
 
@@ -43,6 +47,21 @@ export const AuthProvider: React.FC = ({ children }) => {
         cookie.remove("token"); // Remove token from cookies
         setIsAuthenticated(false);
         setUser(null);
+    };
+
+    // Utility function to check if the token has expired
+    const isTokenExpired = (token: string): boolean => {
+        try {
+            const decodedToken: any = jwtDecode(token);
+            if (decodedToken.exp * 1000 < Date.now()) {
+                // Token is expired
+                return true;
+            }
+            return false;
+        } catch (e) {
+            console.error("Error decoding token:", e);
+            return true; // In case of error, consider the token expired
+        }
     };
 
     return (
@@ -60,21 +79,3 @@ export const useAuth = (): AuthContextType => {
     }
     return context;
 };
-
-// A simple function to decode the JWT token (you can customize this to suit your token structure)
-function decodeToken(token: string) {
-    try {
-        const base64Url = token.split(".")[1];
-        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split("")
-                .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-                .join("")
-        );
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        console.error("Invalid token:", e);
-        return null;
-    }
-}

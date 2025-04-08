@@ -1,8 +1,8 @@
 'use client'
 import Image from "next/image";
-import Responsive from '@/images/features/desktop/responsive.svg'
-import NoLimit from '@/images/features/desktop/no-limit.svg'
-import Embed from '@/images/features/desktop/embed.svg'
+import Responsive from '../../../public/images/features/desktop/responsive.svg'
+import NoLimit from '../../../public/images/features/desktop/no-limit.svg'
+import Embed from '../../../public/images/features/desktop/embed.svg'
 
 function BaseFooter() {
     return (

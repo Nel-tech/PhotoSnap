@@ -1,8 +1,8 @@
 'use client'
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import StoriesImage from "@/images/home/desktop/beautiful-stories.jpg"
-import DesignImage from "@/images/home/desktop/designed-for-everyone.jpg"
+import StoriesImage from "../../../public/images/home/desktop/beautiful-stories.jpg"
+import DesignImage from "../../../public/images/home/desktop/designed-for-everyone.jpg"
 function StoriesSection() {
     return (
         <section>

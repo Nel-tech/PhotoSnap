@@ -1,55 +1,36 @@
 'use client'
-import { useState } from 'react'
-import { Menu, X } from "lucide-react"
-import Link from 'next/link'
-import { Dialog } from '@headlessui/react'
-import Image from 'next/image'
-import Logo from '@/images/shared/desktop/logo.svg'
-import { Button } from "@/components/ui/button"
-import { usePathname } from 'next/navigation'
-import { useAuth } from '@/hooks/AuthContext'
-import { User, Bookmark, Upload, LogOut } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-
-
+import { useState } from 'react';
+import { useAuth } from '@/hooks/AuthContext';
+import { Menu, X } from "lucide-react";
+import { Dialog } from '@headlessui/react';
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import { usePathname } from 'next/navigation';
+import { User, Bookmark, Upload, LogOut } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function Nav() {
-  const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { isAuthenticated, logout } = useAuth()
-
-
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
 
   const navigation = [
-    isAuthenticated ? { name: 'STORIES', href: '/stories' } : null,
     { name: 'FEATURES', href: '/features' },
     { name: 'PRICING', href: '/pricing' },
+    isAuthenticated && { name: 'STORIES', href: '/stories' },
   ].filter(Boolean);
 
-
-
-
-
   return (
-    <div >
-
+    <div>
       <nav className="flex justify-around p-6 lg:px-1" aria-label="Global">
-        <div className="flex items-center"> {/* Add items-center to vertically center items */}
+        <div className="flex items-center">
           <Link href="/" className="-m-1.5 p-1.5">
-            <Image src={Logo} alt="logo" width={150} height={150} />
-
+            <img src="/images/shared/desktop/logo.svg" alt="logo" width={150} height={150} />
           </Link>
         </div>
-        <div className="flex items-center lg:hidden"> {/* Add items-center */}
+        <div className="flex items-center lg:hidden">
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -58,18 +39,16 @@ function Nav() {
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div className="flex items-center gap-x-12"> {/* Add items-center and gap-x */}
+        <div className="flex items-center gap-x-12">
           {navigation.map((item) => (
             <Link
               key={item?.name}
               href={item?.href || '#'}
-              className={`text-base font-semibold leading-6 text-black transition duration-300 
-    ${pathname === item?.href ? "text-primary underline" : "hover:text-primary hover:underline"}
-  `}
+              className={`text-sm opacity-55 font-semibold leading-6 text-black transition duration-300 
+                ${pathname === item?.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
             >
               {item?.name}
             </Link>
-
           ))}
         </div>
         <div className="flex items-center gap-[1rem] justify-end">
@@ -84,10 +63,6 @@ function Nav() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
@@ -130,12 +105,7 @@ function Nav() {
         <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
-
-              <img
-                className="h-8 w-auto"
-                src="images/shared/desktop/logo.svg"
-                alt=""
-              />
+              <img className="h-8 w-auto" src="images/shared/desktop/logo.svg" alt="" />
             </a>
             <button
               type="button"
@@ -171,11 +141,8 @@ function Nav() {
           </div>
         </Dialog.Panel>
       </Dialog>
-
-
     </div>
-  )
-
+  );
 }
 
-export default Nav
+export default Nav;

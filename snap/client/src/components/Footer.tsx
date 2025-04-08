@@ -2,7 +2,7 @@
 import { Github, Linkedin, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import FooterLogo from '@/images/shared/desktop/Footerlogo.svg'
+import FooterLogo from '../../public/images/shared/desktop/Footerlogo.svg'
 
 function Footer() {
     const currentYear = new Date().getFullYear();
