@@ -1,12 +1,12 @@
-
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
-import  Providers  from "./providers";
-import { AuthProvider } from "@/hooks/AuthContext";
+import { AuthProvider } from "@/components/AuthProvider";
+import Providers from "@/app/providers";
 
+// Load font
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -18,8 +18,6 @@ export const metadata: Metadata = {
   description: "A photography storytelling platform.",
 };
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,13 +27,13 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body className={`${poppins.variable} antialiased`}>
-        <Providers>
-          <AuthProvider>
-            {children}
-            <Footer />
-          </AuthProvider>
+        <AuthProvider>
+          <Providers>
+          {children}
+          <Footer />
           <Toaster position="top-right" reverseOrder={false} />
-        </Providers>
+          </Providers>
+        </AuthProvider>
       </body>
     </html>
   );

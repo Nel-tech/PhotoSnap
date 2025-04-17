@@ -9,15 +9,15 @@ function Footer() {
 
     return (
         <footer className="bg-black text-white py-10 mt-[6rem]">
-            <div className=" mx-auto px-6 md:px-12 lg:px-20">
-                <div className="flex  md:flex-row justify-between items-center md:items-start gap-8">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+                <div className="flex flex-col gap-10 md:flex-row md:justify-between md:items-start">
 
                     {/* Logo & Socials */}
-                    <div className="flex flex-col items-center md:items-start">
+                    <div className="flex flex-col items-center md:items-start gap-6">
                         <Image src={FooterLogo} alt="Logo" width={160} height={50} />
 
                         {/* Social Icons */}
-                        <div className="flex gap-4 mt-[3rem]">
+                        <div className="flex gap-4">
                             <a href="#" className="text-gray-400 hover:text-white transition">
                                 <X className="w-6 h-6" />
                             </a>
@@ -31,17 +31,17 @@ function Footer() {
                     </div>
 
                     {/* Navigation Links */}
-                    <nav className="flex gap-[3rem] items-center md:items-start space-y-2">
-                        <Link href="/features" className="footer-links">FEATURES</Link>
-                        <Link href="/pricing" className="footer-links">PRICING</Link>
+                    <nav className="flex flex-col items-center md:items-start gap-4 text-sm tracking-wider">
+                        <Link href="/features" className="text-gray-300 hover:text-white transition">FEATURES</Link>
+                        <Link href="/pricing" className="text-gray-300 hover:text-white transition">PRICING</Link>
                     </nav>
 
-                    {/* Call-to-Action & Copyright */}
+                    {/* Copyright */}
                     <div className="flex flex-col items-center md:items-end">
-                        
-                        <p className="text-gray-400 text-base tracking-widest">&copy; {currentYear} PHOTOSNAP</p>
+                        <p className="text-gray-400 text-sm tracking-widest text-center md:text-right">
+                            &copy; {currentYear} PHOTOSNAP
+                        </p>
                     </div>
-
                 </div>
             </div>
         </footer>

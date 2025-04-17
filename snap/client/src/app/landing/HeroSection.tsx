@@ -8,15 +8,36 @@ import { Card } from "@/components/ui/card";
 
 function HeroSection() {
   return (
-    <section className="flex flex-col lg:flex-row items-center justify-between ">
-      {/* Left Content Section */}
-      <Card className="max-w-lg rounded-none relative text-center  px-[3rem] pt-[9rem] bg-black h-[108.6vh] lg:text-left ">
+    <section className="flex flex-col-reverse items-center justify-between sm:flex-col md:flex-row lg:flex-row">
 
-        <div className='absolute top-[8rem] left-0 h-[18rem] w-[0.3rem] bg-gradient-to-b from-orange-300 via-pink-500 to-blue-500 transform rotate-180'></div>
-        <h1 className="text-3xl font-bold leading-relaxed tracking-wider text-white max-w-[18rem]">
+      {/* Left Content Section */}
+      <Card className="max-w-lg rounded-none relative text-center  px-[3rem] pt-[5rem]  lg:pt-[9rem] bg-black h-[102vh] md:px[1rem] lg:text-left lg:h-[100vh]  ">
+
+        <div className="
+  absolute 
+  top-[-0.1rem] 
+  left-[-0.1rem] 
+  h-[0.2rem] 
+  w-full 
+  rotate-360 
+  bg-gradient-to-r 
+  from-orange-300 
+  via-pink-500 
+  to-blue-500 
+  transform
+ 
+
+  lg:h-[15rem] 
+  lg:w-[0.3rem] 
+  lg:rotate-180 
+  lg:top-[9rem]
+  lg:bg-gradient-to-b
+"></div>
+
+        <h1 className="text-3xl font-medium leading-relaxed tracking-wider text-white max-w-[18rem] text-left md:text-left">
           CREATE AND SHARE YOUR PHOTO STORIES.
         </h1>
-        <p className="text-gray-500 text-base ">
+        <p className="text-gray-500 tracking-wider leading-relaxed text-sm text-left md:text-left lg:text-base">
           Photosnap is a platform for photographers and visual storytellers. We
           make it easy to share photos, tell stories, and connect with others.
         </p>
@@ -29,19 +50,19 @@ function HeroSection() {
         <Image
           src={HeroImageDesktop}
           alt="Create and Share"
-          className=" shadow-lg hidden lg:block"
+          className=" shadow-lg hidden lg:block lg:h-[100vh] lg:object-cover md:hidden"
           priority
         />
         <Image
           src={HeroImageTablet}
           alt="Create and Share"
-          className="rounded-lg shadow-lg hidden md:block lg:hidden"
+          className="hidden md:block lg:hidden"
           priority
         />
         <Image
           src={HeroImageMobile}
           alt="Create and Share"
-          className="rounded-lg shadow-lg md:hidden"
+          className="shadow-lg md:hidden w-full"
           priority
         />
       </div>

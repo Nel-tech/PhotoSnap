@@ -8,11 +8,31 @@ import MobileFeatureImage from '../../../public/images/features/mobile/hero.jpg'
 function HeroSection() {
     return (
         <div>
-            <section className="flex flex-col lg:flex-row items-center justify-between">
+            <section className="flex  flex-col-reverse lg:flex-row items-center justify-between">
                 {/* Left Content Section */}
-                <Card className="max-w-lg rounded-none relative text-center px-[4rem] pt-[6rem] bg-black h-[83vh] lg:text-left flex flex-col justify-center">
-                    <div className="absolute top-[8rem] left-0 h-[18rem] w-[0.3rem] bg-gradient-to-b from-orange-300 via-pink-500 to-blue-500 transform rotate-180"></div>
-                    <h1 className="text-5xl leading-relaxed tracking-wider uppercase text-white max-w-[18rem]">
+                <Card className="max-w-lg rounded-none relative text-left px-[1rem] pt-[1rem] bg-black h-[83vh] lg:text-left flex flex-col justify-center lg:px-[4rem] lg:pt-[6rem]">
+
+                    <div className="
+  absolute 
+  top-[-0.1rem] 
+  left-[-0.1rem] 
+  h-[0.2rem] 
+  w-full 
+  rotate-360 
+  bg-gradient-to-r 
+  from-orange-300 
+  via-pink-500 
+  to-blue-500 
+  transform
+ 
+
+  lg:h-[15rem] 
+  lg:w-[0.3rem] 
+  lg:rotate-180 
+  lg:top-[9rem]
+  lg:bg-gradient-to-b
+"></div>
+                    <h1 className="text-3xl font-bold leading-relaxed tracking-wider uppercase text-white max-w-[18rem] lg:text-5xl">
                         Features
                     </h1>
                     <p className="text-gray-500 text-base">
@@ -21,7 +41,7 @@ function HeroSection() {
                 </Card>
 
                 {/* Right Image Section */}
-                <div className="relative w-full h-[83vh]">
+                <div className="relative w-full">
                     <Image
                         src={DesktopFeatureImage}
                         alt="Features"
@@ -33,13 +53,13 @@ function HeroSection() {
                     <Image
                         src={TabletFeatureImage}
                         alt="Features"
-                        className="rounded-lg shadow-lg hidden md:block lg:hidden object-cover w-full h-full"
+                        className=" shadow-lg hidden md:block lg:hidden object-cover w-full h-full"
                         priority
                     />
                     <Image
                         src={MobileFeatureImage}
                         alt="Features"
-                        className="rounded-lg shadow-lg md:hidden object-cover w-full h-full"
+                        className=" shadow-lg md:hidden w-full"
                         priority
                     />
                 </div>

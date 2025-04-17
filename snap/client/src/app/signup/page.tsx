@@ -9,7 +9,7 @@ import { EyeIcon, EyeClosedIcon } from "lucide-react";
 //import fetcher from "@/lib/fetcher";
 import cookie from "js-cookie";
 import axios from "axios";
-import { useAuth } from '@/hooks/AuthContext';
+import { useAuthStore } from '@/store/useAuthStore';
 
 
 type FormData = {
@@ -36,7 +36,7 @@ export default function SignUp() {
 
 
     const router = useRouter()
-    const { login } = useAuth();
+    const login = useAuthStore((state) => state.login);
 
     const {
         register,
@@ -82,7 +82,7 @@ export default function SignUp() {
             // Handle the token if available
             if (res.data.token) {
                 console.log("Setting token:", res.data.token);
-                cookie.set("token", res.data.token);
+                cookie.set("jwt", res.data.token, { expires: 7, path: "/" });
                 login(res.data.token);
             }
 

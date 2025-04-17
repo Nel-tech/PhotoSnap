@@ -9,7 +9,7 @@ function Features() {
                     <div key={feat.id} className="flex flex-col items-center">
                         <Image src={feat.img} alt={feat.title} width={80}  />
                         <h1 className="font-bold tracking-widest">{feat.title}</h1>
-                        <p className="py-[2rem] max-w-[20rem] text-sm tracking-wider leading-relaxed text-center opacity-40">{feat.info}</p>
+                        <p className="py-[2rem] max-w-[17rem] text-sm tracking-wider leading-relaxed text-center opacity-40 lg:max-w-[20rem]">{feat.info}</p>
                     </div>
                 );
             })}

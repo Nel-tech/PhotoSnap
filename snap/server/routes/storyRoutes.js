@@ -20,4 +20,8 @@ router.get(
   authController.restrictTo('user'),
   storyController.StoriesDetails
 )
+router.post('/book-mark/:id',  authController.restrictTo('user'), storyController.BookMark)
+router.get('/get-book-marked-stories', authController.restrictTo('user'), storyController.getBookMarkedStories)
+router.post('/like-story/:id', authController.restrictTo('user'), storyController.LikeStory)
+router.get('/get-liked-stories', authController.restrictTo('user'), storyController.getLikedStories)
 module.exports = router

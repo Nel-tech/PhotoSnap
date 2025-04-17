@@ -1,9 +1,9 @@
 
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
-import DesktopPricingImage from '@/images/pricing/desktop/hero.jpg'
-import TabletPricingImage from '@/images/pricing/tablet/hero.jpg'
-import MobilePricingImage from '@/images/pricing/mobile/hero.jpg'
+import DesktopPricingImage from '../../../public/images/pricing/desktop/hero.jpg'
+import TabletPricingImage from '../../../public/images/pricing/tablet/hero.jpg'
+import MobilePricingImage from '../../../public/images/pricing/mobile/hero.jpg'
 
 function HeroSection() {
     return (

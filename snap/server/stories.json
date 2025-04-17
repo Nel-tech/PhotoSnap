@@ -10,7 +10,10 @@
     "tags": ["mountains", "hiking", "adventure", "exploration"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
-     "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Himalayas",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 2,
@@ -23,7 +26,10 @@
     "tags": ["city", "sunset", "urban", "photography"],
     "estimatedReadingTime": "4 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "New York City",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 3,
@@ -36,7 +42,10 @@
     "tags": ["voyage", "sea", "travel", "adventure"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Pacific Ocean",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 4,
@@ -49,7 +58,10 @@
     "tags": ["architecture", "design", "urban", "history"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "London",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 5,
@@ -62,7 +74,10 @@
     "tags": ["world tour", "travel", "culture", "experience"],
     "estimatedReadingTime": "8 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Global",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 6,
@@ -75,7 +90,10 @@
     "tags": ["hidden places", "exploration", "adventure", "travel"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Various",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 7,
@@ -88,7 +106,10 @@
     "tags": ["africa", "culture", "wildlife", "traditions"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "East Africa",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 8,
@@ -101,7 +122,10 @@
     "tags": ["spontaneous", "adventure", "travel", "self-discovery"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "United States",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 9,
@@ -114,7 +138,10 @@
     "tags": ["ocean", "waves", "adventure", "nature"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Atlantic Ocean",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 10,
@@ -127,7 +154,10 @@
     "tags": ["running", "freedom", "personal growth", "adventure"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Scottish Highlands",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 11,
@@ -140,7 +170,10 @@
     "tags": ["ocean", "waves", "exploration", "adventure"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Great Barrier Reef",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 12,
@@ -153,7 +186,10 @@
     "tags": ["water", "serenity", "peace", "nature"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Lake Como",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 13,
@@ -166,7 +202,10 @@
     "tags": ["stars", "milky way", "universe", "night photography"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Atacama Desert",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 14,
@@ -179,7 +218,10 @@
     "tags": ["forest", "night", "mystery", "nature"],
     "estimatedReadingTime": "8 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Black Forest",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 15,
@@ -192,7 +234,10 @@
     "tags": ["somwarpet", "nature", "travel", "peace"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Somwarpet, India",
+    "language": "English",
+    "status": "Published"
   },
   {
     "id": 16,
@@ -205,8 +250,9 @@
     "tags": ["dreams", "exploration", "adventure", "fantasy"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
-    "user": "609c3f4e6f1e2a001c8efb9d"
+    "user": "609c3f4e6f1e2a001c8efb9d",
+    "location": "Iceland",
+    "language": "English",
+    "status": "Published"
   }
 ]
-
-

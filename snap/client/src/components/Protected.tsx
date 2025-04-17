@@ -1,10 +1,10 @@
 'use client'
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/AuthContext";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuthStore();
     const router = useRouter();
 
     useEffect(() => {

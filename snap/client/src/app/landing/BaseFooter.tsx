@@ -6,11 +6,11 @@ import Embed from '../../../public/images/features/desktop/embed.svg'
 
 function BaseFooter() {
     return (
-        <div className="mt-[13rem] flex flex-col self-center items-center px-6 md:px-12 lg:px-20">
-            <div className="grid gap-12 md:grid-cols-3 md:gap-8 w-full max-w-6xl text-center">
+        <div className="mt-[13rem] flex flex-col self-center items-center px-6  lg:px-20 md:flex-row-reverse md:flex-wrap">
+            <div className="grid gap-12 md:grid-cols md:gap-8 w-full max-w-6xl text-center lg:grid-cols-3">
 
                 {/* Responsive Section */}
-                <section className="flex flex-col items-center">
+                <section className="flex flex-col items-center ">
                     <Image
                         src={Responsive}
                         alt="Responsive Design"

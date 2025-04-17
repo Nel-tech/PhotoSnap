@@ -42,6 +42,23 @@ const storySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+ 
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  language: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    required: true,
+  },
 });
 
 const Story = mongoose.model('Story', storySchema);
