@@ -8,7 +8,7 @@ import MobileFeatureImage from '../../../public/images/features/mobile/hero.jpg'
 function HeroSection() {
     return (
         <div>
-            <section className="flex  flex-col-reverse lg:flex-row items-center justify-between">
+            <section className="flex  flex-col-reverse md:flex-row lg:flex-row items-center justify-between">
                 {/* Left Content Section */}
                 <Card className="max-w-lg rounded-none relative text-left px-[1rem] pt-[1rem] bg-black h-[83vh] lg:text-left flex flex-col justify-center lg:px-[4rem] lg:pt-[6rem]">
 
@@ -25,6 +25,11 @@ function HeroSection() {
   to-blue-500 
   transform
  
+  md:h-[15rem] 
+  md:w-[0.3rem] 
+  md:rotate-180 
+  md:top-[6rem]
+  md:bg-gradient-to-b
 
   lg:h-[15rem] 
   lg:w-[0.3rem] 
@@ -32,6 +37,7 @@ function HeroSection() {
   lg:top-[9rem]
   lg:bg-gradient-to-b
 "></div>
+
                     <h1 className="text-3xl font-bold leading-relaxed tracking-wider uppercase text-white max-w-[18rem] lg:text-5xl">
                         Features
                     </h1>
@@ -48,12 +54,12 @@ function HeroSection() {
                         className="shadow-lg hidden lg:block object-cover w-full h-full"
                         priority
                         width={990}
-                        height={800} // Ensures image height matches card
+                        height={800} 
                     />
                     <Image
                         src={TabletFeatureImage}
                         alt="Features"
-                        className=" shadow-lg hidden md:block lg:hidden object-cover w-full h-full"
+                        className=" shadow-lg hidden md:block  md:h-[83vh] lg:hidden object-cover w-full "
                         priority
                     />
                     <Image

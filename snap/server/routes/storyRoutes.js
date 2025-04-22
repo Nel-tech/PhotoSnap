@@ -11,17 +11,17 @@ router.get(
 router.use(authController.protect);
 router.get(
   '/get-all-stories',
-  authController.restrictTo('user'), // Check role first
-  storyController.getAllStories      // Then run controller
+  authController.restrictTo('user'), 
+  storyController.getAllStories      
 )
-//router.post('/create-story', storyController.createStory, authController.protect, authController.restrictTo('user'))
+router.post('/upload-story', authController.restrictTo('user'), storyController.upload, storyController.uploadStory)
+router.get('/get-user-stories', authController.restrictTo('user'), storyController.getUserUploads)
 router.get(
   '/stories-details/:id',
   authController.restrictTo('user'),
   storyController.StoriesDetails
 )
 router.post('/book-mark/:id',  authController.restrictTo('user'), storyController.BookMark)
-router.get('/get-book-marked-stories', authController.restrictTo('user'), storyController.getBookMarkedStories)
-router.post('/like-story/:id', authController.restrictTo('user'), storyController.LikeStory)
-router.get('/get-liked-stories', authController.restrictTo('user'), storyController.getLikedStories)
+router.get('/getUserBookMarkedStories', authController.restrictTo('user'), storyController.getUserBookMarkedStories)
+router.get('/get-book-marked-stories', authController.restrictTo('user'), storyController.getAllBookMarkedStories)
 module.exports = router

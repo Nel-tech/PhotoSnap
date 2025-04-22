@@ -26,6 +26,11 @@ function HeroSection() {
   to-blue-500 
   transform
  
+  md:h-[15rem] 
+  md:w-[0.3rem] 
+  md:rotate-180 
+  md:top-[6rem]
+  md:bg-gradient-to-b
 
   lg:h-[15rem] 
   lg:w-[0.3rem] 
@@ -56,7 +61,7 @@ function HeroSection() {
         <Image
           src={HeroImageTablet}
           alt="Create and Share"
-          className="hidden md:block lg:hidden"
+          className="hidden md:block md:h-[102vh] lg:hidden"
           priority
         />
         <Image

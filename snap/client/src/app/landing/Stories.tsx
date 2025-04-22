@@ -17,7 +17,7 @@ function Stories() {
 
     const { data: stories, isLoading, error } = useQuery({
         queryKey: ['public-stories'],
-        queryFn: () => axios.get(`${API_URL}/api/v1/stories/public-stories`).then(res => res.data.data)
+        queryFn: () => axios.get(`${API_URL}api/v1/stories/public-stories`).then(res => res.data.data)
     })
 
     const [showStories, setShowStories] = useState(false)

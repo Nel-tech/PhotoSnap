@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   fetchUserProfile: async (token: string) => {
     try {
       console.log('Fetching user profile with token:', token);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users/getMe`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v1/users/getMe`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

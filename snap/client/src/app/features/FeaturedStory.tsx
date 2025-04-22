@@ -31,7 +31,7 @@ function FeaturedStory() {
 
             {/* Background Image Section */}
             <div
-                className="bg-cover bg-center bg-no-repeat h-[300px] md:h-[500px] lg:h-[300px] flex flex-col items-center justify-evenly text-white relative lg:flex-row"
+                className="bg-cover bg-center bg-no-repeat h-[300px] md:h-[300px] lg:h-[300px] flex flex-col items-center justify-evenly text-white relative lg:flex-row"
                 style={{
                     backgroundImage: "url('/images/shared/desktop/bg-beta.jpg')",
                 }}

@@ -5,14 +5,14 @@ const app = require('./app');
 // Load environment variables
 dotenv.config({ path: './.env' });
 
+
+
+
 // Connect to local MongoDB
 const DB = process.env.DATABASE_LOCAL;
 
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(DB)
   .then(() => console.log('✅ Local MongoDB connected successfully!'))
   .catch((err) => {
     console.error('❌ DB connection failed:', err.message);

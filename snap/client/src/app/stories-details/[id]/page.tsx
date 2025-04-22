@@ -1,4 +1,6 @@
 "use client"
+import Protected from '@/components/Protected'
+import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
@@ -14,15 +16,12 @@ import {
     BookmarkCheck,
     Globe,
     ArrowUp,
-    MessageCircle,
-    ThumbsUp,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import cookie from "js-cookie"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
@@ -38,8 +37,6 @@ interface Story {
     summary?: string;
     date: string;
     estimatedReadingTime: string;
-    views?: number;
-    likes?: number;
     categories?: string[];
     tags?: string[];
     location?: string;
@@ -49,12 +46,12 @@ interface Story {
 
 function StoryDetails() {
     const { id } = useParams()
+    const queryClient = useQueryClient();
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
     const token = cookie.get("token")
     const [isBookmarked, setIsBookmarked] = useState(false)
     const [isLiked, setIsLiked] = useState(false)
     const [showScrollTop, setShowScrollTop] = useState(false)
-    const [activeSection, setActiveSection] = useState("story")
     const [randomStories, setRandomStories] = useState<Story[]>([])
 
     useEffect(() => {
@@ -78,7 +75,7 @@ function StoryDetails() {
         enabled: !!id,
         queryFn: () =>
             axios
-                .get(`${API_URL}/api/v1/stories/stories-details/${id}`, {
+                .get(`${API_URL}api/v1/stories/stories-details/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -95,7 +92,7 @@ function StoryDetails() {
         queryKey: ["get-all-stories"],
         queryFn: () =>
             axios
-                .get(`${API_URL}/api/v1/stories/get-all-stories`, {
+                .get(`${API_URL}api/v1/stories/get-all-stories`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -199,13 +196,16 @@ function StoryDetails() {
 
     const toggleBookmark = async () => {
         try {
-            const res = await axios.post(`${API_URL}/api/v1/stories/book-mark/${id}`, {}, {
+            const res = await axios.post(`${API_URL}api/v1/stories/book-mark/${id}`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            setIsBookmarked(!isBookmarked)
-            toast.success(isBookmarked ? 'Story Unbookmarked' : 'Story Bookmarked')
+            const updated = !isBookmarked;
+            setIsBookmarked(updated);
+            toast.success(updated ? 'Story Bookmarked' : 'Story Unbookmarked');
+
+            queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
             return res.data.data
         } catch (error) {
             toast.error('Failed to update bookmark')
@@ -213,21 +213,7 @@ function StoryDetails() {
         }
     }
 
-    const toggleLike = async () => {
-        try {
-            const res = await axios.post(`${API_URL}/api/v1/stories/like-story/${id}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            setIsLiked(!isLiked)
-            toast.success(isLiked ? 'Story Unliked' : 'Story Liked')
-            return res.data.data
-        } catch (error) {
-            toast.error('Failed to update like')
-            return error
-        }
-    }
+  
 
     const formatDate = (dateString: string): string => {
         const options: Intl.DateTimeFormatOptions = {
@@ -347,19 +333,8 @@ function StoryDetails() {
                                     </div>
                                 </div>
 
-                                {/* Stats Section */}
-                                <div className="mt-8 flex items-center gap-8 text-white">
-                                    <div className="flex items-center gap-2">
-                                        <Eye size={20} />
-                                        <span className="text-lg font-serif">{story.views?.toLocaleString() || "0"}</span>
-                                        <span className="text-sm text-white/80">views</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Heart size={20} />
-                                        <span className="text-lg font-serif">{story.likes?.toLocaleString() || "0"}</span>
-                                        <span className="text-sm text-white/80">likes</span>
-                                    </div>
-                                </div>
+                               
+                               
                             </div>
                         </div>
                     </div>
@@ -380,9 +355,6 @@ function StoryDetails() {
                             {/* Social Interaction Sidebar */}
                             <div className="hidden md:block fixed left-8 top-1/2 transform -translate-y-1/2 z-20">
                                 <div className="flex flex-col items-center gap-6">
-                                    <button onClick={toggleLike} className="p-3 rounded-full bg-white border border-[#e9e1d4] shadow-md text-[#6b6b6b] hover:text-[#c7a17a] transition-colors">
-                                        {isLiked ? <ThumbsUp className="h-5 w-5" /> : <ThumbsUp className="h-5 w-5" />}
-                                    </button>
                                     <button
                                         onClick={toggleBookmark}
                                         className={`p-3 rounded-full bg-white border border-[#e9e1d4] shadow-md ${isBookmarked ? "text-[#c7a17a]" : "text-[#6b6b6b] hover:text-[#c7a17a]"
@@ -472,14 +444,8 @@ function StoryDetails() {
                                             <div className="flex items-center justify-between">
                                                 <div className="text-xs text-[#6b6b6b]">{randomStory.estimatedReadingTime}</div>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex items-center text-xs text-[#6b6b6b]">
-                                                        <Eye className="h-3 w-3 mr-1" />
-                                                        {randomStory.views?.toLocaleString() || "0"}
-                                                    </div>
-                                                    <div className="flex items-center text-xs text-[#6b6b6b]">
-                                                        <Heart className="h-3 w-3 mr-1" />
-                                                        {randomStory.likes?.toLocaleString() || "0"}
-                                                    </div>
+                                                  
+                                                   
                                                 </div>
                                             </div>
                                         </div>

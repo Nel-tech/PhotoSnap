@@ -42,7 +42,7 @@ export default function SignUp() {
         register,
         handleSubmit,
         watch,
-        formState: { errors },
+        formState: { errors,isSubmitting },
     } = useForm<FormData>();
 
     const onSubmit = async (data: FormData) => {
@@ -65,7 +65,7 @@ export default function SignUp() {
             });
 
             // Send POST request
-            const res = await axios.post(`${API_BASE_URL}/api/v1/users/signup`, {
+            const res = await axios.post(`${API_BASE_URL}api/v1/users/signup`, {
                 name: data.name,
                 email: data.email,
                 password: data.password,
@@ -236,10 +236,13 @@ export default function SignUp() {
                         {/* Submit Button */}
                         <div>
                             <button
-                                type="submit"
-                                className="  cursor-pointer flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-indigo-600"
+                                disabled={isSubmitting}
+                                className={`w-full rounded py-2 text-white transition-colors ${isSubmitting
+                                    ? 'bg-indigo-600 cursor-not-allowed'
+                                    : 'bg-indigo-600 hover:bg-indigo-600'
+                                    }`}
                             >
-                                Sign up
+                                {isSubmitting ? 'Creating Account...' : 'Create Account'}
                             </button>
                         </div>
 
@@ -257,3 +260,4 @@ export default function SignUp() {
         </>
     );
 }
+

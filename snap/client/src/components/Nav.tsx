@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Menu, X } from "lucide-react";
 import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { usePathname } from 'next/navigation';
-import { User, Bookmark, Upload, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -25,7 +24,7 @@ function Nav() {
 
   return (
     <div>
-      <nav className="flex items-center justify-between p-4 sm:px-6 lg:px-8">
+      <nav className="flex items-center justify-between p-4 sm:px-6 lg:px-8 md:justify-around">
         <div className="flex items-center">
           <Link href="/" className="-m-1.5 p-1.5">
             <img src="/images/shared/desktop/logo.svg" alt="logo" width={150} height={150} />
@@ -40,7 +39,7 @@ function Nav() {
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
+        <div className="hidden  md:flex md:gap-[1rem] lg:flex lg:gap-x-12">
           {navigation.map((item) => (
             <Link
               key={item?.name}
@@ -52,36 +51,44 @@ function Nav() {
             </Link>
           ))}
         </div>
-        <div className="hidden lg:flex lg:items-center lg:gap-[1rem]">
+        <div className="hidden lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                    <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
-                  </Avatar>
+                <Button variant="ghost" className="flex items-center gap-2 cursor-pointer">
+                  Dashboard
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+
+              <DropdownMenuContent className="w-56 bg-white border-none" align="end" forceMount>
                 <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
+
                   <Link href="/profile">
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Bookmark className="mr-2 h-4 w-4" />
+
+                   <Link href="/bookmark">
+                   
                   <span>Bookmarks</span>
+                   </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem>
+
+                  <Link href="/upload-story">
+
+                    <span>Upload Your Story</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Upload className="mr-2 h-4 w-4" />
-                  <span>Upload Story</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <Button onClick={logout}>Logout</Button>
+                  <Link href='/logout'>
+                  <span >Logout</span>
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -126,65 +133,58 @@ function Nav() {
                     href={item?.href || '#'}
                     className={`text-lg block font-semibold leading-6 text-black transition duration-300 
                 ${pathname === item?.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
-            >
-                  
+                  >
+
                     {item?.name}
                   </a>
                 ))}
               </div>
-              <div className="flex flex-col  gap-2 sm:flex-row   sm:items-start lg:flex lg:items-center lg:gap-[1rem] lg:justify-end">
+              <div className="hidden lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
                 {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                          <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
-                        </Avatar>
+                      <Button variant="ghost" className="flex items-center gap-2 cursor-pointer">
+                        Dashboard
+                        <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
+
+                    <DropdownMenuContent className="w-56 bg-white border-none" align="end" forceMount>
                       <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4" />
+
                         <Link href="/profile">
                           <span>Profile</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Bookmark className="mr-2 h-4 w-4" />
-                        <span>Bookmarks</span>
+
+                        <Link href="/bookmark">
+
+                          <span>Bookmarks</span>
+                        </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>Upload Story</span>
+
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <Button onClick={logout}>Logout</Button>
+                        <span >Logout</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                    <div className="flex flex-col gap-2 mt-4 sm:mt-[3rem] sm:pt-[5rem] sm:flex-row sm:items-start">
-                    <Link href="/signup">
-                      <Button
-                        variant="outline"
-                        className="cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md"
-                      >
+                  <>
+                    <Link href="/signup" className="lg:text-base lg:font-semibold lg:leading-6 lg:text-gray-900">
+                      <Button variant={"outline"} className='cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md'>
                         SIGNUP <span aria-hidden="true">&rarr;</span>
                       </Button>
                     </Link>
 
-                    <Link href="/login">
-                      <Button
-                        variant="outline"
-                        className="bg-black text-white cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-gray-800"
-                      >
+                    <Link href="/login" className="text-base font-semibold leading-6 text-gray-900 ">
+                      <Button variant={"outline"} className='bg-black text-white cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-gray-800'>
                         LOGIN <span aria-hidden="true">&rarr;</span>
                       </Button>
                     </Link>
-                  </div>
+                  </>
                 )}
               </div>
 

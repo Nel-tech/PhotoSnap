@@ -6,10 +6,10 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/components/AuthProvider";
 import Providers from "@/app/providers";
 
-// Load font
+// Load Poppins with a CSS variable
 const poppins = Poppins({
-  variable: "--font-poppins",
   subsets: ["latin"],
+  variable: "--font-poppins",
   weight: ["400", "500", "600", "700"],
 });
 
@@ -20,18 +20,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <head />
-      <body className={`${poppins.variable} antialiased`}>
+    <html lang="en" className={poppins.variable}>
+      <body className="antialiased">
         <AuthProvider>
           <Providers>
-          {children}
-          <Footer />
-          <Toaster position="top-right" reverseOrder={false} />
+            {children}
+            <Footer />
+            <Toaster position="top-right" reverseOrder={false} />
           </Providers>
         </AuthProvider>
       </body>

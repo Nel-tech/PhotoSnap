@@ -38,9 +38,9 @@ export default function PricingTable() {
                     <Label htmlFor="yearly" className="text-xl">Yearly</Label>
                 </div>
 
-                <div className="relative flex flex-col md:flex-row justify-center items-stretch gap-[1rem] max-w-5xl mx-auto">
+                <div className="relative flex flex-col md:flex-row justify-center items-stretch gap-[1rem] max-w-5xl mx-auto lg:flex lg:flex-row lg:justify-center lg:items-stretch lg:max-w-5xl">
                     {/* Basic Plan */}
-                    <div className="bg-gray-100 w-[17rem] h-[75vh] flex flex-col items-center text-center mt-[2rem] pt-[3rem]">
+                    <div className="bg-gray-100 w-[17rem] h-[75vh] flex flex-col mx-auto items-center text-center mt-[2rem] pt-[3rem]  lg:flex-col lg:items-center lg:text-center lg:mt-[2rem] lg:pt-[3rem]">
                         <h2 className="text-2xl font-bold mb-4">Basic</h2>
                         <p className="text-gray-600 mb-8 max-w-[15rem] text-sm">
                             Includes basic usage of our platform. Recommended for new and aspiring photographers.
@@ -53,8 +53,8 @@ export default function PricingTable() {
                     </div>
 
                     {/* Pro Plan */}
-                    <div className="absolute top-0 left-[36.8%] w-[17rem] h-[0.3rem] bg-gradient-to-r from-orange-300 via-pink-500 to-blue-500"></div>
-                    <div className="bg-black text-white w-[17rem] h-[90vh] flex flex-col items-center text-center pt-[2rem]">
+                    <div className="hidden absolute top-0 left-[36.8%] w-[17rem] h-[0.3rem] bg-gradient-to-r from-orange-300 via-pink-500 to-blue-500 md:hidden lg:block"></div>
+                    <div className="bg-black text-white w-[17rem] h-[90vh] flex flex-col items-center text-center mx-auto pt-[2rem]">
                         <h2 className="text-2xl font-bold mb-4">Pro</h2>
                         <p className="text-gray-300 mb-8 max-w-[15rem] text-sm">
                             More advanced features available. Recommended for photography veterans and professionals.
@@ -67,7 +67,7 @@ export default function PricingTable() {
                     </div>
 
                     {/* Business Plan */}
-                    <div className="bg-gray-100 w-[17rem] h-[75vh] flex flex-col items-center text-center mt-[2rem] pt-[3rem]">
+                    <div className="bg-gray-100 w-[17rem] h-[75vh] mx-auto flex flex-col items-center text-center mt-[2rem] pt-[3rem] lg:flex-col lg:items-center lg:text-center lg:mt-[2rem] lg:pt-[3rem]">
                         <h2 className="text-2xl font-bold mb-4">Business</h2>
                         <p className="text-gray-600 mb-8 max-w-[15rem] text-sm">
                             Additional features available such as more detailed metrics. Recommended for business owners.

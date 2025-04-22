@@ -22,7 +22,7 @@ const storySchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  content: {
+  description: {
     type: String,
     required: true,
   },
@@ -30,23 +30,17 @@ const storySchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
-  tags: {
-    type: [String],
-    required: true,
-  },
+
   estimatedReadingTime: {
     type: String,
     required: true,
   },
-  bookmarked: {
-    type: Boolean,
-    default: false,
-  },
+  bookmarkedBy: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+}],
  
-  likes: {
-    type: Number,
-    default: 0,
-  },
+
   location: {
     type: String,
     required: true,
@@ -57,9 +51,16 @@ const storySchema = new mongoose.Schema({
   },
   status: {
     type: String,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
-});
+  
+},
+{ timestamps: true }
+);
 
 const Story = mongoose.model('Story', storySchema);
 

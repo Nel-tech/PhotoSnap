@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { Loader2 } from 'lucide-react'
-import { useAuth } from "@/store/AuthContext"
+//import { useAuth } from "@/store/AuthContext"
 import cookie from "js-cookie"
 //import { useAuth } from "@/hooks/AuthContext"
 //import { useParams } from "next/navigation"
@@ -21,7 +21,7 @@ function PostStories() {
     const { data: stories, isLoading, error } = useQuery({
         queryKey: ['get-all-stories'],
         queryFn: () =>
-            axios.get(`${API_URL}/api/v1/stories/get-all-stories`, {
+            axios.get(`${API_URL}api/v1/stories/get-all-stories`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

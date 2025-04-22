@@ -1,0 +1,180 @@
+"use client"
+import Protected from "@/components/Protected"
+import { useQuery } from "@tanstack/react-query"
+import { useState, useEffect } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Bookmark, Heart, Clock, MapPin, Globe, Trash2 } from "lucide-react"
+import Image from "next/image"
+import Nav from "@/components/Nav"
+import { useAuthStore } from "@/store/useAuthStore"
+import axios from "axios"
+import { Loader2 } from "lucide-react"
+import cookie from 'js-cookie'
+
+type Story = {
+    id: string
+    title: string
+    description: string
+    image: string
+    author: string
+    categories: string[]
+    readingTime: string
+    location: string
+    language: string
+}
+
+export default function BookmarksPage() {
+    const [bookmarks, setBookmarks] = useState<Story[]>([]);
+    const [showStories, setShowStories] = useState(false)
+
+    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+    const { data: storiesResponse, isLoading, error } = useQuery({
+        queryKey: ['get-user-bookmarks'],
+        queryFn: async () => {
+            try {
+                const token = cookie.get('token');
+                console.log("Token:", token);
+
+                if (!token) throw new Error("No token found");
+
+                const res = await axios.get(`${API_URL}api/v1/stories/getUserBookMarkedStories`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                });
+
+                console.log("API Response:", res.data);
+                return res.data;
+            } catch (err) {
+                console.error("Error fetching bookmarks:", err);
+                throw err; // very important so react-query catches it
+            }
+        },
+        enabled: isAuthenticated,
+    });
+
+    console.log("API_URL:", API_URL)
+    console.log("storiesResponse:", storiesResponse)
+
+    useEffect(() => {
+        if (storiesResponse && storiesResponse.success) {
+            setBookmarks(storiesResponse.data || []);
+            setShowStories(true);
+        } else if (storiesResponse && !storiesResponse.success) {
+            setShowStories(true);
+        }
+    }, [storiesResponse]);
+
+    if (isLoading && !showStories) {
+        return (
+            <div className="flex flex-col items-center justify-center h-60">
+                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
+                <p className="text-sm text-gray-500">Loading Bookmarks, please wait...</p>
+            </div>
+        )
+    }
+
+    if (error) return <div>Error: {error.message}</div>
+    if (showStories && bookmarks.length === 0) return <div className="text-center py-12">No Bookmarks Found</div>
+
+    const removeBookmark = (id: string) => {
+        setBookmarks(bookmarks.filter((bookmark) => bookmark.id !== id))
+    }
+
+   
+    const StoryCard = ({ story, onRemove }: { story: Story; onRemove: (id: string) => void }) => (
+        <Card className="h-full">
+            <div className="relative h-48 w-full">
+                <Image src={story.image || "/placeholder.svg"} alt={story.title} fill className="object-cover rounded-t-lg" />
+            </div>
+            <CardHeader className="pb-2">
+                <CardTitle className="text-xl">{story.title}</CardTitle>
+                <CardDescription>by {story.author}</CardDescription>
+            </CardHeader>
+            <CardContent className="pb-2">
+                <p className="text-sm text-muted-foreground mb-3">{story.description}</p>
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {story.categories.map((category) => (
+                        <Badge key={category} variant="secondary">
+                            {category}
+                        </Badge>
+                    ))}
+                </div>
+                <div className="flex flex-wrap text-xs text-muted-foreground gap-3">
+                    <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {story.readingTime}
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {story.location}
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Globe className="h-3 w-3" />
+                        {story.language}
+                    </div>
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => onRemove(story.id)}
+                >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Remove
+                </Button>
+            </CardFooter>
+        </Card>
+    )
+
+    return (
+        <Protected>
+            <div>
+                <header>
+                    <Nav />
+                </header>
+
+                <div className="max-w-6xl mx-auto py-8">
+                    <h1 className="text-3xl font-bold mb-8">Your Bookmark Collections</h1>
+
+                    <Tabs defaultValue="bookmarks">
+                        <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+                            <TabsTrigger value="bookmarks" className="flex items-center gap-2">
+                                <Bookmark className="h-4 w-4" />
+                                Bookmarks ({bookmarks.length})
+                            </TabsTrigger>
+                            
+                        </TabsList>
+
+                        <TabsContent value="bookmarks">
+                            {bookmarks.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                                    <h3 className="text-xl font-medium mb-2">No bookmarks yet</h3>
+                                    <p className="text-muted-foreground">When you bookmark stories, they'll appear here.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {bookmarks.map((bookmark) => (
+                                        <StoryCard key={bookmark.id} story={bookmark} onRemove={removeBookmark} />
+                                    ))}
+                                </div>
+                            )}
+                        </TabsContent>
+
+                       
+                    </Tabs>
+                </div>
+            </div>
+        </Protected>
+    )
+}

@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated } = useAuthStore();
+    const  isAuthenticated  = useAuthStore((state) => state.isAuthenticated);
+    console.log("Auntenticated user",isAuthenticated)
     const router = useRouter();
 
     useEffect(() => {
