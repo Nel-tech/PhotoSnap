@@ -139,7 +139,7 @@ function Nav() {
                   </a>
                 ))}
               </div>
-              <div className="hidden lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
+              <div className=" lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
                 {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -163,6 +163,14 @@ function Nav() {
                           <span>Bookmarks</span>
                         </Link>
                       </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+
+                        <Link href="/upload-story">
+
+                          <span>Upload Your Story</span>
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>
 
                       </DropdownMenuItem>
@@ -172,7 +180,7 @@ function Nav() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <>
+                  <div className='mt-4 flex gap-1'>
                     <Link href="/signup" className="lg:text-base lg:font-semibold lg:leading-6 lg:text-gray-900">
                       <Button variant={"outline"} className='cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md'>
                         SIGNUP <span aria-hidden="true">&rarr;</span>
@@ -184,7 +192,7 @@ function Nav() {
                         LOGIN <span aria-hidden="true">&rarr;</span>
                       </Button>
                     </Link>
-                  </>
+                  </div>
                 )}
               </div>
 

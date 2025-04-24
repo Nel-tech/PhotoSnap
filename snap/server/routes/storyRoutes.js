@@ -16,6 +16,7 @@ router.get(
 )
 router.post('/upload-story', authController.restrictTo('user'), storyController.upload, storyController.uploadStory)
 router.get('/get-user-stories', authController.restrictTo('user'), storyController.getUserUploads)
+router.delete('/delete-User-Story/:storyId', authController.restrictTo('user'), storyController.deleteUserStory)
 router.get(
   '/stories-details/:id',
   authController.restrictTo('user'),

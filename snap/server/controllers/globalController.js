@@ -3,15 +3,13 @@ const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 
 
-console.log( cloudinary.config({
+ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API,
   api_secret: process.env.CLOUDINARY_SECRET,
 })
 
-)
 
-console.log(process.env.CLOUDINARY_API)
 
 
 // ✅ Setup multer with memory storage
@@ -22,3 +20,14 @@ module.exports = {
   cloudinary,
   upload,
 };
+
+
+// const filterObj = (obj, ...allowedFields) => {
+//   const newObj = {};
+//   Object.keys(obj).forEach((el) => {
+//     if (allowedFields.includes(el)) newObj[el] = obj[el];
+//   });
+//   return newObj;
+// };
+
+// module.exports = filterObj;

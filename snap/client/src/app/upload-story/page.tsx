@@ -1,12 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import Nav from '@/components/Nav'
 import Upload from './upload'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import cookie from 'js-cookie'
+import { AlertCircle } from 'lucide-react'
+import { FormProvider,useForm } from 'react-hook-form'
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -27,6 +31,7 @@ export const useUserStories = () => {
 }
 
 function UploadStoryPage() {
+    const methods = useForm<FormData>();
     const [showForm, setShowForm] = useState(false)
 
     const { data: stories, isLoading, isError, refetch } = useUserStories()
@@ -34,6 +39,29 @@ function UploadStoryPage() {
     const handleUploadSuccess = () => {
         setShowForm(false)
         refetch()
+    }
+
+    const handleDelete = async (storyId: string) => {
+        const confirm = window.confirm("Are you sure you want to delete this story?")
+        if (!confirm) return
+
+        try {
+            const token = cookie.get('token')
+            await axios.delete(`${API_BASE_URL}api/v1/stories/delete-User-Story/${storyId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            })
+            refetch()
+        } catch (error) {
+            console.error("Delete failed:", error)
+            alert("Failed to delete story.")
+        }
+    }
+
+
+    const handleEdit = async (storyId: string) => {
+        
+
     }
 
     if (isLoading) return <p className="text-center mt-10">Loading...</p>
@@ -45,9 +73,11 @@ function UploadStoryPage() {
                 <Nav />
             </header>
 
-            <div className="max-w-3xl mx-auto py-8">
+            <div className="max-w-4xl mx-auto py-10 px-4">
                 {showForm ? (
-                    <Upload onSuccess={handleUploadSuccess} />
+                    <FormProvider {...methods}>
+                        <Upload onSuccess={handleUploadSuccess} />
+                    </FormProvider>
                 ) : (
                     <>
                         {stories.length === 0 ? (
@@ -70,12 +100,75 @@ function UploadStoryPage() {
                                     <Button onClick={() => setShowForm(true)}>Upload New</Button>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-800 flex items-start gap-2 text-sm">
+                                    <AlertCircle className="w-5 h-5 mt-0.5" />
+                                    <span>
+                                        Thank you for submitting your story! 🎉 It is currently under review by our team. Once approved by an admin, it will be made public. We appreciate your patience.
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     {stories.map((story: any) => (
-                                        <div key={story._id} className="p-4 border rounded-md shadow-sm">
-                                            <h3 className="text-lg font-bold">{story.title}</h3>
-                                            <p className="text-sm text-gray-500">By {story.author} • {story.estimatedReadingTime} read</p>
-                                            <p className="mt-2 text-sm text-gray-700 line-clamp-2">{story.content}</p>
+                                        <div
+                                            key={story._id}
+                                            className="border rounded-2xl shadow-sm hover:shadow-md bg-white transition-all overflow-hidden"
+                                        >
+                                            <div className="relative w-full h-52">
+                                                <Image
+                                                    src={story.image}
+                                                    alt={story.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+
+                                            <div className="p-5 space-y-3">
+                                                <div className="space-y-1">
+                                                    <h3 className="text-xl font-semibold text-gray-900">{story.title}</h3>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        By <span className="font-medium">{story.author}</span> • {story.estimatedReadingTime} read
+                                                    </p>
+                                                </div>
+
+                                                <p className="text-sm text-gray-700 line-clamp-2">{story.description}</p>
+
+                                                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mt-2">
+                                                    <p><span className="font-semibold">Category:</span> {story.categories}</p>
+                                                    <p><span className="font-semibold">Location:</span> {story.location}</p>
+                                                    <p><span className="font-semibold">Language:</span> {story.language}</p>
+                                                    <p><span className="font-semibold">Status:</span> Pending Approval</p>
+                                                </div>
+
+                                                {story.tags?.length > 0 && (
+                                                    <div className="flex flex-wrap gap-2 pt-2">
+                                                        {story.tags.map((tag: string, idx: number) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full"
+                                                            >
+                                                                #{tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <div className="flex justify-end gap-2 pt-4">
+                                                    <Button
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                        onClick={() => handleEdit(story)}
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                        onClick={() => handleDelete(story._id)}
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

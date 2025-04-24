@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-
-// components/ui/index.ts
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +9,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Clock, MapPin, Globe } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import {  useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import cookie from "js-cookie";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useStoryForm } from "../hooks/useStoryForm";
+import {Countries, Languages} from '@/app/_Mock_/Helper'
+
 
 type FormData = {
     title: string;
@@ -53,52 +53,32 @@ const useUploadStory = () => {
 };
 
 export default function UploadPage({ onSuccess }: UploadProps) {
+    const formMethods = useForm<FormData>();
+  
+    
+    const {
+        tags,
+        inputTag,
+        setInputTag,
+        imagePreview,
+        setImagePreview,
+        handleAddTag,
+        handleKeyDown,
+        handleRemoveTag,
+        handleImageChange,
+    } = useStoryForm(formMethods);
+
     const {
         register,
         handleSubmit,
         control,
-        setValue,
         getValues,
-        clearErrors,
-        formState: { errors }
-    } = useForm<FormData>();
+        formState: { errors },
+    } = useForm<FormData>()
 
     const { mutate, isPending } = useUploadStory();
 
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [inputTag, setInputTag] = useState("");
 
-    const handleAddTag = () => {
-        const trimmed = inputTag.trim();
-        const currentTags = getValues("tags") || [];
-        if (trimmed && !currentTags.includes(trimmed)) {
-            const updatedTags = [...currentTags, trimmed];
-            setValue("tags", updatedTags);
-            setInputTag("");
-            clearErrors("tags");
-        }
-    };
-
-    const handleRemoveTag = (tagToRemove: string) => {
-        const updatedTags = (getValues("tags") || []).filter((tag) => tag !== tagToRemove);
-        setValue("tags", updatedTags);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddTag();
-        }
-    };
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setImagePreview(reader.result as string);
-            reader.readAsDataURL(file);
-        }
-    };
 
     const onSubmit = (data: FormData) => {
         const file = data.image?.[0];
@@ -106,7 +86,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
             toast.error("Image is required");
             return;
         }
-
+        data.tags = tags; 
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (key === "image") {
@@ -129,7 +109,10 @@ export default function UploadPage({ onSuccess }: UploadProps) {
         });
     };
 
+
     return (
+       
+
         <div className="max-w-3xl mx-auto py-8">
             <h1 className="text-3xl font-bold text-center mb-8">Upload a Story</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -141,21 +124,26 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                     <CardContent className="space-y-6">
                         {/* Title */}
                         <div>
-                            <Label>Title *</Label>
-                            <Input placeholder="Story title" {...register("title", { required: "Title is required" })} />
+                            <Label className="mb-2">Title </Label>
+                            <Input
+                                placeholder="Story title"
+                                className="border-[2px] border-gray-400 focus:border-[1px] focus:border-gray-300 focus:ring-0 focus:outline-none"
+                                {...register("title", { required: "Title is required" })}
+                            />
+
                             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                         </div>
 
                         {/* Description */}
                         <div>
-                            <Label>Description *</Label>
+                            <Label className="mb-2">Description </Label>
                             <Textarea placeholder="Short description" {...register("description", { required: "Description is required" })} />
                             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                         </div>
 
                         {/* Image */}
                         <div>
-                            <Label>Image *</Label>
+                            <Label className="mb-2">Image </Label>
                             {imagePreview && (
                                 <div className="relative mb-4">
                                     <img src={imagePreview} alt="Preview" className="max-h-64 rounded" />
@@ -178,7 +166,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
 
                         {/* Author */}
                         <div>
-                            <Label>Author *</Label>
+                            <Label className="mb-2">Author</Label>
                             <Input placeholder="Author name" {...register("author", { required: "Author is required" })} />
                             {errors.author && <p className="text-red-500 text-sm">{errors.author.message}</p>}
                         </div>
@@ -186,13 +174,13 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                         {/* Category & Reading Time */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <Label>Category *</Label>
+                                <Label className="mb-2">Category </Label>
                                 <Input placeholder="e.g. Fiction, History" {...register("categories", { required: "Category is required" })} />
                                 {errors.categories && <p className="text-red-500 text-sm">{errors.categories.message}</p>}
                             </div>
 
                             <div>
-                                <Label className="flex gap-2 items-center"><Clock className="h-4 w-4" /> Estimated Reading Time</Label>
+                                <Label className="flex gap-2 items-center mb-2"><Clock className="h-4 w-4" /> Estimated Reading Time</Label>
                                 <Controller
                                     name="estimatedReadingTime"
                                     control={control}
@@ -218,14 +206,10 @@ export default function UploadPage({ onSuccess }: UploadProps) {
 
                         {/* Location & Language */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <Label className="flex gap-2 items-center"><MapPin className="h-4 w-4" /> Location</Label>
-                                <Input placeholder="Story location" {...register("location", { required: "Location is required" })} />
-                                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-                            </div>
-
-                            <div>
-                                <Label className="flex gap-2 items-center"><Globe className="h-4 w-4" /> Language</Label>
+                            <div className="relative" style={{ zIndex: 20 }}>
+                                <Label className="flex gap-2 items-center mb-2">
+                                    <Globe className="h-4 w-4" /> Language
+                                </Label>
                                 <Controller
                                     name="language"
                                     control={control}
@@ -233,12 +217,41 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select language" />
+                                                <SelectValue placeholder="Select Language" />
                                             </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="English">English</SelectItem>
-                                                <SelectItem value="French">French</SelectItem>
-                                                <SelectItem value="Spanish">Spanish</SelectItem>
+                                            <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
+
+                                                <div className="max-h-[200px] overflow-y-auto">
+                                                    {Languages.map((lang, index) => (
+                                                        <SelectItem key={index} value={lang.name}>
+                                                            {lang.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </div>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+
+
+                            <div>
+                                <Label className="flex gap-2 items-center mb-2"><Globe className="h-4 w-4" /> Location</Label>
+                                <Controller
+                                    name="location"
+                                    control={control}
+                                    rules={{ required: "Location is required" }}
+                                    render={({ field }) => (
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Location" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
+                                                {Countries.map((Country, index) => (
+                                                    <SelectItem key={index} value={Country.name}>
+                                                        {Country.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     )}
@@ -249,7 +262,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
 
                         {/* Tags */}
                         <div>
-                            <Label>Tags</Label>
+                            <Label className="mb-2">Tags</Label>
                             <div className="flex items-center gap-2">
                                 <Input
                                     placeholder="Add a tag"
@@ -257,10 +270,13 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     onChange={(e) => setInputTag(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                 />
+                                {errors.tags && <p className="text-red-500 text-sm">{errors.tags.message}</p>}
                                 <Button type="button" onClick={handleAddTag}>Add</Button>
+
+
                             </div>
                             <div className="flex flex-wrap mt-2 gap-2">
-                                {(getValues("tags") || []).map((tag, index) => (
+                                {tags.map((tag, index) => (
                                     <Badge key={index} className="flex items-center gap-1">
                                         {tag}
                                         <X className="w-3 h-3 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
@@ -269,7 +285,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                             </div>
                         </div>
 
-                       
+
                     </CardContent>
 
                     <CardFooter className="justify-end">
@@ -280,5 +296,6 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                 </Card>
             </form>
         </div>
+        
     );
 }

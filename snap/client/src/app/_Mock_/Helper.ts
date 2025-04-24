@@ -1,24 +1,4 @@
 
-// import MountainImage from "@/images/stories/desktop/mountains.jpg"
-// import SunsetImage from "@/images/stories/desktop/cityscapes.jpg"
-// import VoyageImage from "@/images/stories/desktop/18-days-voyage.jpg"
-// import ArchitecturalsImage from "@/images/stories/desktop/architecturals.jpg"
-// import WorldTourImage from "@/images/stories/desktop/world-tour.jpg"
-// import UnforeseenCornersImage from "@/images/stories/desktop/unforeseen-corners.jpg"
-// import KingOnAfricaImage from "@/images/stories/desktop/king-on-africa.jpg"
-// import TheTripImage from "@/images/stories/desktop/trip-to-nowhere.jpg"
-// import RangesImage from "@/images/stories/desktop/rage-of-the-sea.jpg"
-// import RunningFreeImage from "@/images/stories/desktop/running-free.jpg"
-// import BehindTheWavesImage from "@/images/stories/desktop/behind-the-waves.jpg"
-// import CalmWatersImage from "@/images/stories/desktop/calm-waters.jpg"
-// import MilkyWayImage from "@/images/stories/desktop/milky-way.jpg"
-// import NightAtTheMuseumImage from "@/images/stories/desktop/dark-forest.jpg"
-// import somwarpet from "@/images/stories/desktop/somwarpet.jpg"
-// import LandofDreamsImage from "@/images/stories/desktop/land-of-dreams.jpg"
-
-
-
-
 import Responsive from '../../../public/images/features/desktop/responsive.svg'
 import UploadLimit from '../../../public/images/features/desktop/no-limit.svg'
 import Embed from '../../../public/images/features/desktop/embed.svg'
@@ -26,104 +6,7 @@ import Domain from '../../../public/images/features/desktop/custom-domain.svg'
 import Exposure from '../../../public/images/features/desktop/boost-exposure.svg'
 import Drag_Drop from '../../../public/images/features/desktop/drag-drop.svg'
 
-// export const stories = [
-//     {
-//         id: 1,
-//         title: "The Mountains",
-//         author: "by John Appleseed",
-//         image: MountainImage,
-//     },
-//     {
-//         id: 2,
-//         title: "Sunset Cityscapes",
-//         author: "by Benjamin Cruz",
-//         image: SunsetImage,
-//     },
-//     {
-//         id: 3,
-//         title: "18 Days Voyage",
-//         author: "by Alexei Borodin",
-//         image: VoyageImage,
-//     },
-//     {
-//         id: 4,
-//         title: "Architecturals",
-//         author: "by Samantha Brooke",
-//         image: ArchitecturalsImage,
-//     },
-//     {
-//         id: 5,
-//         title: "World Tour 2019",
-//         author: "by Timothy Wagner",
-//         image: WorldTourImage,
-//     },
-//     {
-//         id: 6,
-//         title: "Unforeseen Corners",
-//         author: "by William Malcolm",
-//         image: UnforeseenCornersImage,
-//     },
-//     {
-//         id: 7,
-//         title: "King on Africa: Part II",
-//         author: "by Sharon Schenk",
-//         image: KingOnAfricaImage,
-//     },
-//     {
-//         id: 8,
-//         title: "The Trip to Nowhere",
-//         author: "by Timothy Wagner",
-//         image: TheTripImage,
-//     },
-//     {
-//         id: 9,
-//         title: "Rage of The Sea",
-//         author: "by Mahmud Ezzar",
-//         image: RangesImage,
-//     },
-//     {
-//         id: 10,
-//         title: "Running Free",
-//         author: "by Michelle",
-//         image: RunningFreeImage,
-//     },
-//     {
-//         id: 11,
-//         title: "Behind the Waves",
-//         author: "by Daniel Krieger",
-//         image:  BehindTheWavesImage,
-//     },
-//     {
-//         id: 12,
-//         title: "Calm Waters",
-//         author: "by Riccardo Beltrami",
-//         image: CalmWatersImage,
-//     },
-//     {
-//         id: 13,
-//         title: "Milky Way",
-//         author: "by Benjamin Cruz",
-//         image: MilkyWayImage,
-//     },
-//     {
-//         id: 14,
-//         title: "Night at The Dark Forest",
-//         author: "by Mohammed Abdul",
-//         image: NightAtTheMuseumImage,
-//     },
-//     {
-//         id: 15,
-//         title: "Somwarpet’s Beauty",
-//         author: "by Michelle",
-//         image: somwarpet,
-//     },
-//     {
-//         id: 16,
-//         title: "Land of Dreams",
-//         author: "by William Malcolm",   
-//         image: LandofDreamsImage,
-//     },     
-// ]
+
 
 export const OurFeatures = [
 {
@@ -167,4 +50,90 @@ title:"Drag & Drop Image",
 info:"Easily drag and drop your image and get beautiful shots everytime. No over the top tooling to add friction to creating stories.",
 img:Drag_Drop
 },
+]
+
+export const Countries =
+[
+  { "name": "Nigeria" },
+  { "name": "Ghana" },
+  { "name": "Kenya" },
+  { "name": "South Africa" },
+  { "name": "Egypt" },
+  { "name": "Morocco" },
+  { "name": "Algeria" },
+  { "name": "United States" },
+  { "name": "Canada" },
+  { "name": "Mexico" },
+  { "name": "Brazil" },
+  { "name": "Argentina" },
+  { "name": "Chile" },
+  { "name": "Colombia" },
+  { "name": "United Kingdom" },
+  { "name": "Germany" },
+  { "name": "France" },
+  { "name": "Italy" },
+  { "name": "Spain" },
+  { "name": "Netherlands" },
+  { "name": "Sweden" },
+  { "name": "Norway" },
+  { "name": "Denmark" },
+  { "name": "Russia" },
+  { "name": "India" },
+  { "name": "Pakistan" },
+  { "name": "Bangladesh" },
+  { "name": "China" },
+  { "name": "Japan" },
+  { "name": "South Korea" },
+  { "name": "Philippines" },
+  { "name": "Vietnam" },
+  { "name": "Indonesia" },
+  { "name": "Australia" },
+  { "name": "New Zealand" },
+  { "name": "Turkey" },
+  { "name": "Saudi Arabia" },
+  { "name": "United Arab Emirates" },
+  { "name": "Qatar" }
+]
+
+export const Languages =
+[
+  { "name": "English" },
+  { "name": "French" },
+  { "name": "Spanish" },
+  { "name": "Arabic" },
+  { "name": "Mandarin Chinese" },
+  { "name": "Hindi" },
+  { "name": "Bengali" },
+  { "name": "Portuguese" },
+  { "name": "Russian" },
+  { "name": "Japanese" },
+  { "name": "Korean" },
+  { "name": "German" },
+  { "name": "Italian" },
+  { "name": "Turkish" },
+  { "name": "Vietnamese" },
+  { "name": "Urdu" },
+  { "name": "Persian (Farsi)" },
+  { "name": "Swahili" },
+  { "name": "Hausa" },
+  { "name": "Yoruba" },
+  { "name": "Igbo" },
+  { "name": "Zulu" },
+  { "name": "Dutch" },
+  { "name": "Malay" },
+  { "name": "Thai" },
+  { "name": "Polish" },
+  { "name": "Ukrainian" },
+  { "name": "Romanian" },
+  { "name": "Greek" },
+  { "name": "Hebrew" },
+  { "name": "Tamil" },
+  { "name": "Telugu" },
+  { "name": "Marathi" },
+  { "name": "Punjabi" },
+  { "name": "Javanese" },
+  { "name": "Burmese" },
+  { "name": "Amharic" },
+  { "name": "Somali" },
+  { "name": "Nepali" }
 ]

@@ -110,6 +110,7 @@ exports.uploadStory = catchAsync(async (req, res, next) => {
 
   let {
     title,
+    tags,
     author,
     description,
     categories,
@@ -117,8 +118,7 @@ exports.uploadStory = catchAsync(async (req, res, next) => {
     location,
     language,
   } = req.body;
-
-  let { tags } = req.body;
+  
   const file = req.file;
 
   console.log('BODY:', req.body);
@@ -212,9 +212,6 @@ if (typeof categories === 'string') {
   });
 });
 
-// Get all uploads for authenticated user
-// controllers/storyController.js
-
 exports.getUserUploads = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;
   if (!userId) return next(new AppError('User not authenticated', 401));
@@ -226,5 +223,74 @@ exports.getUserUploads = catchAsync(async (req, res, next) => {
     status: 'success',
     results: stories.length,
     data: stories,
+  });
+});
+
+exports.deleteUserStory = catchAsync(async (req, res, next) => {
+  const userId = req.user?._id;
+  const { storyId } = req.params;
+
+  if (!userId) return next(new AppError('User not authenticated', 401));
+  if (!storyId) return next(new AppError('Story ID is required', 400));
+
+  const deleted = await Story.findOneAndDelete({
+    _id: storyId,
+    user: userId,
+  });
+
+  if (!deleted) {
+    return next(new AppError('Story not found or unauthorized', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Story deleted successfully',
+  });
+});
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
+exports.updateStory = catchAsync(async (req, res, next) => {
+  const userId = req.user?._id;
+  const { storyId } = req.params;
+
+  if (!userId) return next(new AppError('User not authenticated', 401));
+  if (!storyId) return next(new AppError('Story ID is required', 400));
+
+  const filteredBody = filterObj(
+    req.body,
+    'title',
+    'author',
+    'image',
+    'description',
+    'categories',
+    'tags',
+    'estimatedReadingTime',
+    'location',
+    'language'
+  );
+
+  const updatedStory = await Story.findOneAndUpdate(
+    { _id: storyId, user: userId },
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedStory) {
+    return next(new AppError('Story not found or unauthorized.', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: updatedStory,
   });
 });
