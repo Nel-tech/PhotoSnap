@@ -127,7 +127,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                             <Label className="mb-2">Title </Label>
                             <Input
                                 placeholder="Story title"
-                                className="border-[2px] border-gray-400 focus:border-[1px] focus:border-gray-300 focus:ring-0 focus:outline-none"
+                                className="border-[2px] border-gray-400 focus:border-[1px] focus:border-gray-300 focus:ring-0 focus:outline-none placeholder:text-sm"
                                 {...register("title", { required: "Title is required" })}
                             />
 
@@ -137,7 +137,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                         {/* Description */}
                         <div>
                             <Label className="mb-2">Description </Label>
-                            <Textarea placeholder="Short description" {...register("description", { required: "Description is required" })} />
+                            <Textarea placeholder="Short description" {...register("description", { required: "Description is required" })} className=" placeholder:text-sm" />
                             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                         </div>
 
@@ -155,6 +155,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                             <Input
                                 type="file"
                                 accept="image/*"
+                                className="text-sm file:text-sm file:px-4 file:py-2 file:border file:border-gray-300 file:rounded file:bg-white file:text-gray-700"
                                 {...register("image", { required: "Image is required" })}
                                 onChange={(e) => {
                                     register("image").onChange(e);
@@ -167,7 +168,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                         {/* Author */}
                         <div>
                             <Label className="mb-2">Author</Label>
-                            <Input placeholder="Author name" {...register("author", { required: "Author is required" })} />
+                            <Input placeholder="Author name" {...register("author", { required: "Author is required" })} className=" placeholder:text-sm" />
                             {errors.author && <p className="text-red-500 text-sm">{errors.author.message}</p>}
                         </div>
 
@@ -175,7 +176,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <Label className="mb-2">Category </Label>
-                                <Input placeholder="e.g. Fiction, History" {...register("categories", { required: "Category is required" })} />
+                                <Input placeholder="e.g.Fiction, History" {...register("categories", { required: "Category is required" })} className=" placeholder:text-sm" />
                                 {errors.categories && <p className="text-red-500 text-sm">{errors.categories.message}</p>}
                             </div>
 
@@ -188,9 +189,9 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select..." />
+                                                <SelectValue placeholder="Select..." className=" placeholder:text-sm" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
                                                 <SelectItem value="Under 5 minutes">Under 5 minutes</SelectItem>
                                                 <SelectItem value="5-10 minutes">5–10 minutes</SelectItem>
                                                 <SelectItem value="10-15 minutes">10–15 minutes</SelectItem>
@@ -217,7 +218,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select Language" />
+                                                <SelectValue placeholder="Select Language" className=" placeholder:text-sm" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
 
@@ -244,7 +245,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select Location" />
+                                                <SelectValue placeholder="Select Location" className=" placeholder:text-sm" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
                                                 {Countries.map((Country, index) => (
@@ -265,10 +266,11 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                             <Label className="mb-2">Tags</Label>
                             <div className="flex items-center gap-2">
                                 <Input
-                                    placeholder="Add a tag"
+                                    placeholder="dreams, exploration, adventure, fantasy"
                                     value={inputTag}
                                     onChange={(e) => setInputTag(e.target.value)}
                                     onKeyDown={handleKeyDown}
+                                    className=" placeholder:text-sm"
                                 />
                                 {errors.tags && <p className="text-red-500 text-sm">{errors.tags.message}</p>}
                                 <Button type="button" onClick={handleAddTag}>Add</Button>

@@ -58,6 +58,7 @@ export const useStoryForm = (formMethods: UseFormReturn<FormData>) => {
 
   return {
         tags,
+        setTags,
         inputTag,
         setInputTag,
         imagePreview,

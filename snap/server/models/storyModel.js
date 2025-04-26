@@ -51,6 +51,8 @@ const storySchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    enum:['pending', 'published', 'rejected'],
+    default:'pending'
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

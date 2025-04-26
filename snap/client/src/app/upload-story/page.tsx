@@ -9,12 +9,14 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import cookie from 'js-cookie'
 import { AlertCircle } from 'lucide-react'
-import { FormProvider,useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export const useUserStories = () => {
+
     return useQuery({
         queryKey: ['userStories'],
         queryFn: async () => {
@@ -31,8 +33,10 @@ export const useUserStories = () => {
 }
 
 function UploadStoryPage() {
+    const router = useRouter()
     const methods = useForm<FormData>();
     const [showForm, setShowForm] = useState(false)
+
 
     const { data: stories, isLoading, isError, refetch } = useUserStories()
 
@@ -40,6 +44,15 @@ function UploadStoryPage() {
         setShowForm(false)
         refetch()
     }
+
+    const handleEdit = (storyId: string) => {
+        router.push(`/stories/edit/${storyId}`)
+
+    }
+
+
+
+
 
     const handleDelete = async (storyId: string) => {
         const confirm = window.confirm("Are you sure you want to delete this story?")
@@ -59,10 +72,7 @@ function UploadStoryPage() {
     }
 
 
-    const handleEdit = async (storyId: string) => {
-        
 
-    }
 
     if (isLoading) return <p className="text-center mt-10">Loading...</p>
     if (isError) return <p className="text-center mt-10 text-red-500">Something went wrong!</p>
@@ -136,7 +146,7 @@ function UploadStoryPage() {
                                                     <p><span className="font-semibold">Category:</span> {story.categories}</p>
                                                     <p><span className="font-semibold">Location:</span> {story.location}</p>
                                                     <p><span className="font-semibold">Language:</span> {story.language}</p>
-                                                    <p><span className="font-semibold">Status:</span> Pending Approval</p>
+                                                    <p><span className="font-semibold">Status:</span> {story.status}</p>
                                                 </div>
 
                                                 {story.tags?.length > 0 && (
@@ -156,7 +166,7 @@ function UploadStoryPage() {
                                                     <Button
                                                         variant="outline"
                                                         className="text-xs"
-                                                        onClick={() => handleEdit(story)}
+                                                        onClick={() => handleEdit(story._id)}
                                                     >
                                                         Edit
                                                     </Button>

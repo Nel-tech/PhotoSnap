@@ -2,7 +2,16 @@
 import { create } from 'zustand';
 import cookie from 'js-cookie';
 
-type User = any;
+type UserRole = 'user' | 'admin';
+
+
+interface User {
+  _id: string;
+  email: string;
+  username?: string;
+  role: UserRole;
+  // Add other user fields as needed
+}
 
 interface AuthState {
   isAuthenticated: boolean;

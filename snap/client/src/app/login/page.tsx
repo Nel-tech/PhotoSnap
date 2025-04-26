@@ -10,13 +10,16 @@ import Link from "next/link"
 export default function SignIn() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [isLoading, setIsLoading] = useState(false);
+
     const router = useRouter()
     const login = useAuthStore((state) => state.login);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setIsLoading(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users/login`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v1/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,10 +35,21 @@ export default function SignIn() {
             }
 
             if (data.token) {
-                login(data.token)
-                toast.success('Login successful')
-                router.push('/')
+                login(data.token); 
+
+                // Wait a tiny moment or delay routing to ensure state is set
+                setTimeout(() => {
+                    const role = useAuthStore.getState().user?.role;
+                    if (role === 'admin') {
+                        toast.success('Admin Logged-In successfully');
+                        router.push('/admin');
+                    } else {
+                        toast.success('Login successful');
+                        router.push('/');
+                    }
+                }, 200); 
             }
+
         } catch (error) {
             console.error('Login error:', error)
             toast.error(error instanceof Error ? error.message : 'Login failed')
@@ -102,11 +116,13 @@ export default function SignIn() {
                         <div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+                                disabled={isLoading}
                             >
-                                Sign in
+                                {isLoading ? 'Signing in...' : 'Sign in'}
                             </button>
                         </div>
+
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
