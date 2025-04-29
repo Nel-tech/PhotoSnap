@@ -26,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
 import toast from "react-hot-toast"
+import { useRouter } from 'next/navigation';
 
 interface Story {
     id: string;
@@ -33,7 +34,7 @@ interface Story {
     title: string;
     author: string;
     image: string;
-    content: string;
+    description: string;
     summary?: string;
     date: string;
     estimatedReadingTime: string;
@@ -46,11 +47,11 @@ interface Story {
 
 function StoryDetails() {
     const { id } = useParams()
+    const router = useRouter()
     const queryClient = useQueryClient();
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
     const token = cookie.get("token")
     const [isBookmarked, setIsBookmarked] = useState(false)
-    const [isLiked, setIsLiked] = useState(false)
     const [showScrollTop, setShowScrollTop] = useState(false)
     const [randomStories, setRandomStories] = useState<Story[]>([])
 
@@ -82,6 +83,7 @@ function StoryDetails() {
                 })
                 .then((res) => {
                     const storyData = res.data.data
+                    console.log(storyData)
                     setIsBookmarked(storyData.bookmarked)
                     return storyData
                 }),
@@ -106,11 +108,7 @@ function StoryDetails() {
 
         // Filter out the current story
         const otherStories = stories.filter(story => story._id !== id)
-
-        // If we have fewer stories than requested, return all available
         if (otherStories.length <= count) return otherStories
-
-        // Get random stories using Fisher-Yates shuffle
         const shuffled = [...otherStories]
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1))
@@ -119,7 +117,7 @@ function StoryDetails() {
         return shuffled.slice(0, count)
     }
 
-    // Update random stories when allStories changes
+    
     useEffect(() => {
         if (allStories) {
             setRandomStories(getRandomStories(allStories))
@@ -225,15 +223,22 @@ function StoryDetails() {
     }
 
     return (
+
+        <Protected allowedRoles={['user']}>
+
         <div className="min-h-screen bg-[#f8f7f4] text-[#3c3c3c] font-sans">
             {/* Navigation */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#e9e1d4]">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
-                        <Link href="/" className="flex items-center gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors">
+                        <Button
+                            type="button"
+                            onClick={() => router.back()}
+                            className="flex items-center gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors"
+                        >
                             <ChevronLeft className="h-5 w-5" />
                             <span className="font-medium">Back</span>
-                        </Link>
+                        </Button>
                         <div className="flex items-center gap-4">
                             <Button
                                 variant="ghost"
@@ -348,7 +353,7 @@ function StoryDetails() {
                             {/* First Letter Styling */}
                             <div className="prose prose-lg max-w-none">
                                 <p className="text-[#3c3c3c] leading-relaxed text-lg first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:text-[#c7a17a] first-letter:mr-3 first-letter:float-left">
-                                    {story.content}
+                                    {story.description}
                                 </p>
                             </div>
 
@@ -439,7 +444,7 @@ function StoryDetails() {
                                                 {randomStory.title}
                                             </h3>
                                             <p className="text-sm text-[#6b6b6b] mb-4 line-clamp-2">
-                                                {randomStory.summary || randomStory.content.substring(0, 150) + "..."}
+                                                {randomStory.summary || randomStory.description.substring(0, 150) + "..."}
                                             </p>
                                             <div className="flex items-center justify-between">
                                                 <div className="text-xs text-[#6b6b6b]">{randomStory.estimatedReadingTime}</div>
@@ -457,6 +462,7 @@ function StoryDetails() {
                 </div>
             </div>
         </div>
+        </Protected>
     )
 }
 

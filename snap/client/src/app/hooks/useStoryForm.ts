@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 // import { useForm} from "react-hook-form";
 import { useFormContext,UseFormReturn } from "react-hook-form";
+
 type FormData = {
     title: string;
     author: string;
@@ -16,7 +17,6 @@ export const useStoryForm = (formMethods: UseFormReturn<FormData>) => {
      const {
         setValue,
         getValues,
-        clearErrors,
     } = formMethods;
 
     const [tags, setTags] = useState<string[]>(getValues("tags") || []);
@@ -32,6 +32,7 @@ export const useStoryForm = (formMethods: UseFormReturn<FormData>) => {
         if (trimmed && !tags.includes(trimmed)) {
             const updatedTags = [...tags, trimmed];
             setTags(updatedTags);
+            setValue("tags", updatedTags)
             setInputTag("");
         }
     };
@@ -39,6 +40,7 @@ export const useStoryForm = (formMethods: UseFormReturn<FormData>) => {
     const handleRemoveTag = (tagToRemove: string) => {
         const updatedTags = tags.filter(tag => tag !== tagToRemove);
         setTags(updatedTags);
+        setValue('tags', updatedTags);
     };
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {

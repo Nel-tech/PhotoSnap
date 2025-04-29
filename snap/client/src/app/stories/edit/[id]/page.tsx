@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { useStoryForm } from "@/app/hooks/useStoryForm";
 import { Countries, Languages } from '@/app/_Mock_/Helper'
 import { useParams } from "next/navigation";
+import Protected from "@/components/Protected";
 
 
 
@@ -139,15 +140,13 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
             toast.error("Image is required");
             return;
         }
-
-        // Add tags to formData
         formData.tags = tags;
         const formDataToSend = new FormData();
 
-        // Populate formData with the values
+       
         Object.entries(formData).forEach(([key, value]) => {
             if (key === "image") {
-                // Only append image if a new file was selected
+              
                 if (formData.image?.[0]) {
                     formDataToSend.append("image", formData.image[0]);
                 }
@@ -158,7 +157,6 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
             }
         });
 
-        // Call the API to update the story (use axios here)
         try {
             const token = cookie.get("token");
 
@@ -187,6 +185,7 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
 
     return (
 
+        <Protected allowedRoles={['user']}>
 
         <div className="max-w-3xl mx-auto py-8">
             <h1 className="text-3xl font-bold text-center mb-8">Edit  Story</h1>
@@ -383,6 +382,9 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
                 </Card>
             </form>
         </div>
+
+        </Protected>
+
 
     );
 }

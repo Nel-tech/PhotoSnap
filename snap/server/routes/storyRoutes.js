@@ -58,7 +58,7 @@ router.post(
   authController.restrictTo('user'),
   storyController.BookMark
 );
-
+router.delete('/delete-bookmark/:id',authController.restrictTo('user'), storyController.deleteBookmark);
 router.get(
   '/getUserBookMarkedStories',
   authController.restrictTo('user'),
@@ -69,6 +69,12 @@ router.get(
   '/get-book-marked-stories',
   authController.restrictTo('user'),
   storyController.getAllBookMarkedStories
+);
+
+router.get(
+  '/featured-stories',
+  authController.restrictTo('user'),
+  storyController.rotateFeaturedStory
 );
 
 // ─── 4. ADMIN ROUTES ────────────────────────────────

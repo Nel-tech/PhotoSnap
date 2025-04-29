@@ -67,14 +67,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
         handleRemoveTag,
         handleImageChange,
     } = useStoryForm(formMethods);
-
-    const {
-        register,
-        handleSubmit,
-        control,
-        getValues,
-        formState: { errors },
-    } = useForm<FormData>()
+    const { register, handleSubmit, control, setValue, formState: { errors } } = formMethods;
 
     const { mutate, isPending } = useUploadStory();
 
@@ -86,13 +79,19 @@ export default function UploadPage({ onSuccess }: UploadProps) {
             toast.error("Image is required");
             return;
         }
-        data.tags = tags; 
+        if (!data.tags || data.tags.length === 0) {
+            toast.error("Please add at least one tag");
+            return;
+        }
+
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (key === "image") {
                 formData.append("image", file);
             } else if (key === "tags" && Array.isArray(value)) {
-                value.forEach((tag) => formData.append("tags", tag));
+                formData.append("tags", JSON.stringify(value));
+            } else if (key === "categories") {
+                formData.append("categories", JSON.stringify(value));  
             } else {
                 formData.append(key, value as string);
             }
@@ -103,8 +102,9 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                 toast.success("Story uploaded successfully");
                 onSuccess();
             },
-            onError: () => {
+            onError: (error) => {
                 toast.error("Failed to upload story");
+                console.error(error);
             }
         });
     };
@@ -137,7 +137,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                         {/* Description */}
                         <div>
                             <Label className="mb-2">Description </Label>
-                            <Textarea placeholder="Short description" {...register("description", { required: "Description is required" })} className=" placeholder:text-sm" />
+                            <Textarea placeholder=" description" {...register("description", { required: "Description is required" })} className=" placeholder:text-sm" />
                             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                         </div>
 
@@ -257,7 +257,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                         </Select>
                                     )}
                                 />
-                                {errors.language && <p className="text-red-500 text-sm">{errors.language.message}</p>}
+                                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
                             </div>
                         </div>
 
@@ -273,7 +273,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                                     className=" placeholder:text-sm"
                                 />
                                 {errors.tags && <p className="text-red-500 text-sm">{errors.tags.message}</p>}
-                                <Button type="button" onClick={handleAddTag}>Add</Button>
+                                <Button type="button" className="bg-black text-white" onClick={handleAddTag}>Add</Button>
 
 
                             </div>
@@ -291,7 +291,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                     </CardContent>
 
                     <CardFooter className="justify-end">
-                        <Button type="submit" disabled={isPending}>
+                        <Button type="submit" className="bg-black text-white" disabled={isPending}>
                             {isPending ? "Uploading..." : "Submit Story"}
                         </Button>
                     </CardFooter>

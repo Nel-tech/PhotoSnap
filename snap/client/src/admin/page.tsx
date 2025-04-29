@@ -9,6 +9,7 @@ import cookie from 'js-cookie'
 import axios from "axios"
 import toast from "react-hot-toast"
 import Image from "next/image"
+import Protected from '@/components/Protected'
 
 interface Story {
     _id: string
@@ -21,7 +22,7 @@ interface Story {
     location: string;
     language: string;
     tags: string[];
-    status: "pending" | "published" | "rejected"
+    status: "pending" | "Published" | "rejected"
 
 }
 
@@ -53,26 +54,26 @@ const useFetchStories = () => {
 
 const useUpdateStoryStatus = () => {
     return useMutation({
-        mutationFn: async ({ storyId, status }: { storyId: string; status: "published" | "rejected" | "pending" }) => {
+        mutationFn: async ({ storyId, status }: { storyId: string; status: "Published" | "rejected" | "pending" }) => {
             const token = cookie.get("token");
-            const formData = new FormData();
-            formData.append("status", status);
 
-            const response = await axios.post(
+            const response = await axios.patch(
                 `${API_BASE_URL}api/v1/stories/update-story-status/${storyId}`,
-                formData,
+                { status }, 
                 {
                     headers: {
-                        "Content-Type": "multipart/form-data",
+                        "Content-Type": "application/json", // <--- important!
                         Authorization: `Bearer ${token}`,
                     },
                     withCredentials: true,
                 }
             );
+
             return response.data;
         },
     });
 };
+
 
 export default function AdminPage() {
     const [stories, setStories] = useState<Story[]>([])
@@ -87,15 +88,12 @@ export default function AdminPage() {
 
 
     const handleAccept = (id: string) => {
-        setStories(stories.map((story: any) => (story._id === id ? { ...story, status: "published" } : story)))
-
-        toast("Congratulations! The story has been approved and will be published soon.",)
-
+        setStories(stories.map((story: any) => (story._id === id ? { ...story, status: "Published" } : story)))
         mutate(
-            { storyId: id, status: "published" },
+            { storyId: id, status: "Published" },
             {
                 onSuccess: () => {
-                    toast("Congratulations! The story has been approved and will be published soon.");
+                    toast("Congratulations! The story has been approved and will be Published soon.");
                 },
                 onError: () => {
                     toast.error("Something went wrong while approving the story.");
@@ -107,9 +105,6 @@ export default function AdminPage() {
 
     const handleReject = (id: string) => {
         setStories(stories.map((story) => (story._id === id ? { ...story, status: "rejected" } : story)))
-
-        toast("The story has been rejected. An email will be sent to the author with feedback.")
-
         mutate(
             { storyId: id, status: "rejected" },
             {
@@ -126,6 +121,9 @@ export default function AdminPage() {
     if (isError) return <div>Something went wrong</div>
 
     return (
+
+        <Protected allowedRoles={["admin"]}>
+
         <div className="container mx-auto py-10">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Story Submissions</h1>
@@ -170,7 +168,7 @@ export default function AdminPage() {
                                 </div>
 
                                 {/* Status Badge */}
-                                {story.status === "published" && (
+                                {story.status === "Published" && (
                                     <div className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         Accepted
                                     </div>
@@ -248,6 +246,7 @@ export default function AdminPage() {
 
 
         </div>
+        </Protected>
     )
 }
 

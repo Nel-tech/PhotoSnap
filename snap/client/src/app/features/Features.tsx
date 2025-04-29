@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function Features() {
     return (
-        <div className="mt-[10rem] grid self-center items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="mt-[10rem] grid self-center items-center  sm:grid-cols-2 md:grid-cols-2 gap-4 lg:grid-cols-3">
             {OurFeatures.map((feat) => {
                 return (
                     <div key={feat.id} className="flex flex-col items-center ">

@@ -4,11 +4,11 @@ import cookie from 'js-cookie';
 
 type UserRole = 'user' | 'admin';
 
-
 interface User {
   _id: string;
   email: string;
   username?: string;
+  name:string;
   role: UserRole;
   // Add other user fields as needed
 }
@@ -16,20 +16,24 @@ interface User {
 interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
-  login: (token: string) => void;
+ login: (token: string) => Promise<void>;
   logout: () => void;
   fetchUserProfile: (token: string) => Promise<void>;
   setAuthState: (authState: boolean, user: User | null) => void;
 }
 
-// Load initial state from cookies
+
 const loadInitialState = () => {
   try {
     const storedUser = cookie.get('user');
-    return {
-      isAuthenticated: !!storedUser,
-      user: storedUser ? JSON.parse(storedUser) : null,
-    };
+    const token = cookie.get('token');
+    
+   
+    if (storedUser && token) {
+      return { isAuthenticated: true, user: JSON.parse(storedUser) };
+    }
+
+    return { isAuthenticated: false, user: null };
   } catch (error) {
     console.error('Error loading initial state:', error);
     return {
@@ -64,16 +68,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (err) {
       console.error('Error fetching user profile:', err);
       cookie.remove('user');
+      cookie.remove('token');
       set({ user: null, isAuthenticated: false });
     }
   },
 
-  login: (token: string) => {
-    console.log('Login called with token:', token);
-    cookie.set('token', token, { expires: 7, path: '/' });
-    const store = useAuthStore.getState();
-    store.fetchUserProfile(token);
-  },
+login: async (token: string) => {
+  console.log('Login called with token:', token);
+  cookie.set('token', token, { expires: 7, path: '/' });
+  await useAuthStore.getState().fetchUserProfile(token);
+},
+
 
   logout: () => {
     console.log('Logout called');

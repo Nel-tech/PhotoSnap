@@ -7,11 +7,13 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useState, useEffect } from 'react'
 import { useAuthStore } from "@/store/useAuthStore"
-//import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 
 function Stories() {
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+    const router = useRouter();
+
 
     const user = useAuthStore((state) => state.user);
 
@@ -66,11 +68,18 @@ function Stories() {
                             <Separator className="bg-white opacity-30" />
 
                             <Link
-                                href={user ? `/stories-details/${story._id}` : "/login"}
+                                href={`/stories-details/${story._id}`}
+                                onClick={(e) => {
+                                    if (!user) {
+                                        e.preventDefault();
+                                        router.push('/login'); 
+                                    }
+                                }}
                                 className="text-sm tracking-wider pt-2 inline-block"
                             >
                                 READ STORY <span aria-hidden="true">&rarr;</span>
                             </Link>
+
                         </div>
                     </div>
                 </div>

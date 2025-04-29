@@ -1,20 +1,35 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { motion, AnimatePresence } from 'framer-motion';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function Nav() {
   const pathname = usePathname();
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
+
+ 
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null; 
+
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const navigation = [
     { name: 'FEATURES', href: '/features' },
@@ -39,18 +54,21 @@ function Nav() {
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div className="hidden  md:flex md:gap-[1rem] lg:flex lg:gap-x-12">
-          {navigation.map((item) => (
-            <Link
-              key={item?.name}
-              href={item?.href || '#'}
-              className={`text-sm opacity-55 font-semibold leading-6 text-black transition duration-300 
-                ${pathname === item?.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
-            >
-              {item?.name}
-            </Link>
-          ))}
+        <div className="hidden md:flex md:gap-[1rem] lg:flex lg:gap-x-12">
+          {navigation
+            .filter((item): item is { name: string; href: string } => Boolean(item))
+            .map((item) => (
+              <Link
+                key={item.name}
+                href={item.href || '#'}
+                className={`text-sm opacity-55 font-semibold leading-6 text-black transition duration-300 
+          ${pathname === item.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
+              >
+                {item.name}
+              </Link>
+            ))}
         </div>
+
         <div className="hidden lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -62,18 +80,13 @@ function Nav() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-56 bg-white border-none" align="end" forceMount>
+                
                 <DropdownMenuItem>
 
-                  <Link href="/profile">
-                    <span>Profile</span>
+                  <Link href="/bookmark">
+
+                    <span>Bookmarks</span>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-
-                   <Link href="/bookmark">
-                   
-                  <span>Bookmarks</span>
-                   </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem>
@@ -86,9 +99,9 @@ function Nav() {
                 <DropdownMenuItem>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link href='/logout'>
-                  <span >Logout</span>
-                  </Link>
+                  <div className='cursor-pointer' onClick={handleLogout}>
+                    <span>Logout</span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -110,96 +123,114 @@ function Nav() {
         </div>
       </nav>
 
-      <Dialog as="div" className="lg:hidden md:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-        <div className="fixed inset-0 z-50" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-
-            <button
-              type="button"
-              className="md:hidden lg:hidden -m-2.5 rounded-md p-2.5 text-gray-700"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="sr-only">Close menu</span>
-              <X className="h-6 w-6" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                {navigation.map((item) => (
-                  <a
-                    key={item?.name}
-                    href={item?.href || '#'}
-                    className={`text-lg block font-semibold leading-6 text-black transition duration-300 
-                ${pathname === item?.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
-                  >
-
-                    {item?.name}
-                  </a>
-                ))}
+      <AnimatePresence>
+        <Dialog
+          key="mobile-menu"
+          open={mobileMenuOpen}
+          onClose={setMobileMenuOpen}
+        >
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.9 }}
+            className="fixed inset-0 z-50"
+          />
+          <motion.div // Wrapping Dialog.Panel with motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.9 }}
+            className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10"
+          >
+            <Dialog.Panel>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span className="sr-only">Close menu</span>
+                  <X className="h-6 w-6" aria-hidden="true" />
+                </button>
               </div>
-              <div className=" lg:flex lg:items-center lg:gap-[1rem] md:flex md:gap-[1rem]">
-                {isAuthenticated ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-2 cursor-pointer">
-                        Dashboard
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent className="w-56 bg-white border-none" align="end" forceMount>
-                      <DropdownMenuItem>
-
-                        <Link href="/profile">
-                          <span>Profile</span>
+              <div className="mt-6 flow-root">
+                <div className="-my-6 divide-y divide-gray-500/10">
+                  <div className="space-y-4 py-6">
+                    {navigation
+                      .filter((item): item is { name: string; href: string } => Boolean(item))
+                      .map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href || '#'}
+                          className={`block text-sm font-semibold leading-6 text-black transition duration-300 
+                      ${pathname === item.href ? "text-primary underline" : "hover:text-primary hover:underline"}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {item.name}
                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-
-                        <Link href="/bookmark">
-
-                          <span>Bookmarks</span>
-                        </Link>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem>
-
-                        <Link href="/upload-story">
-
-                          <span>Upload Your Story</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <span >Logout</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <div className='mt-4 flex gap-1'>
-                    <Link href="/signup" className="lg:text-base lg:font-semibold lg:leading-6 lg:text-gray-900">
-                      <Button variant={"outline"} className='cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md'>
-                        SIGNUP <span aria-hidden="true">&rarr;</span>
-                      </Button>
-                    </Link>
-
-                    <Link href="/login" className="text-base font-semibold leading-6 text-gray-900 ">
-                      <Button variant={"outline"} className='bg-black text-white cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-gray-800'>
-                        LOGIN <span aria-hidden="true">&rarr;</span>
-                      </Button>
-                    </Link>
+                      ))}
                   </div>
-                )}
-              </div>
+                  <div className="py-6">
+                    {isAuthenticated ? (
+                      <div className="space-y-3">
+                        <Link
+                          href="/bookmark"
+                          className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Bookmarks
+                        </Link>
+                        <Link
+                          href="/upload-story"
+                          className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Upload Your Story
+                        </Link>
+                        <Link
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setMobileMenuOpen(false);
+                            handleLogout();
+                          }}
+                          className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
+                        >
+                          Logout
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <Link
+                          href="/signup"
+                          className="block text-sm font-semibold leading-6 text-gray-900"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Button variant="outline" className="w-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md">
+                            SIGNUP <span aria-hidden="true">&rarr;</span>
+                          </Button>
+                        </Link>
 
-            </div>
-          </div>
-        </Dialog.Panel>
-      </Dialog>
+                        <Link
+                          href="/login"
+                          className="block text-sm font-semibold leading-6 text-gray-900"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Button variant="outline" className="w-full bg-black text-white cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md hover:bg-gray-800">
+                            LOGIN <span aria-hidden="true">&rarr;</span>
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Dialog.Panel>
+          </motion.div> {/* End of motion.div */}
+        </Dialog>
+      </AnimatePresence>
+
     </div>
   );
 }

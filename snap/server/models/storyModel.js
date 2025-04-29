@@ -18,6 +18,13 @@ const storySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+featured: {
+  type: Boolean,
+  default: false,
+},
+  featuredAt: {
+    type:Date,
+  },
   date: {
     type: Date,
     default: Date.now,
@@ -40,6 +47,10 @@ const storySchema = new mongoose.Schema({
   ref: 'User',
 }],
  
+tags:{
+  type:[String],
+  required:true
+},
 
   location: {
     type: String,
@@ -51,7 +62,7 @@ const storySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum:['pending', 'published', 'rejected'],
+    enum:['pending', 'Published', 'rejected'],
     default:'pending'
   },
   createdBy: {

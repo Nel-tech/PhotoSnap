@@ -11,11 +11,16 @@ import Image from "next/image"
 import Nav from "@/components/Nav"
 import { useAuthStore } from "@/store/useAuthStore"
 import axios from "axios"
-import { Loader2 } from "lucide-react"
+import toast from "react-hot-toast"
 import cookie from 'js-cookie'
+// import { useRouter } from "next/navigation"
+import Link from "next/link"
+
+
+
 
 type Story = {
-    id: string
+    _id: string
     title: string
     description: string
     image: string
@@ -29,6 +34,8 @@ type Story = {
 export default function BookmarksPage() {
     const [bookmarks, setBookmarks] = useState<Story[]>([]);
     const [showStories, setShowStories] = useState(false)
+
+
 
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -60,8 +67,7 @@ export default function BookmarksPage() {
         enabled: isAuthenticated,
     });
 
-    console.log("API_URL:", API_URL)
-    console.log("storiesResponse:", storiesResponse)
+
 
     useEffect(() => {
         if (storiesResponse && storiesResponse.success) {
@@ -71,26 +77,26 @@ export default function BookmarksPage() {
             setShowStories(true);
         }
     }, [storiesResponse]);
-
-    if (isLoading && !showStories) {
-        return (
-            <div className="flex flex-col items-center justify-center h-60">
-                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
-                <p className="text-sm text-gray-500">Loading Bookmarks, please wait...</p>
-            </div>
-        )
-    }
-
+ 
     if (error) return <div>Error: {error.message}</div>
-    if (showStories && bookmarks.length === 0) return <div className="text-center py-12">No Bookmarks Found</div>
-
-    const removeBookmark = (id: string) => {
-        setBookmarks(bookmarks.filter((bookmark) => bookmark.id !== id))
+   
+    const removeBookmark = async (id: string) => {
+        try {
+            // Call API to delete bookmark
+            await axios.delete(`${API_URL}api/v1/stories/delete-bookmark/${id}`, {
+                headers: { Authorization: `Bearer ${cookie.get('token')}` }
+            });
+            setBookmarks(bookmarks.filter((bookmark) => bookmark._id !== id));
+            toast.success('Bookmark removed successfully');
+        } catch (error) {
+            console.error('Error removing bookmark:', error);
+            toast.error('Failed to remove bookmark');
+        }
     }
 
-   
+
     const StoryCard = ({ story, onRemove }: { story: Story; onRemove: (id: string) => void }) => (
-        <Card className="h-full">
+        <Card className="h-full border-gray-50">
             <div className="relative h-48 w-full">
                 <Image src={story.image || "/placeholder.svg"} alt={story.title} fill className="object-cover rounded-t-lg" />
             </div>
@@ -127,7 +133,7 @@ export default function BookmarksPage() {
                     variant="ghost"
                     size="sm"
                     className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    onClick={() => onRemove(story.id)}
+                    onClick={() => onRemove(story._id)}
                 >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Remove
@@ -137,23 +143,27 @@ export default function BookmarksPage() {
     )
 
     return (
-        <Protected>
+        <Protected allowedRoles={['user']}>
             <div>
                 <header>
                     <Nav />
                 </header>
 
+                <div className="ml-[2rem]  py-5 flex items-center justify-between mb-6  lg:ml-[7rem]">
+                    <div className="flex items-center text-sm text-gray-500 gap-1 flex-wrap">
+                        <Link href="/" className="hover:underline text-gray-600">Home</Link>
+                        <span className="mx-1 text-gray-400">/</span>
+                        <span className=" text-gray-600">Dashboard</span>
+                        <span className="mx-1 text-gray-400">/</span>
+                        <span className="text-gray-400">Bookmarks</span>
+                    </div>
+                </div>
+
                 <div className="max-w-6xl mx-auto py-8">
-                    <h1 className="text-3xl font-bold mb-8">Your Bookmark Collections</h1>
+                    <h1 className="text-lg text-center  font-bold mb-8  lg:text-3xl ">Your Bookmark Collections</h1>
 
                     <Tabs defaultValue="bookmarks">
-                        <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
-                            <TabsTrigger value="bookmarks" className="flex items-center gap-2">
-                                <Bookmark className="h-4 w-4" />
-                                Bookmarks ({bookmarks.length})
-                            </TabsTrigger>
-                            
-                        </TabsList>
+                        
 
                         <TabsContent value="bookmarks">
                             {bookmarks.length === 0 ? (
@@ -165,13 +175,13 @@ export default function BookmarksPage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {bookmarks.map((bookmark) => (
-                                        <StoryCard key={bookmark.id} story={bookmark} onRemove={removeBookmark} />
+                                        <StoryCard key={bookmark._id} story={bookmark} onRemove={removeBookmark} />
                                     ))}
                                 </div>
                             )}
                         </TabsContent>
 
-                       
+
                     </Tabs>
                 </div>
             </div>

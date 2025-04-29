@@ -10,7 +10,7 @@ import MobileDesignImage from '../../../public/images/home/mobile/designed-for-e
 function StoriesSection() {
     return (
         <section>
-            <div className="flex flex-col lg:flex-row items-center justify-between md:flex-row  ">
+            <div className="flex pb-[2rem] flex-col lg:flex-row items-center lg:pb-0 justify-between md:flex-row  ">
                 <div className="">
                     
                         {/* Mobile */}
@@ -49,18 +49,17 @@ function StoriesSection() {
                     <p className="text-gray-500 leading-relaxed pt-[.3rem]">
                         We provide design templates to ensure your stories look terrific. Easily add photos, text, embed maps and media from other networks. Then share your story with everyone.
                     </p>
-                    <Button className="mt-[2rem] cursor-pointer hover:underline">VIEW THE STORIES <span aria-hidden="true">&rarr;</span></Button>
+               
                 </div>
             </div>
 
-            <div className=" flex flex-col-reverse lg:flex-row items-center justify-between  md:flex-row">
+            <div className="pb-[2rem] flex flex-col-reverse lg:flex-row lg:pb-0 items-center justify-between  md:flex-row">
 
                 <div className=" px-[3rem] lg:px-[5rem]">
                     <h1 className="text-3xl mt-[3rem] font-medium tracking-wider max-w-[30rem] leading-snug uppercase lg:mt-[0rem] lg:max-w-[20rem] lg:text-5xl lg:font-semibold  ">Designed for everyone</h1>
                     <p className="text-gray-500 leading-relaxed pt-[.3rem]">
                         Photosnap can help you create stories that resonate with your audience. Our tool is designed for photographers of all levels, brands, businesses you name it.
                     </p>
-                    <Button className="mt-[2rem] cursor-pointer hover:underline">VIEW THE STORIES <span aria-hidden="true">&rarr;</span></Button>
                 </div>
 
                 <div className="">

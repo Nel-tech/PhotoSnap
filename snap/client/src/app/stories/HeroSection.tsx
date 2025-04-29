@@ -1,66 +1,108 @@
 'use client'
-import BackgroundImage from '../../../public/images/stories/desktop/moon-of-appalacia.jpg'
-import { useEffect, useState } from 'react'
+// import BackgroundImage from '../../../public/images/stories/desktop/moon-of-appalacia.jpg'
+// import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import axios from "axios"
+import { useQuery } from "@tanstack/react-query"
+import cookie from 'js-cookie'
+import { useAuthStore } from "@/store/useAuthStore"
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 function HeroSection() {
-    const [prevMonth, setPrevMonth] = useState('')
+    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-    useEffect(() => {
-        const previous = () => {
-            const date = new Date();
-            const prevMonthDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-            const formatted = prevMonthDate.toLocaleString('default', {
-                month: 'long',
-                year: 'numeric',
-            });
-            setPrevMonth(formatted);
-        };
-        previous();
-    }, []);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['get-featured-stories'],
+        queryFn: async () => {
+            try {
+                const token = cookie.get('token');
+                console.log("Token:", token);
+
+                if (!token) throw new Error("No token found");
+
+                const res = await axios.get(`${API_URL}api/v1/stories/featured-stories`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                });
+
+                console.log("API Response:", res.data.data);
+                return res.data.data;
+            } catch (err) {
+                console.error("Error fetching featuredstories:", err);
+                throw err; 
+            }
+        },
+        enabled: isAuthenticated,
+      
+    });
+    if (isLoading || !data) {
+        return (
+            <section className="h-screen flex items-center justify-center text-center">
+                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
+                <p className="text-gray-500">Loading featured story...</p>
+            </section>
+        );
+    }
+   
 
     return (
-        <section>
+        <section className="relative">
             <div
-                className="bg-cover bg-center  h-screen w-full pt-[6rem]"
-                style={{ backgroundImage: `url(${BackgroundImage.src})` }}
+                className="relative bg-cover bg-center h-screen w-full pt-[6rem]"
+                style={{ backgroundImage: `url(${data?.image})` }}
             >
-                <div className='ml-[1rem] lg:ml-[5rem] hidden md:block lg:block'>
-                    <h1 className="text-white text-sm tracking-widest ">LAST MONTH'S FEATURED STORY</h1>
-                    <h2 className="text-white text-4xl max-w-[15rem] tracking-widest leading-normal uppercase pt-[1rem] ">Hazy Full Moon of Appalacia</h2>
-                    <div className=" pt-[1rem] flex items-center gap-2">
-                        <h3 className="text-white  text-sm opacity-55 ">{prevMonth} </h3> <span className='text-white text-sm'>By John Appleseed</span>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 z-0" />
+
+                {/* Text Content */}
+                <div className="relative z-10 ml-[1rem] lg:ml-[5rem] hidden md:block lg:block">
+                    <h1 className="text-white text-sm tracking-widest">FEATURED STORY</h1>
+                    <h2 className="text-white text-4xl tracking-widest leading-normal uppercase pt-[1rem]">
+                        {data?.title}
+                    </h2>
+                    <div className="pt-[1rem] flex items-center gap-2">
+                        <span className="text-white text-sm">By {data?.author}</span>
                     </div>
-                    <p className="pt-[1rem] text-white text-sm tracking-wide leading-[24px] max-w-[27rem] opacity-55">
-
-                        The dissected plateau area, while not actually made up of geological mountains,
-                        is popularly called "mountains," especially in eastern Kentucky and West Virginia,
-                        and while the ridges are not high, the terrain is extremely rugged.
-
+                    <p className="pt-[1rem] text-white text-sm tracking-wide leading-[24px] max-w-[27rem]">
+                        {data?.description.substring(0, 150) + "..."}
                     </p>
-                    <Button className="text-white -ml-[1rem] text-sm uppercase">Read the story <span><ArrowRight /></span></Button>
+                    <Link href={`/stories-details/${data?._id}`}>
+                        <Button className="text-white -ml-[1rem] text-sm uppercase cursor-pointer">
+                            Read the story <ArrowRight />
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
-            <Card className="rounded-none bg-black h-[122vh]  md:hidden lg:hidden">
-                <div className='ml-[1rem] lg:ml-[5rem]'>
-                    <h1 className="text-white text-sm tracking-widest ">LAST MONTH'S FEATURED STORY</h1>
-                    <h2 className="text-white text-4xl max-w-[15rem] tracking-widest leading-normal uppercase pt-[1rem] ">Hazy Full Moon of Appalacia</h2>
-                    <div className=" pt-[1rem] flex items-center gap-2">
-                        <h3 className="text-white  text-sm opacity-55 ">{prevMonth} </h3> <span className='text-white text-sm'>By John Appleseed</span>
+            {/* Mobile version */}
+            <Card className="rounded-none bg-black h-[122vh] md:hidden lg:hidden">
+                <div className="ml-[1rem] lg:ml-[5rem]">
+                    <h1 className="text-white text-sm tracking-widest">FEATURED STORY</h1>
+                    <h2 className="text-white text-4xl max-w-[15rem] tracking-widest leading-normal uppercase pt-[1rem]">
+                        {data?.title}
+                    </h2>
+                    <div className="pt-[1rem] flex items-center gap-2">
+                        <span className="text-white text-sm">By {data?.author}</span>
                     </div>
                     <p className="pt-[1rem] text-white text-sm tracking-wide leading-[30px] max-w-[27rem] opacity-55">
-
-                        The dissected plateau area, while not actually made up of geological mountains,
-                        is popularly called "mountains," especially in eastern Kentucky and West Virginia,
-                        and while the ridges are not high, the terrain is extremely rugged.
-
+                        {data?.description.substring(0, 150) + "..."}
                     </p>
-                    <Button className="text-white -ml-[1rem] text-sm uppercase">Read the story <span><ArrowRight /></span></Button>
+                    <Link
+                        href={`/stories-details/${data?._id}`}
+                        className="text-sm tracking-wider text-white pt-4 inline-block"
+                    >
+                        READ STORY <span aria-hidden="true">&rarr;</span>
+                    </Link>
                 </div>
             </Card>
         </section>
+
     );
 }
 

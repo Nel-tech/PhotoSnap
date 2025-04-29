@@ -47,7 +47,7 @@ function HeroSection() {
                 </Card>
 
                 {/* Right Image Section */}
-                <div className="relative w-full">
+                <div className="relative  w-full h-[83vh]">
                     <Image
                         src={DesktopFeatureImage}
                         alt="Features"

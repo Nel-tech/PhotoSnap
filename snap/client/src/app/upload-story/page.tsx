@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import Nav from '@/components/Nav'
@@ -11,6 +11,9 @@ import cookie from 'js-cookie'
 import { AlertCircle } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+import Protected from '@/components/Protected'
+
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -27,6 +30,7 @@ export const useUserStories = () => {
                 },
                 withCredentials: true,
             })
+            console.log(response.data.data)
             return response.data.data
         },
     })
@@ -74,10 +78,23 @@ function UploadStoryPage() {
 
 
 
-    if (isLoading) return <p className="text-center mt-10">Loading...</p>
+ 
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-60">
+                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
+                <p className="text-sm text-gray-500">Loading stories, please wait...</p>
+            </div>
+        )
+    }
     if (isError) return <p className="text-center mt-10 text-red-500">Something went wrong!</p>
 
     return (
+
+        <Protected allowedRoles={['user']}>
+
+
         <div>
             <header>
                 <Nav />
@@ -98,7 +115,7 @@ function UploadStoryPage() {
                                 </p>
                                 <Button
                                     onClick={() => setShowForm(true)}
-                                    className="bg-black text-white hover:bg-violet-200 hover:text-primary/80 px-4 py-2 rounded-md"
+                                        className="bg-black text-white transition-transform duration-300 hover:-translate-y-1 cursor-pointer hover:text-primary/80 px-4 py-2 rounded-md"
                                 >
                                     Upload Story
                                 </Button>
@@ -110,12 +127,23 @@ function UploadStoryPage() {
                                     <Button onClick={() => setShowForm(true)}>Upload New</Button>
                                 </div>
 
-                                <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-800 flex items-start gap-2 text-sm">
-                                    <AlertCircle className="w-5 h-5 mt-0.5" />
-                                    <span>
-                                        Thank you for submitting your story! 🎉 It is currently under review by our team. Once approved by an admin, it will be made public. We appreciate your patience.
-                                    </span>
-                                </div>
+                                        {/* {stories.some((story: any) => story.status === 'Pending') && (
+                                            <div className="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-800 flex items-start gap-2 text-sm">
+                                                <AlertCircle className="w-5 h-5 mt-0.5" />
+                                                <span>
+                                                    Thank you for submitting your story! 🎉 It is currently under review by our team. Once approved by an admin, it will be made public. We appreciate your patience.
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {stories.some((story: any) => story.status === 'Published') && (
+                                            <div className="mb-4 p-4 rounded-md bg-green-100 text-green-800 flex items-start gap-2 text-sm">
+                                                <AlertCircle className="w-5 h-5 mt-0.5" />
+                                                <span>
+                                                    Congratulations! 🎉 Your story has been approved and is now live for everyone to see. Thank you for sharing your amazing story with us!
+                                                </span>
+                                            </div>
+                                        )} */}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     {stories.map((story: any) => (
@@ -123,6 +151,8 @@ function UploadStoryPage() {
                                             key={story._id}
                                             className="border rounded-2xl shadow-sm hover:shadow-md bg-white transition-all overflow-hidden"
                                         >
+                                           
+
                                             <div className="relative w-full h-52">
                                                 <Image
                                                     src={story.image}
@@ -161,7 +191,16 @@ function UploadStoryPage() {
                                                         ))}
                                                     </div>
                                                 )}
-
+                                                {story.status === 'Pending' && (
+                                                    <span className="text-yellow-600 bg-yellow-100 text-xs px-2 py-1 rounded-full">
+                                                        Pending Review
+                                                    </span>
+                                                )}
+                                                {story.status === 'Published' && (
+                                                    <span className="text-green-600 bg-green-100 text-xs px-2 py-1 rounded-full">
+                                                        Published
+                                                    </span>
+                                                )}
                                                 <div className="flex justify-end gap-2 pt-4">
                                                     <Button
                                                         variant="outline"
@@ -188,6 +227,7 @@ function UploadStoryPage() {
                 )}
             </div>
         </div>
+        </Protected>
     )
 }
 

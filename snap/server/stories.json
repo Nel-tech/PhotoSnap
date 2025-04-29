@@ -5,15 +5,17 @@
     "author": "John Appleseed",
     "image": "/images/stories/desktop/mountains.jpg",
     "date": "2025-03-05",
-    "content": "High above the clouds, the mountains stood like silent guardians of time. I embarked on a journey through their rugged paths, facing cold winds and breathtaking views. Each peak held stories of ancient travelers, and with every step, I felt closer to something eternal and powerful. This adventure rekindled my sense of wonder and reminded me how small yet significant we are in nature's grand design.",
+    "description": "High above the clouds, the mountains stood like silent guardians of time. I embarked on a journey through their rugged paths, facing cold winds and breathtaking views. Each peak held stories of ancient travelers, and with every step, I felt closer to something eternal and powerful. This adventure rekindled my sense of wonder and reminded me how small yet significant we are in nature's grand design.",
     "categories": ["Nature", "Adventure", "Travel"],
     "tags": ["mountains", "hiking", "adventure", "exploration"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Himalayas",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":true
   },
   {
     "id": 2,
@@ -21,15 +23,17 @@
     "author": "Benjamin Cruz",
     "image": "/images/stories/desktop/cityscapes.jpg",
     "date": "2025-03-10",
-    "content": "The city came alive as the sun dipped below the skyline, casting golden hues on the glass towers. I wandered through the bustling streets, camera in hand, capturing fleeting moments of beauty and motion. There’s a kind of poetry in urban life—an orchestration of chaos and calm. The sunset painted the perfect finale to a day immersed in the energy of the metropolis.",
+    "description": "The city came alive as the sun dipped below the skyline, casting golden hues on the glass towers. I wandered through the bustling streets, camera in hand, capturing fleeting moments of beauty and motion. There’s a kind of poetry in urban life—an orchestration of chaos and calm. The sunset painted the perfect finale to a day immersed in the energy of the metropolis.",
     "categories": ["Cityscapes", "Photography", "Urban"],
     "tags": ["city", "sunset", "urban", "photography"],
     "estimatedReadingTime": "4 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "New York City",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 3,
@@ -37,15 +41,17 @@
     "author": "Alexei Borodin",
     "image": "/images/stories/desktop/18-days-voyage.jpg",
     "date": "2025-02-15",
-    "content": "The sea stretched endlessly ahead of us as we embarked on an 18-day voyage across uncharted waters. Each morning brought a new horizon, each night a sky full of stars. We lived with the rhythm of the ocean—its tempests, its tranquility. The voyage wasn’t just a journey through distance, but through time and reflection. I returned changed, salt in my veins, stories in my soul.",
+    "description": "The sea stretched endlessly ahead of us as we embarked on an 18-day voyage across uncharted waters. Each morning brought a new horizon, each night a sky full of stars. We lived with the rhythm of the ocean—its tempests, its tranquility. The voyage wasn’t just a journey through distance, but through time and reflection. I returned changed, salt in my veins, stories in my soul.",
     "categories": ["Adventure", "Sea", "Voyage"],
     "tags": ["voyage", "sea", "travel", "adventure"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Pacific Ocean",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 4,
@@ -53,15 +59,17 @@
     "author": "Samantha Brooke",
     "image": "/images/stories/desktop/architecturals.jpg",
     "date": "2025-03-01",
-    "content": "Every corner of the city whispered history through its structures. From gothic cathedrals to brutalist blocks, I explored the language of design carved in stone and steel. Architecture is more than utility—it’s a mirror of human dreams and defiance. I documented stories of architects and residents alike, each structure bearing witness to eras that shaped our present.",
+    "description": "Every corner of the city whispered history through its structures. From gothic cathedrals to brutalist blocks, I explored the language of design carved in stone and steel. Architecture is more than utility—it’s a mirror of human dreams and defiance. I documented stories of architects and residents alike, each structure bearing witness to eras that shaped our present.",
     "categories": ["Architecture", "Cityscapes", "Photography"],
     "tags": ["architecture", "design", "urban", "history"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "London",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 5,
@@ -69,15 +77,17 @@
     "author": "Timothy Wagner",
     "image": "/images/stories/desktop/world-tour.jpg",
     "date": "2019-09-12",
-    "content": "2019 was the year the world unfolded before me. From the colorful chaos of India to the serene lakes of Scandinavia, every country offered a new lesson in life. I learned to listen in new languages, smile in unfamiliar lands, and appreciate cultures with open arms. The world tour wasn’t just travel—it was transformation.",
+    "description": "2019 was the year the world unfolded before me. From the colorful chaos of India to the serene lakes of Scandinavia, every country offered a new lesson in life. I learned to listen in new languages, smile in unfamiliar lands, and appreciate cultures with open arms. The world tour wasn’t just travel—it was transformation.",
     "categories": ["Travel", "Cultural Exploration", "World Tour"],
     "tags": ["world tour", "travel", "culture", "experience"],
     "estimatedReadingTime": "8 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Global",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 6,
@@ -85,15 +95,17 @@
     "author": "William Malcolm",
     "image": "/images/stories/desktop/unforeseen-corners.jpg",
     "date": "2025-02-28",
-    "content": "Some of the most magical places I found were never on the map. Little alleys in European towns, forgotten temples in Southeast Asia, a hidden beach in South America—each unseen corner held a story untold. In these moments of unexpected discovery, I found peace and perspective, reminding me that detours are often the real destinations.",
+    "description": "Some of the most magical places I found were never on the map. Little alleys in European towns, forgotten temples in Southeast Asia, a hidden beach in South America—each unseen corner held a story untold. In these moments of unexpected discovery, I found peace and perspective, reminding me that detours are often the real destinations.",
     "categories": ["Adventure", "Travel", "Discovery"],
     "tags": ["hidden places", "exploration", "adventure", "travel"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Various",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 7,
@@ -101,15 +113,17 @@
     "author": "Sharon Schenk",
     "image": "/images/stories/desktop/king-on-africa.jpg",
     "date": "2025-01-20",
-    "content": "Africa's vast savannahs and ancient cultures called me back for a second time. This journey was not just about documenting wildlife, but immersing in traditions, food, and music that echo centuries. I followed the footsteps of kings and tribes, capturing their stories and spirit. The soul of Africa lives in its people—and I was humbled to witness it firsthand.",
+    "description": "Africa's vast savannahs and ancient cultures called me back for a second time. This journey was not just about documenting wildlife, but immersing in traditions, food, and music that echo centuries. I followed the footsteps of kings and tribes, capturing their stories and spirit. The soul of Africa lives in its people—and I was humbled to witness it firsthand.",
     "categories": ["Africa", "Travel", "Culture"],
     "tags": ["africa", "culture", "wildlife", "traditions"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "East Africa",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 8,
@@ -117,15 +131,17 @@
     "author": "Timothy Wagner",
     "image": "/images/stories/desktop/trip-to-nowhere.jpg",
     "date": "2025-03-15",
-    "content": "Sometimes the best journeys are the ones without a plan. I packed a bag, left my GPS behind, and followed intuition. This trip to nowhere led me to everywhere—quiet forests, roadside diners, and kind strangers who shared stories over campfires. In losing direction, I found connection, clarity, and myself.",
+    "description": "Sometimes the best journeys are the ones without a plan. I packed a bag, left my GPS behind, and followed intuition. This trip to nowhere led me to everywhere—quiet forests, roadside diners, and kind strangers who shared stories over campfires. In losing direction, I found connection, clarity, and myself.",
     "categories": ["Adventure", "Travel", "Self-Discovery"],
     "tags": ["spontaneous", "adventure", "travel", "self-discovery"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "United States",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 9,
@@ -133,15 +149,17 @@
     "author": "Mahmud Ezzar",
     "image": "/images/stories/desktop/rage-of-the-sea.jpg",
     "date": "2025-03-20",
-    "content": "The sea, in all its fury, shows no mercy. It roars and crashes against the cliffs, a relentless force of nature. I set sail to witness its raw power, knowing the dangers it holds. The waves are magnificent but unforgiving. They remind us of nature's ability to both create and destroy, leaving us awestruck and humbled in their wake.",
+    "description": "The sea, in all its fury, shows no mercy. It roars and crashes against the cliffs, a relentless force of nature. I set sail to witness its raw power, knowing the dangers it holds. The waves are magnificent but unforgiving. They remind us of nature's ability to both create and destroy, leaving us awestruck and humbled in their wake.",
     "categories": ["Sea", "Adventure", "Nature"],
     "tags": ["ocean", "waves", "adventure", "nature"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Atlantic Ocean",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 10,
@@ -149,15 +167,17 @@
     "author": "Michelle",
     "image": "/images/stories/desktop/running-free.jpg",
     "date": "2025-03-18",
-    "content": "There’s a kind of liberation that comes when you let go of everything. Running through the open fields, feeling the wind rush past me, I experienced freedom like never before. The world around me was vast, yet I felt connected to everything. It was a reminder that sometimes the best therapy is simply moving forward, with no destination in mind, just the pure joy of the journey.",
+    "description": "There’s a kind of liberation that comes when you let go of everything. Running through the open fields, feeling the wind rush past me, I experienced freedom like never before. The world around me was vast, yet I felt connected to everything. It was a reminder that sometimes the best therapy is simply moving forward, with no destination in mind, just the pure joy of the journey.",
     "categories": ["Freedom", "Adventure", "Personal Growth"],
     "tags": ["running", "freedom", "personal growth", "adventure"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Scottish Highlands",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 11,
@@ -165,15 +185,17 @@
     "author": "Daniel Krieger",
     "image": "/images/stories/desktop/behind-the-waves.jpg",
     "date": "2025-03-25",
-    "content": "I spent days watching the waves crash upon the shore, each wave telling its own story. But it was what lay beneath the surface that intrigued me the most—the life and movement hidden from view. In this story, I dive deep, exploring the unseen world of the ocean, the mysteries it holds, and the beauty that lies beneath the crashing waves.",
+    "description": "I spent days watching the waves crash upon the shore, each wave telling its own story. But it was what lay beneath the surface that intrigued me the most—the life and movement hidden from view. In this story, I dive deep, exploring the unseen world of the ocean, the mysteries it holds, and the beauty that lies beneath the crashing waves.",
     "categories": ["Sea", "Adventure", "Photography"],
     "tags": ["ocean", "waves", "exploration", "adventure"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Great Barrier Reef",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 12,
@@ -181,15 +203,17 @@
     "author": "Riccardo Beltrami",
     "image": "/images/stories/desktop/calm-waters.jpg",
     "date": "2025-03-22",
-    "content": "In contrast to the roaring sea, there are moments when the water is still and serene, like a mirror reflecting the sky. These are the times when we find peace, when everything slows down, and we can simply breathe. I took a journey to capture these quiet moments—times when the world seems to pause, offering a rare kind of tranquility.",
+    "description": "In contrast to the roaring sea, there are moments when the water is still and serene, like a mirror reflecting the sky. These are the times when we find peace, when everything slows down, and we can simply breathe. I took a journey to capture these quiet moments—times when the world seems to pause, offering a rare kind of tranquility.",
     "categories": ["Peace", "Nature", "Photography"],
     "tags": ["water", "serenity", "peace", "nature"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Lake Como",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 13,
@@ -197,15 +221,17 @@
     "author": "Benjamin Cruz",
     "image": "/images/stories/desktop/milky-way.jpg",
     "date": "2025-04-01",
-    "content": "On a clear night, I found myself gazing up at the stars, lost in the vastness of the universe. The Milky Way stretched across the sky like a cosmic river, and for a brief moment, I felt part of something far greater than myself. This is a story of those fleeting moments under the night sky, where time stands still, and we are reminded of the infinite wonders around us.",
+    "description": "On a clear night, I found myself gazing up at the stars, lost in the vastness of the universe. The Milky Way stretched across the sky like a cosmic river, and for a brief moment, I felt part of something far greater than myself. This is a story of those fleeting moments under the night sky, where time stands still, and we are reminded of the infinite wonders around us.",
     "categories": ["Astronomy", "Night Photography", "Nature"],
     "tags": ["stars", "milky way", "universe", "night photography"],
     "estimatedReadingTime": "6 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Atacama Desert",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 14,
@@ -213,15 +239,17 @@
     "author": "Mohammed Abdul",
     "image": "/images/stories/desktop/dark-forest.jpg",
     "date": "2025-04-05",
-    "content": "There is something eerie and magical about the forest at night. As the sun sets and the world quiets, the trees become silhouettes against the darkening sky. I ventured into the heart of the dark forest, armed with only a flashlight and the curiosity to see what the night holds. What I found were shadows, sounds, and an inexplicable sense of connection to the earth’s ancient roots.",
+    "description": "There is something eerie and magical about the forest at night. As the sun sets and the world quiets, the trees become silhouettes against the darkening sky. I ventured into the heart of the dark forest, armed with only a flashlight and the curiosity to see what the night holds. What I found were shadows, sounds, and an inexplicable sense of connection to the earth’s ancient roots.",
     "categories": ["Adventure", "Nature", "Mystery"],
     "tags": ["forest", "night", "mystery", "nature"],
     "estimatedReadingTime": "8 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy": "609c3f4e6f1e2a001c8efb9d",
     "location": "Black Forest",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 15,
@@ -229,15 +257,17 @@
     "author": "Michelle",
     "image": "/images/stories/desktop/somwarpet.jpg",
     "date": "2025-03-30",
-    "content": "Somwarpet, a small town nestled in the hills, is a place where beauty lies in the simplicity of life. Surrounded by lush green fields and misty mountains, this town offers a serene escape from the chaos of city life. I spent a few days here, wandering through the vibrant landscape, capturing the peaceful moments and quiet corners of this hidden gem.",
+    "description": "Somwarpet, a small town nestled in the hills, is a place where beauty lies in the simplicity of life. Surrounded by lush green fields and misty mountains, this town offers a serene escape from the chaos of city life. I spent a few days here, wandering through the vibrant landscape, capturing the peaceful moments and quiet corners of this hidden gem.",
     "categories": ["Travel", "Nature", "Photography"],
     "tags": ["somwarpet", "nature", "travel", "peace"],
     "estimatedReadingTime": "5 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Somwarpet, India",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   },
   {
     "id": 16,
@@ -245,14 +275,16 @@
     "author": "William Malcolm",
     "image": "/images/stories/desktop/land-of-dreams.jpg",
     "date": "2025-04-07",
-    "content": "In a place where reality blends with fantasy, the Land of Dreams stands as a testament to human imagination. I traveled to this mythical land, where the colors of the sky and the earth seemed to merge into one. It’s a place where every step felt like a new chapter in an unfinished story. This adventure was one of discovery, inspiration, and the pursuit of dreams.",
+    "description": "In a place where reality blends with fantasy, the Land of Dreams stands as a testament to human imagination. I traveled to this mythical land, where the colors of the sky and the earth seemed to merge into one. It’s a place where every step felt like a new chapter in an unfinished story. This adventure was one of discovery, inspiration, and the pursuit of dreams.",
     "categories": ["Fantasy", "Adventure", "Exploration"],
     "tags": ["dreams", "exploration", "adventure", "fantasy"],
     "estimatedReadingTime": "7 min",
     "bookmarked": false,
     "user": "609c3f4e6f1e2a001c8efb9d",
+    "createdBy":"609c3f4e6f1e2a001c8efb9d",
     "location": "Iceland",
     "language": "English",
-    "status": "Published"
+    "status": "Published",
+    "featured":false
   }
 ]

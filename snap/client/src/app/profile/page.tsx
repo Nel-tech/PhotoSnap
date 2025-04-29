@@ -13,36 +13,52 @@ import { useAuthStore } from '@/store/useAuthStore';
 import Nav from "@/components/Nav"
 
 type Profile = {
-  name: string;
   email: string;
   password: string;
+  name:string;
 }
 
 export default function ProfilePage() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
   const user = useAuthStore((state) => state.user);
-  const [isEditing, setIsEditing] = useState(false)
-  const [profileData, setProfileData] = useState<Profile | null>(null)
+  const fetchUserProfile = useAuthStore((state) => state.fetchUserProfile);
+
+  console.log('user in profile', user)
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
-  })
+  });
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    if (token && !user) {
+      fetchUserProfile(token); 
+    }
+  }, [user, fetchUserProfile]);
 
   useEffect(() => {
     if (user) {
       setProfileData({
-        name: user.name,
+        name:user.name,
         email: user.email,
         password: ''
-      })
+      });
     }
-  }, [user])
+  }, [user]);
 
   const handleSave = async () => {
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1]
-      const response = await fetch(`${API_BASE_URL}/api/v1/users/updateMe`, {
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const response = await fetch(`${API_BASE_URL}api/v1/users/updateMe`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -65,25 +81,26 @@ export default function ProfilePage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     if (profileData) {
-      setProfileData(prev => prev ? { ...prev, [name]: value } : null)
+      setProfileData(prev => prev ? { ...prev, [name]: value } : null);
     }
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setPasswordData(prev => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
   }
 
   const handlePasswordUpdate = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('New passwords do not match')
-      return
+      toast.error('New passwords do not match');
+      return;
     }
 
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1]
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      if (!token) throw new Error('No token found');
       const response = await fetch(`${API_BASE_URL}/api/v1/users/updatePassword`, {
         method: 'PATCH',
         headers: {
@@ -95,27 +112,32 @@ export default function ProfilePage() {
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword
         })
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to update password')
+        throw new Error('Failed to update password');
       }
 
       setPasswordData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
-      })
-      toast.success('Password updated successfully')
+      });
+      toast.success('Password updated successfully');
     } catch (error) {
-      console.error('Failed to update password:', error)
-      toast.error('Failed to update password')
+      console.error('Failed to update password:', error);
+      toast.error('Failed to update password');
     }
   }
 
-  if (!user) {
-    return <div>Loading...</div>
+  if (!mounted) {
+    return null; // or <div>Loading...</div> if you want
   }
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
 
   return (
     <section>
