@@ -37,7 +37,7 @@ function FeaturedStory() {
                 }}
             >
                 <p className="text-3xl font-bold tracking-wider leading-relaxed uppercase max-w-[15rem]  text-left md:text-left lg:text-center lg:tracking-widest lg:leading-relaxed">
-                    we're in beta get your invite today
+                    we&apos;re in beta get your invite today
                 </p>
                 <Link href="/">
                     <p className="text-base text-left ml-[-7rem]">

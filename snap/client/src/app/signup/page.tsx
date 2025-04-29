@@ -10,6 +10,7 @@ import { EyeIcon, EyeClosedIcon } from "lucide-react";
 import cookie from "js-cookie";
 import axios from "axios";
 import { useAuthStore } from '@/store/useAuthStore';
+import { AxiosError } from "axios";
 
 
 type FormData = {
@@ -21,7 +22,7 @@ type FormData = {
 
 export default function SignUp() {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-    const [serverMessage, setServerMessage] = useState("");
+    const [, setServerMessage] = useState("");
     const [passwordVisibility, setPasswordVisibility] = useState({
         password: false,
         passwordConfirm: false,
@@ -101,19 +102,23 @@ export default function SignUp() {
 
             toast.success("Account Successfully Created");
             router.push("/");
-        } catch (error: any) {
-            // Handle axios errors
-            if (error.response && error.response.data) {
-                const errorMsg = error.response.data.message || "Something went wrong. Please try again.";
+        } catch (error: unknown) {
+            const axiosError = error as AxiosError<{ message: string }>;
+
+            if (axiosError.response && axiosError.response.data) {
+                const errorMsg = axiosError.response.data.message || "Something went wrong. Please try again.";
                 toast.error(errorMsg);
+
                 if (errorMsg === "Email already exists") {
                     toast.error("This email is already registered");
                 }
             } else {
                 toast.error("Something went wrong. Please try again.");
             }
-            console.error("Error:", error);
+
+            console.error("Error:", axiosError);
         }
+
     };
 
 

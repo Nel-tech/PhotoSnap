@@ -15,7 +15,7 @@ function HeroSection() {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['get-featured-stories'],
         queryFn: async () => {
             try {

@@ -10,8 +10,6 @@ import {
     Clock,
     Tag,
     MapPin,
-    Eye,
-    Heart,
     ChevronLeft,
     BookmarkCheck,
     Globe,
@@ -22,7 +20,7 @@ import cookie from "js-cookie"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback} from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
 import toast from "react-hot-toast"
@@ -178,7 +176,7 @@ function StoryDetails() {
                     </div>
                     <h2 className="text-2xl font-serif text-[#3c3c3c] mb-4">Story Not Found</h2>
                     <p className="text-[#6b6b6b] mb-8 font-light">
-                        The story you're looking for doesn't exist or has been removed.
+                        The story you&apos;re looking for doesn&apos;t exist or has been removed.
                     </p>
                     <Button
                         variant="outline"

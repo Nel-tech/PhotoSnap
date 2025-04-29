@@ -9,6 +9,13 @@ import { useState, useEffect } from 'react'
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
 
+interface Story {
+    _id: string;
+    title: string;
+    image: string;
+    author: string;
+}
+
 
 function Stories() {
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -41,7 +48,7 @@ function Stories() {
 
     return (
         <section className="flex flex-wrap lg:flex-nowrap">
-            {stories.slice(0, 4).map((story: any) => (
+            {stories.slice(0, 4).map((story:Story) => (
                 <div
                     key={story._id}
                     className="w-full md:w-1/2"

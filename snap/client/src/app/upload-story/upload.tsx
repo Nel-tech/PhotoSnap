@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Clock, MapPin, Globe } from "lucide-react";
+import { X, Clock, Globe } from "lucide-react";
 import {  useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import cookie from "js-cookie";
@@ -16,6 +16,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useStoryForm } from "../hooks/useStoryForm";
 import {Countries, Languages} from '@/app/_Mock_/Helper'
+import Image from "next/image";
 
 
 type FormData = {
@@ -67,7 +68,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
         handleRemoveTag,
         handleImageChange,
     } = useStoryForm(formMethods);
-    const { register, handleSubmit, control, setValue, formState: { errors } } = formMethods;
+    const { register, handleSubmit, control,  formState: { errors } } = formMethods;
 
     const { mutate, isPending } = useUploadStory();
 
@@ -146,7 +147,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
                             <Label className="mb-2">Image </Label>
                             {imagePreview && (
                                 <div className="relative mb-4">
-                                    <img src={imagePreview} alt="Preview" className="max-h-64 rounded" />
+                                    <Image src={imagePreview} alt="Preview" className="max-h-64 rounded" />
                                     <Button type="button" size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setImagePreview(null)}>
                                         <X className="h-4 w-4" />
                                     </Button>

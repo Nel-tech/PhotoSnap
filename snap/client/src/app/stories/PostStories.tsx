@@ -12,6 +12,12 @@ import cookie from "js-cookie"
 //import { useAuth } from "@/hooks/AuthContext"
 //import { useParams } from "next/navigation"
 
+ interface Story {
+    _id: string;
+    title: string;
+    image: string;
+    author: string;
+}
 
 
 function PostStories() {
@@ -54,7 +60,7 @@ function PostStories() {
 
     return (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {stories.map((story: any) => (
+            {stories.map((story: Story) => (
                 <div key={story._id} className="relative overflow-hidden  shadow-lg">
 
                     {/* Image Container */}

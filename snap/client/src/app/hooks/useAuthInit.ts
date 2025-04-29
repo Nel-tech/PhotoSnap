@@ -5,13 +5,19 @@ import cookie from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 import { useAuthStore } from '@/store/useAuthStore';
 
+type DecodedToken = {
+  exp: number; 
+  id:string;
+  email:string;
+}
+
 const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded: any = jwtDecode(token);
+    const decoded: DecodedToken = jwtDecode(token);
     return decoded.exp * 1000 < Date.now();
-  } catch (e) {
-    return true;
-  }
+  } catch {
+  return true;
+}
 };
 
 export const useAuthInit = () => {

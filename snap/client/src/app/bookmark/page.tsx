@@ -2,11 +2,11 @@
 import Protected from "@/components/Protected"
 import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent} from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Bookmark, Heart, Clock, MapPin, Globe, Trash2 } from "lucide-react"
+import { Bookmark, Clock, MapPin, Globe, Trash2 } from "lucide-react"
 import Image from "next/image"
 import Nav from "@/components/Nav"
 import { useAuthStore } from "@/store/useAuthStore"
@@ -33,7 +33,7 @@ type Story = {
 
 export default function BookmarksPage() {
     const [bookmarks, setBookmarks] = useState<Story[]>([]);
-    const [showStories, setShowStories] = useState(false)
+    const [, setShowStories] = useState(false)
 
 
 
@@ -41,7 +41,7 @@ export default function BookmarksPage() {
 
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-    const { data: storiesResponse, isLoading, error } = useQuery({
+    const { data: storiesResponse, error } = useQuery({
         queryKey: ['get-user-bookmarks'],
         queryFn: async () => {
             try {
@@ -170,7 +170,7 @@ export default function BookmarksPage() {
                                 <div className="text-center py-12">
                                     <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                                     <h3 className="text-xl font-medium mb-2">No bookmarks yet</h3>
-                                    <p className="text-muted-foreground">When you bookmark stories, they'll appear here.</p>
+                                    <p className="text-muted-foreground">When you bookmark stories, they&apos;ll appear here.</p>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

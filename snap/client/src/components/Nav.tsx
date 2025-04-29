@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function Nav() {
   const pathname = usePathname();

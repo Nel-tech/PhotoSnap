@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import StoriesImage from "../../../public/images/home/desktop/beautiful-stories.jpg"
 import DesignImage from "../../../public/images/home/desktop/designed-for-everyone.jpg"
 import TabletStoriesImage from '../../../public/images/home/tablet/beautiful-stories.jpg'

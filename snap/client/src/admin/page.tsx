@@ -88,7 +88,7 @@ export default function AdminPage() {
 
 
     const handleAccept = (id: string) => {
-        setStories(stories.map((story: any) => (story._id === id ? { ...story, status: "Published" } : story)))
+        setStories(stories.map((story: Story) => (story._id === id ? { ...story, status: "Published" } : story)))
         mutate(
             { storyId: id, status: "Published" },
             {
