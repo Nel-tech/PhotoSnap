@@ -1,6 +1,5 @@
 "use client";
 
-// import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,17 +8,17 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Clock, Globe } from "lucide-react";
-import {  useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import cookie from "js-cookie";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useStoryForm } from "../hooks/useStoryForm";
-import {Countries, Languages} from '@/app/_Mock_/Helper'
+import { Countries, Languages } from '@/app/_Mock_/Helper'
 import Image from "next/image";
 
-
-type FormData = {
+// Define the StoryFormData interface with proper types
+export interface StoryFormData {
     title: string;
     author: string;
     description: string;
@@ -29,19 +28,19 @@ type FormData = {
     location: string;
     language: string;
     tags: string[];
-};
+}
 
-// type UploadProps = {
-//     onSuccess: () => void;
-// };
+export type UploadProps = {
+    onSuccess: () => void;
+};
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const useUploadStory = () => {
     return useMutation({
-        mutationFn: async (data: FormData) => {
+        mutationFn: async (formData: FormData) => {
             const token = cookie.get("token");
-            const response = await axios.post(`${API_BASE_URL}api/v1/stories/upload-story`, data, {
+            const response = await axios.post(`${API_BASE_URL}api/v1/stories/upload-story`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`
@@ -53,10 +52,9 @@ const useUploadStory = () => {
     });
 };
 
-export default function UploadPage() {
-    const formMethods = useForm<FormData>();
-  
-    
+export default function UploadForm({ onSuccess }: UploadProps) {
+    const formMethods = useForm<StoryFormData>();
+
     const {
         tags,
         inputTag,
@@ -68,13 +66,12 @@ export default function UploadPage() {
         handleRemoveTag,
         handleImageChange,
     } = useStoryForm(formMethods);
-    const { register, handleSubmit, control,  formState: { errors } } = formMethods;
+
+    const { register, handleSubmit, control, formState: { errors } } = formMethods;
 
     const { mutate, isPending } = useUploadStory();
 
-
-
-    const onSubmit = (data: FormData) => {
+    const onSubmit = (data: StoryFormData) => {
         const file = data.image?.[0];
         if (!file) {
             toast.error("Image is required");
@@ -85,6 +82,7 @@ export default function UploadPage() {
             return;
         }
 
+        // Create a new FormData object (HTML FormData, not our interface)
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (key === "image") {
@@ -92,16 +90,17 @@ export default function UploadPage() {
             } else if (key === "tags" && Array.isArray(value)) {
                 formData.append("tags", JSON.stringify(value));
             } else if (key === "categories") {
-                formData.append("categories", JSON.stringify(value));  
+                formData.append("categories", value as string);  
             } else {
                 formData.append(key, value as string);
             }
         });
 
-        mutate(formData as FormData, {
+        // Pass the FormData directly
+        mutate(formData, {
             onSuccess: () => {
                 toast.success("Story uploaded successfully");
-                
+                onSuccess();
             },
             onError: (error) => {
                 toast.error("Failed to upload story");
@@ -110,10 +109,7 @@ export default function UploadPage() {
         });
     };
 
-
     return (
-       
-
         <div className="max-w-3xl mx-auto py-8">
             <h1 className="text-3xl font-bold text-center mb-8">Upload a Story</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -147,7 +143,13 @@ export default function UploadPage() {
                             <Label className="mb-2">Image </Label>
                             {imagePreview && (
                                 <div className="relative mb-4">
-                                    <Image src={imagePreview} alt="Preview" className="max-h-64 rounded" />
+                                    <Image
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        width={300}
+                                        height={200}
+                                        className="max-h-64 rounded"
+                                    />
                                     <Button type="button" size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setImagePreview(null)}>
                                         <X className="h-4 w-4" />
                                     </Button>
@@ -222,7 +224,6 @@ export default function UploadPage() {
                                                 <SelectValue placeholder="Select Language" className=" placeholder:text-sm" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white shadow-lg border border-gray-200 rounded-md z-[9999]">
-
                                                 <div className="max-h-[200px] overflow-y-auto">
                                                     {Languages.map((lang, index) => (
                                                         <SelectItem key={index} value={lang.name}>
@@ -235,7 +236,6 @@ export default function UploadPage() {
                                     )}
                                 />
                             </div>
-
 
                             <div>
                                 <Label className="flex gap-2 items-center mb-2"><Globe className="h-4 w-4" /> Location</Label>
@@ -273,11 +273,9 @@ export default function UploadPage() {
                                     onKeyDown={handleKeyDown}
                                     className=" placeholder:text-sm"
                                 />
-                                {errors.tags && <p className="text-red-500 text-sm">{errors.tags.message}</p>}
                                 <Button type="button" className="bg-black text-white" onClick={handleAddTag}>Add</Button>
-
-
                             </div>
+                            {errors.tags && <p className="text-red-500 text-sm">{errors.tags.message}</p>}
                             <div className="flex flex-wrap mt-2 gap-2">
                                 {tags.map((tag, index) => (
                                     <Badge key={index} className="flex items-center gap-1">
@@ -287,8 +285,6 @@ export default function UploadPage() {
                                 ))}
                             </div>
                         </div>
-
-
                     </CardContent>
 
                     <CardFooter className="justify-end">
@@ -299,6 +295,5 @@ export default function UploadPage() {
                 </Card>
             </form>
         </div>
-        
     );
 }

@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) throw new Error('Failed to fetch user profile');
 
       const { data } = await res.json();
-      console.log('User profile data:', data);
+     
 
       // Store user data in cookie
       cookie.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
@@ -74,7 +74,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
 login: async (token: string) => {
-  console.log('Login called with token:', token);
   cookie.set('token', token, { expires: 7, path: '/' });
   await useAuthStore.getState().fetchUserProfile(token);
 },
