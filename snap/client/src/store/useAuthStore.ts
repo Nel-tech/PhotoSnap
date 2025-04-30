@@ -18,7 +18,7 @@ interface AuthState {
   user: User | null;
  login: (token: string) => Promise<void>;
   logout: () => void;
-  fetchUserProfile: (token: string) => Promise<void>;
+ fetchUserProfile: (token: string) => Promise<User | null>;
   setAuthState: (authState: boolean, user: User | null) => void;
 }
 
@@ -46,32 +46,31 @@ const loadInitialState = () => {
 export const useAuthStore = create<AuthState>((set) => ({
   ...loadInitialState(),
 
-  fetchUserProfile: async (token: string) => {
-    try {
-      console.log('Fetching user profile with token:', token);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v1/users/getMe`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-      });
+  fetchUserProfile: async (token: string): Promise<User | null> => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v1/users/getMe`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
+    });
 
-      if (!res.ok) throw new Error('Failed to fetch user profile');
+    if (!res.ok) throw new Error('Failed to fetch user profile');
 
-      const { data } = await res.json();
-     
+    const { data } = await res.json();
 
-      // Store user data in cookie
-      cookie.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
-      
-      set({ user: data.user, isAuthenticated: true });
-    } catch (err) {
-      console.error('Error fetching user profile:', err);
-      cookie.remove('user');
-      cookie.remove('token');
-      set({ user: null, isAuthenticated: false });
-    }
-  },
+    cookie.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
+    set({ user: data.user, isAuthenticated: true });
+    return data.user; // ✅ RETURN USER
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    cookie.remove('user');
+    cookie.remove('token');
+    set({ user: null, isAuthenticated: false });
+    return null; // ✅ RETURN NULL on failure
+  }
+},
+
 
 login: async (token: string) => {
   cookie.set('token', token, { expires: 7, path: '/' });
