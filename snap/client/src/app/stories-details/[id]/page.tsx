@@ -399,7 +399,7 @@ function StoryDetails() {
                             </div>
                             <blockquote className="font-serif text-xl italic text-[#3c3c3c] relative z-10">
                                 Stories have the power to transport us to different worlds, to make us feel emotions we've never felt
-                                before, and to connect us with people we've never met.
+                                before, and to connect us with people we&apos;ve never met.
                             </blockquote>
                             <div className="mt-4 text-right text-[#6b6b6b] font-medium">— The Art of Storytelling</div>
                         </div>

@@ -98,7 +98,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
             }
         });
 
-        mutate(formData as any, {
+        mutate(formData as FormData, {
             onSuccess: () => {
                 toast.success("Story uploaded successfully");
                 onSuccess();

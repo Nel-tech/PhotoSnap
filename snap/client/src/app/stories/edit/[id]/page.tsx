@@ -18,6 +18,7 @@ import { useStoryForm } from "@/app/hooks/useStoryForm";
 import { Countries, Languages } from '@/app/_Mock_/Helper'
 import { useParams } from "next/navigation";
 import Protected from "@/components/Protected";
+import Image from "next/image";
 
 
 
@@ -41,7 +42,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
 
-const fetchStory = (storyId: string) => {
+
+
+export default function EditStoryPage({ onSuccess }: UploadProps) {
+
+    const fetchStory = (storyId: string) => {
     return useQuery({
         queryKey: ['edit-stories', storyId], 
         queryFn: async () => {
@@ -62,6 +67,7 @@ const fetchStory = (storyId: string) => {
                 console.log("Response", response.data)
                 return response.data; 
             } catch (error) {
+                console.log(error)
                 throw new Error('Error fetching story data');
             }
         },
@@ -71,7 +77,6 @@ const fetchStory = (storyId: string) => {
     });
 };
 
-export default function EditStoryPage({ onSuccess }: UploadProps) {
     const formMethods = useForm<FormData>();
     const params = useParams();
     const storyId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -175,6 +180,7 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
             onSuccess(); 
         } catch (err) {
             toast.error("Failed to update story");
+            return err
         }
     };
 
@@ -221,7 +227,7 @@ export default function EditStoryPage({ onSuccess }: UploadProps) {
                             <Label className="mb-2">Image </Label>
                             {imagePreview && (
                                 <div className="relative mb-4">
-                                    <img src={imagePreview} alt="Preview" className="max-h-64 rounded" />
+                                    <Image src={imagePreview} alt="Preview" className="max-h-64 rounded" />
                                     <Button type="button" size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setImagePreview(null)}>
                                         <X className="h-4 w-4" />
                                     </Button>

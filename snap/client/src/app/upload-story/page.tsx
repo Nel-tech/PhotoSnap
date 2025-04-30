@@ -14,6 +14,23 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import Protected from '@/components/Protected'
 
+interface Story {
+    id: string;
+    _id: string;
+    title: string;
+    author: string;
+    image: string;
+    description: string;
+    summary?: string;
+    date: string;
+    estimatedReadingTime: string;
+    categories?: string[];
+    tags?: string[];
+    location?: string;
+    language?: string;
+    bookmarked?: boolean;
+    status:string;
+}
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -146,7 +163,7 @@ function UploadStoryPage() {
                                         )} */}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    {stories.map((story: any) => (
+                                    {stories.map((story: Story) => (
                                         <div
                                             key={story._id}
                                             className="border rounded-2xl shadow-sm hover:shadow-md bg-white transition-all overflow-hidden"
@@ -179,7 +196,7 @@ function UploadStoryPage() {
                                                     <p><span className="font-semibold">Status:</span> {story.status}</p>
                                                 </div>
 
-                                                {story.tags?.length > 0 && (
+                                                {Array.isArray(story.tags) && story.tags.length > 0 && (
                                                     <div className="flex flex-wrap gap-2 pt-2">
                                                         {story.tags.map((tag: string, idx: number) => (
                                                             <span
@@ -191,6 +208,7 @@ function UploadStoryPage() {
                                                         ))}
                                                     </div>
                                                 )}
+
                                                 {story.status === 'Pending' && (
                                                     <span className="text-yellow-600 bg-yellow-100 text-xs px-2 py-1 rounded-full">
                                                         Pending Review
