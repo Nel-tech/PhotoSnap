@@ -110,7 +110,7 @@ function UploadStoryPage() {
                             <div className="text-center space-y-4 mt-10">
                                 <h2 className="font-semibold text-lg">No story uploaded yet</h2>
                                 <p className="text-gray-500 text-sm">
-                                    You haven't shared any stories yet. Click below to upload your first one.
+                                    You haven&apos;t shared any stories yet. Click below to upload your first one.
                                 </p>
                                 <Button
                                     onClick={() => setShowForm(true)}
