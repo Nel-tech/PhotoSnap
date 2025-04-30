@@ -31,9 +31,9 @@ type FormData = {
     tags: string[];
 };
 
-type UploadProps = {
-    onSuccess: () => void;
-};
+// type UploadProps = {
+//     onSuccess: () => void;
+// };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -53,7 +53,7 @@ const useUploadStory = () => {
     });
 };
 
-export default function UploadPage({ onSuccess }: UploadProps) {
+export default function UploadPage() {
     const formMethods = useForm<FormData>();
   
     
@@ -101,7 +101,7 @@ export default function UploadPage({ onSuccess }: UploadProps) {
         mutate(formData as FormData, {
             onSuccess: () => {
                 toast.success("Story uploaded successfully");
-                onSuccess();
+                
             },
             onError: (error) => {
                 toast.error("Failed to upload story");

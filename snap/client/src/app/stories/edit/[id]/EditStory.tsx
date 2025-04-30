@@ -141,7 +141,6 @@ export default function EditStoryForm() {
 
         Object.entries(formData).forEach(([key, value]) => {
             if (key === "image") {
-                // Only append image if a new file was selected
                 if (formData.image?.[0]) {
                     formDataToSend.append("image", formData.image[0]);
                 }
@@ -167,7 +166,6 @@ export default function EditStoryForm() {
             });
 
             toast.success("Story updated successfully");
-            // Navigate back to stories page or wherever appropriate
             router.push("/stories");
         } catch (err) {
             toast.error("Failed to update story");
