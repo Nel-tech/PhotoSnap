@@ -1,23 +1,21 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "outputDirectory": "snap/client/.next",
+  "monorepoManager": "npm",
+  "rewrites": [
     {
-      "src": "client/next.config.js",
-      "use": "@vercel/next"
-    },
-    {
-      "src": "server/index.js",
-      "use": "@vercel/node"
+      "source": "/api/:path*",
+      "destination": "snap/server/server.js"
     }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "client/$1"
+  "functions": {
+    "snap/server/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ]
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
