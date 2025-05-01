@@ -42,7 +42,31 @@ function Stories() {
     }, [isLoading])
 
 
-    if (isLoading || !showStories) return <div className="text-center  pt-[6rem] text-2xl font-semibold animate-pulse">Fetching latest stories...</div>
+    if (isLoading || !showStories) {
+        return (
+            <section className="flex flex-wrap lg:flex-nowrap gap-4 pt-[6rem]">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="w-full md:w-1/2">
+                        <div className="relative w-full h-64 md:h-[60rem] lg:h-[30rem] overflow-hidden rounded-none shadow-md animate-pulse bg-gray-300">
+                            {/* Image Skeleton */}
+                            <div className="absolute inset-0 bg-gray-300" />
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent z-10" />
+
+                            {/* Text Skeleton */}
+                            <div className="absolute bottom-8 left-8 z-20 space-y-2">
+                                <div className="h-4 w-32 bg-gray-400 rounded" />
+                                <div className="h-3 w-24 bg-gray-400 rounded" />
+                                <div className="h-2 w-16 bg-gray-400 rounded mt-2" />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </section>
+        );
+    }
+
     if (error) return <div>Error: {error.message}</div>
     if (!stories || stories.length === 0) return <div>No stories found</div>
 

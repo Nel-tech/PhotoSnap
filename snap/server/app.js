@@ -28,22 +28,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 4️⃣ Enable CORS
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.PROD_CLIENT_URL,
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  process.env.PROD_CLIENT_URL || 'https://your-production-domain.com',
 ];
+console.log(allowedOrigins)
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // Allow requests with no origin (like curl or Postman)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.error(`Blocked by CORS: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
   })
 );
+
 
 
 // 5️⃣ Set security HTTP headers
