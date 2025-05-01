@@ -27,7 +27,24 @@ app.enable('trust proxy');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 4️⃣ Enable CORS
-app.use(cors());
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.PROD_CLIENT_URL,
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
+
 
 // 5️⃣ Set security HTTP headers
 app.use(
