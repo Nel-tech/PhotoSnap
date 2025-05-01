@@ -27,10 +27,7 @@ app.enable('trust proxy');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 4️⃣ Enable CORS
-app.use(cors({
-  origin: 'http://localhost:3000', 
-  credentials: true
-}));
+app.use(cors());
 
 // 5️⃣ Set security HTTP headers
 app.use(

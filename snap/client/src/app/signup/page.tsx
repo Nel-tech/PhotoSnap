@@ -82,8 +82,7 @@ export default function SignUp() {
 
             // Handle the token if available
             if (res.data.token) {
-                console.log("Setting token:", res.data.token);
-                cookie.set("jwt", res.data.token, { expires: 7, path: "/" });
+                cookie.set("token", res.data.token, { expires: 7, path: "/" });
                 login(res.data.token);
             }
 

@@ -19,6 +19,7 @@ interface Story {
 
 function Stories() {
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+    console.log(API_URL)
     const router = useRouter();
 
 

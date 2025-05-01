@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "cd snap/client && npm run build",
   "framework": "nextjs",
   "outputDirectory": "snap/client/.next",
   "rewrites": [
@@ -9,7 +9,7 @@
     }
   ],
   "functions": {
-    "snap/server/*.js": {
+    "snap/server/server.js": {
       "memory": 1024,
       "maxDuration": 10
     }

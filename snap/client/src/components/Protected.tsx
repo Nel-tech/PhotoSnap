@@ -12,27 +12,29 @@ interface ProtectedProps {
 }
 
 const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
-    const [hasMounted, setHasMounted] = useState(false); // Ensures no SSR mismatch
+    const [hasMounted, setHasMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-    const user = useAuthStore((state) => state.user);
-    const login = useAuthStore((state) => state.login);
     const router = useRouter();
+    const login = useAuthStore((state) => state.login);
 
     useEffect(() => {
-        setHasMounted(true); // Mark component as mounted on client
+        setHasMounted(true);
 
         const checkAuth = async () => {
             const token = cookie.get("token");
 
-            if (token) {
+            if (token && !useAuthStore.getState().isAuthenticated) {
                 await login(token);
             }
+
+            const user = useAuthStore.getState().user;
+            const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
             const noAccess =
                 !token ||
                 !isAuthenticated ||
-                (allowedRoles.length > 0 && (!user || !allowedRoles.includes(user.role)));
+                !user ||
+                (allowedRoles.length > 0 && !allowedRoles.includes(user.role));
 
             if (noAccess) {
                 router.push("/unauthorized");
@@ -42,7 +44,7 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
         };
 
         checkAuth();
-    }, [router, isAuthenticated, login, user, allowedRoles]);
+    }, []);
 
     if (!hasMounted || isLoading) {
         return (

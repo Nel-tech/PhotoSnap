@@ -56,12 +56,10 @@ export default function BookmarksPage() {
                     },
                     withCredentials: true,
                 });
-
-                console.log("API Response:", res.data);
                 return res.data;
             } catch (err) {
                 console.error("Error fetching bookmarks:", err);
-                throw err; // very important so react-query catches it
+                throw err; 
             }
         },
         enabled: isAuthenticated,

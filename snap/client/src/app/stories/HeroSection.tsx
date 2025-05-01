@@ -58,22 +58,22 @@ function HeroSection() {
                 style={{ backgroundImage: `url(${data?.image})` }}
             >
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 z-0" />
+                {/* <div className="absolute inset-0 bg-black bg-opacity-40 z-0" /> */}
 
                 {/* Text Content */}
-                <div className="relative z-10 ml-[1rem] lg:ml-[5rem] hidden md:block lg:block">
-                    <h1 className="text-white text-sm tracking-widest">FEATURED STORY</h1>
-                    <h2 className="text-white text-4xl tracking-widest leading-normal uppercase pt-[1rem]">
+                <div className="relative text-black ml-[1rem] lg:ml-[5rem] hidden md:block lg:block">
+                    <h1 className=" text-sm tracking-widest">FEATURED STORY</h1>
+                    <h2 className=" text-4xl tracking-widest leading-normal uppercase pt-[1rem]">
                         {data?.title}
                     </h2>
                     <div className="pt-[1rem] flex items-center gap-2">
-                        <span className="text-white text-sm">By {data?.author}</span>
+                        <span className=" text-sm">By {data?.author}</span>
                     </div>
-                    <p className="pt-[1rem] text-white text-sm tracking-wide leading-[24px] max-w-[27rem]">
+                    <p className="pt-[1rem]  text-sm tracking-wide leading-[24px] max-w-[27rem]">
                         {data?.description.substring(0, 150) + "..."}
                     </p>
                     <Link href={`/stories-details/${data?._id}`}>
-                        <Button className="text-white -ml-[1rem] text-sm uppercase cursor-pointer">
+                        <Button className=" -ml-[1rem] text-sm uppercase cursor-pointer">
                             Read the story <ArrowRight />
                         </Button>
                     </Link>
