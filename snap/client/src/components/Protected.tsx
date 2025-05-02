@@ -44,7 +44,7 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
         };
 
         checkAuth();
-    }, []);
+    },);
 
     if (!hasMounted || isLoading) {
         return (

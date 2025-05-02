@@ -60,6 +60,7 @@ export default function SignIn() {
             }
         } catch (error) {
             toast.error('Something went wrong. Please try again.');
+            return error;
         }
     };
 

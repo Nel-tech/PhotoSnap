@@ -6,8 +6,8 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { Loader2 } from 'lucide-react'
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Loader2 } from 'lucide-react'
+// import { Skeleton } from "@/components/ui/skeleton";
 //import { useAuth } from "@/store/AuthContext"
 import cookie from "js-cookie"
 //import { useAuth } from "@/hooks/AuthContext"

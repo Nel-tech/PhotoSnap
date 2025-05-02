@@ -124,6 +124,7 @@ export default function ProfilePage() {
       toast.success('Password updated successfully');
     } catch (error) {
       toast.error('Failed to update password');
+      return error
     }
   }
 

@@ -72,6 +72,7 @@ export default function BookmarksPage() {
             toast.success('Bookmark removed successfully')
         } catch (error) {
             toast.error('Failed to remove bookmark')
+            return error
         }
     }
 

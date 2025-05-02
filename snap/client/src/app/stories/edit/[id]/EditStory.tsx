@@ -85,6 +85,7 @@ export default function EditStoryForm() {
                 return response.data;
             } catch (error) {
                 throw new Error('Error fetching story data');
+                return error
             }
         },
         staleTime: 5 * 60 * 1000,
@@ -164,8 +165,9 @@ export default function EditStoryForm() {
 
             toast.success("Story updated successfully");
             router.push("/stories");
-        } catch (err) {
+        } catch (error) {
             toast.error("Failed to update story");
+            return error
         }
     };
 

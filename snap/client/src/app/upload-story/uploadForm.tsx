@@ -104,6 +104,7 @@ export default function UploadForm({ onSuccess }: UploadProps) {
             },
             onError: (error) => {
                 toast.error("Failed to upload story");
+                return error
             }
         });
     };

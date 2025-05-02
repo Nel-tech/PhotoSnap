@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import Image from 'next/image';
 
 function Nav() {
   const pathname = usePathname();
@@ -42,7 +43,7 @@ function Nav() {
       <nav className="flex items-center justify-between p-4 sm:px-6 lg:px-8 md:justify-around">
         <div className="flex items-center">
           <Link href="/" className="-m-1.5 p-1.5">
-            <img src="/images/shared/desktop/logo.svg" alt="logo" width={150} height={150} />
+            <Image src="/images/shared/desktop/logo.svg" alt="logo" width={150} height={150} />
           </Link>
         </div>
         <div className="flex items-center lg:hidden md:hidden">

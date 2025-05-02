@@ -78,6 +78,7 @@ function UploadStoryPage() {
             refetch()
         } catch (error) {
             alert("Failed to delete story.")
+            return error
         }
     }
 
