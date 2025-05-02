@@ -44,7 +44,6 @@ export const useUserStories = () => {
                 },
                 withCredentials: true,
             })
-            console.log(response.data.data)
             return response.data.data
         },
     })
@@ -78,7 +77,6 @@ function UploadStoryPage() {
             })
             refetch()
         } catch (error) {
-            console.error("Delete failed:", error)
             alert("Failed to delete story.")
         }
     }

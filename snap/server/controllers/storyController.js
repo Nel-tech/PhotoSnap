@@ -33,7 +33,7 @@ exports.rotateFeaturedStory = catchAsync(async (req, res, next) => {
         newFeaturedStory.featuredAt = currentDate;
         await newFeaturedStory.save();
 
-        console.log('Rotated to new featured story:', newFeaturedStory.title);
+        
 
         return res.status(200).json({
           status: 'success',
@@ -41,7 +41,6 @@ exports.rotateFeaturedStory = catchAsync(async (req, res, next) => {
           data: newFeaturedStory
         });
       } else {
-        console.warn('No new story available to feature. Keeping old one.');
         return res.status(200).json({
           status: 'info',
           message: 'No new story to feature. Returning the current featured story.',
@@ -92,12 +91,11 @@ async function loadStories() {
 
     if (existingCount === 0) {
       await Story.insertMany(stories);
-      console.log('Stories uploaded successfully!');
     } else {
-      console.log('Stories already exist. Skipping upload.');
     }
   } catch (error) {
     console.error('Error loading stories:', error);
+    return error
   }
 }
 loadStories();

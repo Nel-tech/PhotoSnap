@@ -39,8 +39,6 @@ const useFetchStories = () => {
                 headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             });
-
-            console.log(response.data)
             return response.data;
 
         },

@@ -32,8 +32,6 @@ export default function SignIn() {
             const resData = await response.json();
 
             if (!response.ok) {
-                // Log the response for debugging
-                console.log('Login failed response:', resData);
 
                 if (response.status === 401 || (resData.message && resData.message.toLowerCase().includes('incorrect'))) {
                     toast.error('Incorrect email or password.', {
@@ -61,7 +59,6 @@ export default function SignIn() {
                 }, 200);
             }
         } catch (error) {
-            console.error('Login error:', error);
             toast.error('Something went wrong. Please try again.');
         }
     };

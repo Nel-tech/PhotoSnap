@@ -89,7 +89,6 @@ function StoryDetails() {
                 })
                 .then((res) => {
                     const storyData = res.data.data
-                    console.log(storyData)
                     setIsBookmarked(storyData.bookmarked)
                     return storyData
                 }),

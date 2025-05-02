@@ -47,8 +47,6 @@ export default function SignUp() {
     } = useForm<FormData>();
 
     const onSubmit = async (data: FormData) => {
-        console.log("Submitting form...", data);
-
         setServerMessage("");
 
         if (data.password !== data.passwordConfirm) {
@@ -57,15 +55,6 @@ export default function SignUp() {
         }
 
         try {
-            // Log request data for debugging
-            console.log("Request Data:", {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-                passwordConfirm: data.passwordConfirm,
-            });
-
-            // Send POST request
             const res = await axios.post(`${API_BASE_URL}api/v1/users/signup`, {
                 name: data.name,
                 email: data.email,
@@ -76,20 +65,14 @@ export default function SignUp() {
                     "Content-Type": "application/json",
                 }
             });
-
-            // Log the response data
-            console.log("Response:", res.data);
-
-            // Handle the token if available
             if (res.data.token) {
                 cookie.set("token", res.data.token, { expires: 7, path: "/" });
                 login(res.data.token);
             }
 
-            // Handle the response and error
+           
             setServerMessage(res.data.message || "Signup successful");
 
-            // Check the status of the response
             if (res.data.status !== "success") {
                 if (res.data.message === "Email already exists") {
                     toast.error("This email is already registered");
@@ -115,7 +98,7 @@ export default function SignUp() {
                 toast.error("Something went wrong. Please try again.");
             }
 
-            console.error("Error:", axiosError);
+            
         }
 
     };

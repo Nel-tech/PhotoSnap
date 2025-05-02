@@ -28,11 +28,9 @@ export const useAuthInit = () => {
     const initAuth = async () => {
       const token = cookie.get('token');
       if (token && !isTokenExpired(token)) {
-        console.log('Token is valid, fetching profile');
         const user = await fetchUserProfile(token); 
         setAuthState(true, user);  
       } else {
-        console.log('No valid token found or token is expired');
         setAuthState(false, null);  
       }
     };

@@ -23,7 +23,6 @@ export default function ProfilePage() {
   const user = useAuthStore((state) => state.user);
   const fetchUserProfile = useAuthStore((state) => state.fetchUserProfile);
 
-  console.log('user in profile', user)
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState<Profile | null>(null);
   const [passwordData, setPasswordData] = useState({
@@ -75,7 +74,6 @@ export default function ProfilePage() {
       setIsEditing(false)
       toast.success('Profile updated successfully')
     } catch (error) {
-      console.error('Failed to update profile:', error)
       toast.error('Failed to update profile')
     }
   }
@@ -125,7 +123,6 @@ export default function ProfilePage() {
       });
       toast.success('Password updated successfully');
     } catch (error) {
-      console.error('Failed to update password:', error);
       toast.error('Failed to update password');
     }
   }

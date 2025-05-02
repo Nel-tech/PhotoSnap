@@ -29,14 +29,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 4️⃣ Enable CORS
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:3000',
-  process.env.PROD_CLIENT_URL || 'https://your-production-domain.com',
+  process.env.PROD_CLIENT_URL || 'https://photo-snap-app.vercel.app',
 ];
-console.log(allowedOrigins)
+
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like curl or Postman)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {

@@ -46,8 +46,6 @@ export default function BookmarksPage() {
         queryFn: async () => {
             try {
                 const token = cookie.get('token');
-                console.log("Token:", token);
-
                 if (!token) throw new Error("No token found");
 
                 const res = await axios.get(`${API_URL}api/v1/stories/getUserBookMarkedStories`, {
@@ -58,7 +56,6 @@ export default function BookmarksPage() {
                 });
                 return res.data;
             } catch (err) {
-                console.error("Error fetching bookmarks:", err);
                 throw err; 
             }
         },
@@ -87,7 +84,6 @@ export default function BookmarksPage() {
             setBookmarks(bookmarks.filter((bookmark) => bookmark._id !== id));
             toast.success('Bookmark removed successfully');
         } catch (error) {
-            console.error('Error removing bookmark:', error);
             toast.error('Failed to remove bookmark');
         }
     }

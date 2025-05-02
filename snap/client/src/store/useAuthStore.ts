@@ -35,7 +35,6 @@ const loadInitialState = () => {
 
     return { isAuthenticated: false, user: null };
   } catch (error) {
-    console.error('Error loading initial state:', error);
     return {
       isAuthenticated: false,
       user: null,
@@ -63,7 +62,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: data.user, isAuthenticated: true });
     return data.user; // ✅ RETURN USER
   } catch (err) {
-    console.error('Error fetching user profile:', err);
     cookie.remove('user');
     cookie.remove('token');
     set({ user: null, isAuthenticated: false });
@@ -79,7 +77,6 @@ login: async (token: string) => {
 
 
   logout: () => {
-    console.log('Logout called');
     cookie.remove('token');
     cookie.remove('user');
     set({ user: null, isAuthenticated: false });

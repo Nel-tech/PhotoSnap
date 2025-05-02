@@ -20,7 +20,6 @@ function HeroSection() {
         queryFn: async () => {
             try {
                 const token = cookie.get('token');
-                console.log("Token:", token);
 
                 if (!token) throw new Error("No token found");
 
@@ -31,10 +30,9 @@ function HeroSection() {
                     withCredentials: true,
                 });
 
-                console.log("API Response:", res.data.data);
+        
                 return res.data.data;
             } catch (err) {
-                console.error("Error fetching featuredstories:", err);
                 throw err; 
             }
         },

@@ -82,11 +82,8 @@ export default function EditStoryForm() {
                     },
                     withCredentials: true,
                 });
-
-                console.log("Response", response.data);
                 return response.data;
             } catch (error) {
-                console.log(error);
                 throw new Error('Error fetching story data');
             }
         },
@@ -169,7 +166,6 @@ export default function EditStoryForm() {
             router.push("/stories");
         } catch (err) {
             toast.error("Failed to update story");
-            console.error(err);
         }
     };
 

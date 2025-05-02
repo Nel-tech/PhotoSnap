@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { Loader2 } from 'lucide-react'
+import { Skeleton } from "@/components/ui/skeleton";
 //import { useAuth } from "@/store/AuthContext"
 import cookie from "js-cookie"
 //import { useAuth } from "@/hooks/AuthContext"
@@ -39,19 +40,28 @@ function PostStories() {
     useEffect(() => {
         if (!isLoading) {
             const timer = setTimeout(() => {
-                setShowStories(true)
-            }, 6000)
-            return () => clearTimeout(timer)
+                setShowStories(true);
+            }, 6000);
+            return () => clearTimeout(timer);
         }
-    }, [isLoading])
+    }, [isLoading]);
 
     if (isLoading || !showStories) {
         return (
-            <div className="flex flex-col items-center justify-center h-60">
-                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
-                <p className="text-sm text-gray-500">Loading stories, please wait...</p>
-            </div>
-        )
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="relative overflow-hidden shadow-lg">
+                        <div className="h-[300px] w-full bg-gray-300 animate-pulse" />
+                        <div className="absolute bottom-8 left-8 text-white z-10 space-y-2">
+                            <div className="h-5 w-32 bg-gray-400 rounded animate-pulse" />
+                            <div className="h-4 w-20 bg-gray-400 rounded animate-pulse" />
+                            <div className="h-1 w-24 bg-gray-500 rounded animate-pulse mt-2" />
+                            <div className="h-4 w-28 bg-gray-400 rounded animate-pulse mt-2" />
+                        </div>
+                    </div>
+                ))}
+            </section>
+        );
     }
 
     if (error) return <div>Error: {error.message}</div>

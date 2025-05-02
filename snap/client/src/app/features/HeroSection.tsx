@@ -47,11 +47,11 @@ function HeroSection() {
                 </Card>
 
                 {/* Right Image Section */}
-                <div className="relative  w-full h-[83vh]">
+                <div className="relative w-full ">
                     <Image
                         src={DesktopFeatureImage}
                         alt="Features"
-                        className="shadow-lg hidden lg:block object-cover w-full h-full"
+                        className=" shadow-lg hidden lg:block lg:h-[100vh] lg:object-cover md:hidden"
                         priority
                         width={990}
                         height={800} 
