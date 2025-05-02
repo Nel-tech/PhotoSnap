@@ -38,6 +38,7 @@ const loadInitialState = () => {
     return {
       isAuthenticated: false,
       user: null,
+      error
     };
   }
 };
@@ -60,13 +61,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     cookie.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
     set({ user: data.user, isAuthenticated: true });
-    return data.user; // ✅ RETURN USER
+    return data.user; 
   } catch (err) {
-    cookie.remove('user');
-    cookie.remove('token');
-    set({ user: null, isAuthenticated: false });
-    return null; // ✅ RETURN NULL on failure
-  }
+  cookie.remove('user');
+  cookie.remove('token');
+  set({ user: null, isAuthenticated: false });
+  console.error(err); 
+  return null;
+}
+
 },
 
 
