@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 4️⃣ Enable CORS
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:3000',
-  process.env.PROD_CLIENT_URL || 'https://photo-snap-app.vercel.app',
+  process.env.PROD_CLIENT_URL || 'https://snap-peach-omega.vercel.app/',
 ];
 
 
