@@ -223,13 +223,11 @@ export default function SignUp() {
                         {/* Submit Button */}
                         <div>
                             <button
+                                type="submit"
+                                className="flex w-full justify-center rounded-md cursor-pointer bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
                                 disabled={isSubmitting}
-                                className={`w-full rounded py-2 text-white transition-colors ${isSubmitting
-                                    ? 'bg-indigo-600 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-600'
-                                    }`}
                             >
-                                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                                {isSubmitting ? 'Creating...' : 'Create Account'}
                             </button>
                         </div>
 

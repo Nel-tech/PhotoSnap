@@ -26,6 +26,8 @@ import { motion } from "framer-motion"
 import toast from "react-hot-toast"
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore'
+import StorySkeleton from '@/components/StorySkeleton'
+
 
 interface Story {
     id: string;
@@ -129,45 +131,36 @@ function StoryDetails() {
         }
     }, [allStories, getRandomStories])
 
-    // Loading state with spinner
+   
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#f8f7f4]">
-                <div className="text-center">
-                    <div className="relative w-24 h-24 mx-auto mb-8">
-                        <div className="absolute inset-0 rounded-full border-t-4 border-b-4 border-[#c7a17a] animate-spin"></div>
-                        <div className="absolute inset-3 rounded-full border-t-4 border-b-4 border-[#e9e1d4] animate-spin animation-delay-150"></div>
-                        <div className="absolute inset-6 rounded-full border-t-4 border-b-4 border-[#f8f7f4] animate-spin animation-delay-300"></div>
-                    </div>
-                    <span className="text-xl font-serif italic text-[#3c3c3c]">Loading your story...</span>
-                </div>
-            </div>
+            <StorySkeleton/>
         )
     }
 
     // Error state
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#f8f7f4]">
-                <div className="text-center p-12 max-w-md bg-white rounded-lg shadow-xl border border-[#e9e1d4]">
-                    <div className="w-20 h-20 mx-auto mb-6 text-[#c7a17a]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
+            <div className="min-h-screen flex items-center justify-center bg-[#f8f7f4] px-4">
+                <div className="text-center p-10 max-w-md bg-white rounded-xl shadow-lg border border-[#e9e1d4]">
+                    <div className="mb-6">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-16 h-16 text-red-500 mx-auto">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M15 9l-6 6M9 9l6 6" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-serif text-[#3c3c3c] mb-4">Error Loading Story</h2>
-                    <p className="text-[#6b6b6b] mb-8 font-light">{error.message || "Failed to load story details"}</p>
+                    <h2 className="text-2xl font-serif text-[#3c3c3c] mb-3">Oops! Something went wrong</h2>
+                    <p className="text-[#6b6b6b] mb-6 font-light">{error.message || "We couldn’t load the story. Try again later."}</p>
                     <Button
-                        variant="outline"
-                        asChild
-                        className="border-[#c7a17a] text-[#c7a17a] hover:bg-[#f8f3ea] hover:text-[#a67c52]"
+                        onClick={() => router.back()}
+                        className="px-6 py-2 bg-black text-white hover:bg-gray-800 transition-colors rounded-md font-medium"
                     >
-                        <Link href="/">Return Home</Link>
+                        Go Back
                     </Button>
+
                 </div>
             </div>
-        )
+        );
     }
 
     // Not found state
