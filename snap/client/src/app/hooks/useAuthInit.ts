@@ -9,6 +9,7 @@ type DecodedToken = {
   exp: number; 
   id:string;
   email:string;
+  role:string;
 }
 
 const isTokenExpired = (token: string): boolean => {
@@ -29,6 +30,7 @@ export const useAuthInit = () => {
       const token = cookie.get('token');
       if (token && !isTokenExpired(token)) {
         const user = await fetchUserProfile(token); 
+        console.log(user)
         setAuthState(true, user);  
       } else {
         setAuthState(false, null);  

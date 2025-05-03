@@ -10,7 +10,6 @@ interface User {
   username?: string;
   name:string;
   role: UserRole;
-  // Add other user fields as needed
 }
 
 interface AuthState {
@@ -61,6 +60,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     cookie.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
     set({ user: data.user, isAuthenticated: true });
+
     return data.user; 
   } catch (err) {
   cookie.remove('user');

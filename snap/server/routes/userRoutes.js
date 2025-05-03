@@ -12,7 +12,7 @@ router.get('/logout', authController.logout);
 router.use(authController.protect);
 
 // router.patch('/updateMyPassword', authController.updatePassword);
- router.get('/getMe', authController.restrictTo('user'), userController.getMe);
+router.get('/getMe', userController.getMe);
   // router.patch('/updateMe', authController.restrictTo('user'), userController.updateMe);
 
 

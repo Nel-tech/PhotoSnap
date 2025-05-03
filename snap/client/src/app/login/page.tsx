@@ -17,6 +17,9 @@ export default function SignIn() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
+     const user = useAuthStore((state) => state.user);
+    console.log(user)
+
 
     const onSubmit = async (data: FormData) => {
         try {
@@ -35,7 +38,7 @@ export default function SignIn() {
 
                 if (response.status === 401 || (resData.message && resData.message.toLowerCase().includes('incorrect'))) {
                     toast.error('Incorrect email or password.', {
-                        duration: 4000 // Make sure it stays visible
+                        duration: 4000 
                     });
                 } else {
                     toast.error(resData.message || 'Login failed', {
@@ -44,20 +47,20 @@ export default function SignIn() {
                 }
                 return;
             }
-            if (resData.token) {
-                login(resData.token);
+           if (resData.token) {
+    await login(resData.token); 
 
-                setTimeout(() => {
-                    const role = useAuthStore.getState().user?.role;
-                    if (role === 'admin') {
-                        toast.success('Admin Logged-In successfully');
-                        router.push('/admin');
-                    } else {
-                        toast.success('Login successful');
-                        router.push('/');
-                    }
-                }, 200);
-            }
+    const role = useAuthStore.getState().user?.role;
+    console.log(role)
+    if (role === 'admin') {
+        toast.success('Admin Logged-In successfully');
+        router.push('/admin');
+    } else {
+        toast.success('Login successful');
+        router.push('/');
+    }
+}
+
         } catch (error) {
             toast.error('Something went wrong. Please try again.');
             return error;
