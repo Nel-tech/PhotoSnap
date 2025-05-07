@@ -17,8 +17,8 @@ export default function SignIn() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
-     const user = useAuthStore((state) => state.user);
-    console.log(user)
+    //  const user = useAuthStore((state) => state.user);
+    
 
 
     const onSubmit = async (data: FormData) => {
@@ -51,7 +51,7 @@ export default function SignIn() {
     await login(resData.token); 
 
     const role = useAuthStore.getState().user?.role;
-    console.log(role)
+   
     if (role === 'admin') {
         toast.success('Admin Logged-In successfully');
         router.push('/admin');

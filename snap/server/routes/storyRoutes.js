@@ -72,6 +72,29 @@ router.get(
 );
 
 router.get(
+  '/bookmarked-status/:id',
+  authController.restrictTo('user'),
+  storyController.getBookmarkedStoriesStatus
+);
+
+router.post(
+  '/like-Story/:id',
+  authController.restrictTo('user'),
+  storyController.likeStory
+);
+
+router.get(
+  '/get-story-status/:id',
+  authController.restrictTo('user'),
+  storyController.getStoriesByLikeStatus
+);
+
+router.post(
+  '/story-views/:id',
+  authController.restrictTo('user'),
+  storyController.views
+);
+router.get(
   '/featured-stories',
   authController.restrictTo('user'),
   storyController.rotateFeaturedStory

@@ -79,7 +79,7 @@ function HeroSection() {
             </div>
 
             {/* Mobile version */}
-            <Card className="rounded-none bg-black h-[122vh] md:hidden lg:hidden">
+            <Card className="rounded-none bg-black h-[400px] md:hidden lg:hidden">
                 <div className="ml-[1rem] lg:ml-[5rem]">
                     <h1 className="text-white text-sm tracking-widest">FEATURED STORY</h1>
                     <h2 className="text-white text-4xl max-w-[15rem] tracking-widest leading-normal uppercase pt-[1rem]">

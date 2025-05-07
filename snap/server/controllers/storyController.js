@@ -323,6 +323,25 @@ exports.deleteBookmark = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getBookmarkedStoriesStatus = catchAsync(async (req, res, next) => {
+  const userId = req.user?._id;  
+  const stories = await Story.find();
+
+  if (!stories) return next(new AppError('No stories found', 404));
+  const BookmarkedStatus = stories.map(story => {
+    const isBookmarked = story.bookmarkedBy.some(b => b.equals(userId)); 
+    return {
+      ...story.toObject(),
+      isBookmarked,  
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data: BookmarkedStatus,
+  });
+});
+
 
 
 // Get all bookmarks of current user
@@ -340,6 +359,72 @@ exports.getUserBookMarkedStories = catchAsync(async (req, res, next) => {
     data: bookmarks,
   });
 });
+
+
+exports.likeStory = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user?._id;
+
+  const story = await Story.findById(id);
+  if (!story) return next(new AppError('Story not found', 404));
+
+  const alreadyLiked = story.likedBy.some((b) => b.equals(userId));
+
+  if (alreadyLiked) {
+    story.likedBy.pull(userId);
+    story.like = Math.max(story.like - 1, 0); 
+    await story.save();
+    return res.status(200).json({ success: true, message: 'Story unliked' });
+  } else {
+    story.likedBy.push(userId);
+    story.like += 1;
+    await story.save();
+    return res.status(200).json({ success: true, message: 'Story liked' });
+  }
+});
+
+
+exports.getStoriesByLikeStatus = catchAsync(async (req, res, next) => {
+  const userId = req.user?._id;  
+  const stories = await Story.find();
+
+  if (!stories) return next(new AppError('No stories found', 404));
+  const storiesWithLikeStatus = stories.map(story => {
+    const isLiked = story.likedBy.some(b => b.equals(userId)); 
+    return {
+      ...story.toObject(),
+      isLiked,  
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data: storiesWithLikeStatus,
+  });
+});
+
+
+
+
+exports.views = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user?._id;
+
+  const story = await Story.findById(id);
+  if (!story) return next(new AppError('Story not found', 404));
+
+  const alreadyViewed = story.viewedBy.some((b) => b.equals(userId));
+
+  if (!alreadyViewed) {
+    story.viewedBy.push(userId);
+    story.views += 1;
+    await story.save();
+  }
+
+  return res.status(200).json({ success: true, message: 'Story viewed' });
+});
+
+
 
 /* ------------------------------- ADMIN ROUTES ------------------------------ */
 

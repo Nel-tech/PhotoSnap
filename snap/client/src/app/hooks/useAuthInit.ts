@@ -30,13 +30,12 @@ export const useAuthInit = () => {
       const token = cookie.get('token');
       if (token && !isTokenExpired(token)) {
         const user = await fetchUserProfile(token); 
-        console.log(user)
         setAuthState(true, user);  
       } else {
         setAuthState(false, null);  
       }
     };
 
-    initAuth(); // Run the initialization
+    initAuth(); 
   }, [fetchUserProfile, setAuthState]);
 };

@@ -10,7 +10,7 @@ function HeroSection() {
         <div>
             <section className="flex flex-col-reverse md:flex-row lg:flex-row items-center justify-between">
                 {/* Left Content Section */}
-                <Card className="max-w-lg rounded-none relative text-left px-[1rem] pt-[1rem] bg-black h-[83vh] lg:text-left flex flex-col justify-center lg:px-[4rem] lg:pt-[6rem]">
+                <Card className="max-w-lg rounded-none relative  px-[3rem] pt-[5rem] lg:pt-[9rem] bg-black min-h-[400px] md:min-h-[600px] lg:min-h-[600px] md:px-[1rem] lg:text-left">
                     <div className="
   absolute 
   top-[-0.1rem] 
@@ -27,7 +27,7 @@ function HeroSection() {
   md:h-[15rem] 
   md:w-[0.3rem] 
   md:rotate-180 
-  md:top-[6rem]
+  md:top-[7rem]
   md:bg-gradient-to-b
 
   lg:h-[15rem] 
@@ -49,7 +49,7 @@ function HeroSection() {
                     <Image
                         src={DesktopPricingImage}
                         alt="Features"
-                        className="shadow-lg hidden lg:block object-cover w-full h-full"
+                        className=" shadow-lg hidden lg:block lg:h-[600px] lg:object-cover md:hidden"
                         priority
                         width={990}
                         height={800} // Ensures image height matches card
@@ -57,7 +57,7 @@ function HeroSection() {
                     <Image
                         src={TabletPricingImage}
                         alt="Features"
-                        className=" shadow-lg hidden md:block lg:hidden object-cover w-full h-full"
+                        className="hidden md:block md:h-[600px] lg:hidden"
                         priority
                     />
                     <Image

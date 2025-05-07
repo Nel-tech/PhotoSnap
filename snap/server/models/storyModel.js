@@ -60,6 +60,25 @@ tags:{
     type: String,
     required: true,
   },
+  like:{
+    type:Number,
+    default:0,
+  },
+
+    views:{
+    type:Number,
+    default:0,
+  },
+  likedBy: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User'
+}],
+
+  viewedBy: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User'
+}],
+
   status: {
     type: String,
     enum:['pending', 'Published', 'rejected'],

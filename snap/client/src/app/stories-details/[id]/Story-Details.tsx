@@ -1,8 +1,7 @@
 "use client"
 import Protected from '@/components/Protected'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useParams } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import {
     Bookmark,
@@ -14,8 +13,11 @@ import {
     BookmarkCheck,
     Globe,
     ArrowUp,
+    Heart,
+    Eye,
+
 } from "lucide-react"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import cookie from "js-cookie"
 import Link from "next/link"
 import Image from "next/image"
@@ -27,6 +29,8 @@ import toast from "react-hot-toast"
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore'
 import StorySkeleton from '@/components/StorySkeleton'
+import { LikeStoryAPI, viewStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/Api/Api'
+import InteractionButton from '@/components/InteractionButton'
 
 
 interface Story {
@@ -44,18 +48,22 @@ interface Story {
     location?: string;
     language?: string;
     bookmarked?: boolean;
+    views: number;
+    like: number;
 }
 
 function StoryDetails() {
-    const { id } = useParams()
+    const { id } = useParams() as { id: string };
     const router = useRouter()
     const queryClient = useQueryClient();
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+    const user = useAuthStore((state) => state.user)
     const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
     const [token, setToken] = useState(cookie.get("token") || "")
-    const [isBookmarked, setIsBookmarked] = useState(false)
     const [showScrollTop, setShowScrollTop] = useState(false)
     const [randomStories, setRandomStories] = useState<Story[]>([])
+
+
 
     // Re-fetch token on mount and when authentication status changes
     useEffect(() => {
@@ -91,7 +99,6 @@ function StoryDetails() {
                 })
                 .then((res) => {
                     const storyData = res.data.data
-                    setIsBookmarked(storyData.bookmarked)
                     return storyData
                 }),
     })
@@ -109,11 +116,11 @@ function StoryDetails() {
                 .then((res) => res.data.data),
     })
 
-    
+
     const getRandomStories = useCallback((stories: Story[], count = 2): Story[] => {
         if (!stories || stories.length === 0) return []
 
-       
+
         const otherStories = stories.filter(story => story._id !== id)
         if (otherStories.length <= count) return otherStories
         const shuffled = [...otherStories]
@@ -131,12 +138,55 @@ function StoryDetails() {
         }
     }, [allStories, getRandomStories])
 
-   
+
+    //view story
+   // View story with optimistic update
+const { mutate: view } = useMutation({
+    mutationFn: () => viewStoryAPI(id),
+    onMutate: async () => {
+        await queryClient.cancelQueries(['view-story', id]);
+        const previousData = queryClient.getQueryData(['view-story', id]);
+
+        queryClient.setQueryData(['view-story', id], (old: any) => {
+            if (old) {
+                return {
+                    ...old,
+                    views: (old.views || 0) + 1,
+                };
+            }
+            return old;
+        });
+
+        return { previousData };
+    },
+    onError: (error: any, _, context) => {
+        if (error.message === 'No token found') {
+            toast.error('Please login to view story');
+            router.push('/login');
+        } else {
+            toast.error('Failed to record story view');
+        }
+        queryClient.setQueryData(['view-story', id], context?.previousData);
+    },
+    onSettled: () => {
+        queryClient.invalidateQueries(['view-story', id]);
+    },
+});
+
+    useEffect(() => {
+        if (id) {
+            view();
+        }
+    }, [id, view]);
+
+
     if (isLoading) {
         return (
-            <StorySkeleton/>
+            <StorySkeleton />
         )
     }
+
+
 
     // Error state
     if (error) {
@@ -190,32 +240,12 @@ function StoryDetails() {
         )
     }
 
-    const toggleBookmark = async () => {
-        try {
-            // Check if token exists before making request
-            const currentToken = cookie.get("token")
-            if (!currentToken) {
-                toast.error('Authentication required')
-                router.push('/login')
-                return
-            }
+    // Bookmark-Story API
 
-            const res = await axios.post(`${API_URL}api/v1/stories/book-mark/${id}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${currentToken}`,
-                },
-            })
-            const updated = !isBookmarked;
-            setIsBookmarked(updated);
-            toast.success(updated ? 'Story Bookmarked' : 'Story Unbookmarked');
 
-            queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
-            return res.data.data
-        } catch (error) {
-            toast.error('Failed to update bookmark')
-            return error
-        }
-    }
+
+
+
 
     const formatDate = (dateString: string): string => {
         const options: Intl.DateTimeFormatOptions = {
@@ -227,6 +257,8 @@ function StoryDetails() {
     }
 
     return (
+
+
         <Protected allowedRoles={['user']}>
             <div className="min-h-screen bg-[#f8f7f4] text-[#3c3c3c] font-sans">
                 {/* Navigation */}
@@ -242,16 +274,29 @@ function StoryDetails() {
                                 <span className="font-medium">Back</span>
                             </Button>
                             <div className="flex items-center gap-4">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={toggleBookmark}
-                                    className={`${isBookmarked ? "text-[#c7a17a] hover:text-[#a67c52]" : "text-[#6b6b6b] hover:text-[#3c3c3c]"
-                                        } hover:bg-[#f8f3ea]`}
-                                >
-                                    {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
-                                    <span className="ml-2 hidden sm:inline">{isBookmarked ? "Saved" : "Save"}</span>
-                                </Button>
+                                <InteractionButton
+                                    id={id}
+                                    user={user}
+                                    token={token}
+                                    isAuthenticated={isAuthenticated}
+                                    type="like"
+                                    getStatusFn={getStoryStatus}
+                                    toggleFn={LikeStoryAPI}
+                                    queryKey={["story-like-status"]}
+                                    relatedQueryKeys={[["get-story-by-id"]]}
+                                />
+
+                                <InteractionButton
+                                    id={id}
+                                    user={user}
+                                    token={token}
+                                    isAuthenticated={isAuthenticated}
+                                    type="bookmark"
+                                    getStatusFn={getBookmarkedbyStatus}
+                                    toggleFn={toggleBookmark}
+                                    queryKey={["story-bookmark-status"]}
+                                    relatedQueryKeys={[["get-story-by-id"], ["user-bookmarks"]]}
+                                />
                             </div>
                         </div>
                     </div>
@@ -277,7 +322,7 @@ function StoryDetails() {
                         <div
                             className="absolute inset-0 bg-cover bg-no-repeat bg-center"
                             style={{
-                                backgroundImage: `url(${story.image || "/placeholder.svg?height=1080&width=1920"})`,
+                                backgroundImage: `url(${story.image})`,
                                 transform: "translateZ(0)",
                             }}
                         ></div>
@@ -286,7 +331,7 @@ function StoryDetails() {
                             <div className="container mx-auto px-4 pb-16 md:pb-24">
                                 <div className="max-w-3xl">
                                     <div className="flex flex-wrap gap-2 mb-4">
-                                        {story.categories?.map((category: string, index: number) => (
+                                        {story.categories.map((category: string, index: number) => (
                                             <Badge
                                                 key={index}
                                                 variant="secondary"
@@ -296,7 +341,7 @@ function StoryDetails() {
                                             </Badge>
                                         ))}
                                     </div>
-                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 leading-tight">
+                                    <h1 className="text-4xl  md:text-5xl lg:text-6xl font-bold text-white  leading-tight">
                                         {story.title}
                                     </h1>
 
@@ -306,7 +351,7 @@ function StoryDetails() {
                                         <div className="flex items-center gap-4 text-white">
                                             <Avatar className="h-16 w-16 border-2 border-white/30">
                                                 <AvatarFallback className="bg-white/10 text-white text-xl font-serif">
-                                                    {story.author?.charAt(0)}
+                                                    {story.author.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
@@ -339,11 +384,22 @@ function StoryDetails() {
                                             )}
                                         </div>
                                     </div>
+
+                                    {/* Stats */}
+                                    <div className="mt-6 grid grid-cols-2 gap-4 max-w-[200px]">
+                                        <div className="bg-white/10 backdrop-blur-sm p-3 text-center">
+                                            <div className="text-2xl font-serif font-bold text-white">{story.views?.toLocaleString()}</div>
+                                            <div className="text-xs text-white uppercase tracking-wider">Views</div>
+                                        </div>
+                                        <div className="bg-white/10 backdrop-blur-sm p-3 text-center">
+                                            <div className="text-2xl font-serif font-bold text-white">{story.like?.toLocaleString()}</div>
+                                            <div className="text-xs text-white uppercase tracking-wider">Likes</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     {/* Main Content */}
                     <div className="container mx-auto px-4 py-12">
                         <div className="max-w-3xl mx-auto">
@@ -356,18 +412,8 @@ function StoryDetails() {
                                     </p>
                                 </div>
 
-                                {/* Social Interaction Sidebar */}
-                                <div className="hidden md:block fixed left-8 top-1/2 transform -translate-y-1/2 z-20">
-                                    <div className="flex flex-col items-center gap-6">
-                                        <button
-                                            onClick={toggleBookmark}
-                                            className={`p-3 rounded-full bg-white border border-[#e9e1d4] shadow-md ${isBookmarked ? "text-[#c7a17a]" : "text-[#6b6b6b] hover:text-[#c7a17a]"
-                                                } transition-colors`}
-                                        >
-                                            {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
-                                        </button>
-                                    </div>
-                                </div>
+                               
+                              
                             </div>
 
                             {/* Tags with decorative elements */}
@@ -446,7 +492,17 @@ function StoryDetails() {
                                                 </p>
                                                 <div className="flex items-center justify-between">
                                                     <div className="text-xs text-[#6b6b6b]">{randomStory.estimatedReadingTime}</div>
-                                                    <div className="flex items-center gap-3">
+
+                                                    <div className='flex items-center gap-3'>
+                                                    <div className="flex items-center gap-2">
+                                                        <Eye size={15}/>
+                                                        <span className='text-sm'>{randomStory.views}</span>
+                                                    </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <Heart size={15} />
+                                                        <span className='text-sm'>{randomStory.like}</span>
+                                                    </div>
                                                     </div>
                                                 </div>
                                             </div>
