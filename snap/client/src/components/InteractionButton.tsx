@@ -121,21 +121,21 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
   }, [optimisticState, isAuthenticated, user, id, type]);
 
 
-  const isDevelopment = process.env.NEXT_NODE_ENV !== 'production';
+//   const isDevelopment = process.env.NEXT_NODE_ENV !== 'production';
 
-useEffect(() => {
-  if (isDevelopment) {
-    ({
-      optimisticState,
-      serverStateActive: isActive,
-      userId: user?._id,
-      storageKey: getStorageKey(),
-      localStorage: typeof window !== 'undefined' && getStorageKey() 
-        ? localStorage.getItem(getStorageKey() || '') 
-        : 'not-available'
-    });
-  }
-}, [optimisticState, isActive, user, id, type]);
+// useEffect(() => {
+//   if (isDevelopment) {
+//     ({
+//       optimisticState,
+//       serverStateActive: isActive,
+//       userId: user?._id,
+//       storageKey: getStorageKey(),
+//       localStorage: typeof window !== 'undefined' && getStorageKey() 
+//         ? localStorage.getItem(getStorageKey() || '') 
+//         : 'not-available'
+//     });
+//   }
+// }, [optimisticState, isActive, user, id, type]);
 
 
 
