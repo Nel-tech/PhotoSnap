@@ -121,7 +121,7 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
   }, [optimisticState, isAuthenticated, user, id, type]);
 
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+  const isDevelopment = process.env.NEXT_NODE_ENV !== 'production';
 
 useEffect(() => {
   if (isDevelopment) {
