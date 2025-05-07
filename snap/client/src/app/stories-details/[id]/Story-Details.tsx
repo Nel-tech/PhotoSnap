@@ -4,20 +4,18 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useParams } from "next/navigation"
 import axios from "axios"
 import {
-    Bookmark,
     Calendar,
     Clock,
     Tag,
     MapPin,
     ChevronLeft,
-    BookmarkCheck,
     Globe,
     ArrowUp,
     Heart,
     Eye,
 
 } from "lucide-react"
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback} from "react"
 import cookie from "js-cookie"
 import Link from "next/link"
 import Image from "next/image"
