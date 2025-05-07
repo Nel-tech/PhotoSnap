@@ -139,37 +139,43 @@ function StoryDetails() {
 
     //view story
    // View story with optimistic update
-const { mutate: view } = useMutation({
-    mutationFn: () => viewStoryAPI(id),
-    onMutate: async () => {
-        await queryClient.cancelQueries(['view-story', id]);
-        const previousData = queryClient.getQueryData(['view-story', id]);
+    const queryKey = ['view-story', id] as const;
 
-        queryClient.setQueryData(['view-story', id], (old: any) => {
-            if (old) {
-                return {
-                    ...old,
-                    views: (old.views || 0) + 1,
-                };
+    const { mutate: view } = useMutation({
+        mutationFn: () => viewStoryAPI(id),
+        onMutate: async () => {
+            await queryClient.cancelQueries({ queryKey }); 
+
+            const previousData = queryClient.getQueryData(queryKey); 
+
+            queryClient.setQueryData(queryKey, (old: any) => {
+                if (old) {
+                    return {
+                        ...old,
+                        views: (old.views || 0) + 1,
+                    };
+                }
+                return old;
+            });
+
+            return { previousData };
+        },
+        onError: (error: any, _, context) => {
+            if (error.message === 'No token found') {
+                toast.error('Please login to view story');
+                router.push('/login');
+            } else {
+                toast.error('Failed to record story view');
             }
-            return old;
-        });
 
-        return { previousData };
-    },
-    onError: (error: any, _, context) => {
-        if (error.message === 'No token found') {
-            toast.error('Please login to view story');
-            router.push('/login');
-        } else {
-            toast.error('Failed to record story view');
-        }
-        queryClient.setQueryData(['view-story', id], context?.previousData);
-    },
-    onSettled: () => {
-        queryClient.invalidateQueries(['view-story', id]);
-    },
-});
+            queryClient.setQueryData(queryKey, context?.previousData);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey }); // Use queryKey as object
+        },
+    });
+
+
 
     useEffect(() => {
         if (id) {
