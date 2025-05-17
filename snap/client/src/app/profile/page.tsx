@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Mail, Lock, AlertTriangle } from "lucide-react";
+import { User, Mail, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 import Nav from "@/components/Nav";
 import { handleSave, fetchUserProfile, handlePasswordUpdate } from "../Api/Api";
@@ -117,7 +117,8 @@ export default function ProfilePage() {
       <section className="max-w-3xl mx-auto py-8 px-4 text-center space-y-4">
         <AlertTriangle className="h-12 w-12 text-red-500 mx-auto" />
         <h2 className="text-2xl font-bold">Something went wrong</h2>
-        <p className="text-gray-600">We couldn't load your profile. Please try again later.</p>
+        <p className="text-gray-600">We couldn&apos;t load your profile. Please try again later.</p>
+
         <Button onClick={() => refetch()} variant="secondary">Retry</Button>
       </section>
     );

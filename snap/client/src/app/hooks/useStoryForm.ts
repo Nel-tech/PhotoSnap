@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UseFormReturn, UseFormSetValue } from "react-hook-form";
+import {UseFormSetValue } from "react-hook-form";
 
 // Make sure the types match exactly with what's used in the form component
 type StoryFormData = {

@@ -126,7 +126,7 @@ function UploadStoryPage() {
                                 </div>
                                 <h2 className="font-bold text-xl text-gray-900">No stories yet</h2>
                                 <p className="text-gray-500 max-w-md mx-auto">
-                                    You haven't shared any stories yet. Start your storytelling journey by uploading your first one.
+                                    You haven&apos;t shared any stories yet. Start your storytelling journey by uploading your first one.
                                 </p>
                                 <Button
                                     onClick={() => setShowForm(true)}
