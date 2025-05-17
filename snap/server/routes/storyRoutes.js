@@ -10,6 +10,7 @@ router.get('/public-stories', storyController.getAllStories);
 router.use(authController.protect);
 
 // ─── 3. USER ROUTES ─────────────────────────────────
+
 router.get(
   '/get-all-stories',
   authController.restrictTo('user'),
@@ -36,7 +37,7 @@ router.get(
 );
 
 router.put(
-  '/edit-stories',
+  '/edit-stories/:storyId',
   authController.restrictTo('user'),
   storyController.updateStory
 );
@@ -82,6 +83,12 @@ router.post(
   authController.restrictTo('user'),
   storyController.likeStory
 );
+router.get(
+  '/get-user-likes',
+  authController.restrictTo('user'),
+  storyController.getUserLikedStories
+);
+router.delete('/delete-likes/:id',authController.restrictTo('user'), storyController.deleteLikes);
 
 router.get(
   '/get-story-status/:id',

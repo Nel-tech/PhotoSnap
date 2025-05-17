@@ -137,22 +137,22 @@ function StoryDetails() {
     }, [allStories, getRandomStories])
 
 
-    //view story
-   // View story with optimistic update
-    const queryKey = ['view-story', id] as const;
+   
+    const viewQueryKey = ['view-story', id];
+    const storyQueryKey = ['get-story-by-id', id, token];
 
     const { mutate: view } = useMutation({
         mutationFn: () => viewStoryAPI(id),
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey }); 
+            await queryClient.cancelQueries({ queryKey: viewQueryKey });
+            await queryClient.cancelQueries({ queryKey: storyQueryKey });
+            const previousData = queryClient.getQueryData(storyQueryKey);
 
-            const previousData = queryClient.getQueryData(queryKey); 
-
-            queryClient.setQueryData(queryKey, (old: any) => {
+            queryClient.setQueryData(storyQueryKey, (old: any) => {
                 if (old) {
                     return {
                         ...old,
-                        views: (old.views || 0) + 1,
+                        views: typeof old.views === 'number' ? old.views + 1 : 1
                     };
                 }
                 return old;
@@ -167,21 +167,22 @@ function StoryDetails() {
             } else {
                 toast.error('Failed to record story view');
             }
-
-            queryClient.setQueryData(queryKey, context?.previousData);
+            queryClient.setQueryData(storyQueryKey, context?.previousData);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey }); // Use queryKey as object
+            queryClient.invalidateQueries({ queryKey: viewQueryKey });
+            queryClient.invalidateQueries({ queryKey: storyQueryKey });
         },
     });
 
 
 
+
     useEffect(() => {
-        if (id) {
+        if (id && token && isAuthenticated) {
             view();
         }
-    }, [id, view]);
+    }, [id, token, isAuthenticated, view]);
 
 
     if (isLoading) {
@@ -235,7 +236,7 @@ function StoryDetails() {
                     <Button
                         variant="outline"
                         asChild
-                        className="border-[#c7a17a] text-[#c7a17a] hover:bg-[#f8f3ea] hover:text-[#a67c52]"
+                        className="border-black text-black hover:bg-black hover:text-white"
                     >
                         <Link href="/">Browse Stories</Link>
                     </Button>
@@ -313,7 +314,7 @@ function StoryDetails() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         onClick={scrollToTop}
-                        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-[#c7a17a] text-white shadow-lg hover:bg-[#a67c52] transition-colors"
+                        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-black text-white shadow-lg hover:bg-gray-200 transition-colors"
                     >
                         <ArrowUp className="h-5 w-5" />
                     </motion.button>
@@ -411,7 +412,7 @@ function StoryDetails() {
                             <div className="relative">
                                 {/* First Letter Styling */}
                                 <div className="prose prose-lg max-w-none">
-                                    <p className="text-[#3c3c3c] leading-relaxed text-lg first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:text-[#c7a17a] first-letter:mr-3 first-letter:float-left">
+                                    <p className="text-[#3c3c3c] leading-relaxed text-lg first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left">
                                         {story.description}
                                     </p>
                                 </div>
@@ -422,19 +423,19 @@ function StoryDetails() {
 
                             {/* Tags with decorative elements */}
                             <div className="my-16 relative">
-                                <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-px bg-[#e9e1d4]"></div>
+                                <div className=" hidden absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-px bg-[#e9e1d4] lg:block md:block"></div>
                                 <div className="relative z-10 flex justify-center">
                                     <div className="bg-[#f8f7f4] px-8 text-center">
-                                        <h3 className="text-sm font-serif italic text-[#c7a17a]">Tagged With</h3>
+                                        <h3 className="text-sm font-serif italic text-black">Tagged With</h3>
                                     </div>
                                 </div>
                                 <div className="mt-8 flex flex-wrap justify-center gap-3">
                                     {story.tags?.map((tag: string, index: number) => (
                                         <div
                                             key={index}
-                                            className="flex items-center px-4 py-2 bg-white border border-[#e9e1d4] text-[#3c3c3c] text-sm font-medium hover:bg-[#f8f3ea] hover:text-[#c7a17a] transition-colors"
+                                            className="flex items-center px-4 py-2 bg-white border border-black text-[#3c3c3c] text-sm font-medium hover:bg-[#f8f3ea] hover:text-[#c7a17a] transition-colors"
                                         >
-                                            <Tag size={14} className="mr-1.5 text-[#c7a17a]" />
+                                            <Tag size={14} className="mr-1.5 text-black" />
                                             {tag}
                                         </div>
                                     ))}
@@ -442,7 +443,7 @@ function StoryDetails() {
                             </div>
 
                             {/* Quote Section */}
-                            <div className="my-16 px-8 py-12 bg-[#f8f3ea] border-l-4 border-[#c7a17a] relative">
+                            <div className="my-16 px-8 py-12 bg-white border-l-4 border-black relative">
                                 <div className="absolute top-4 left-4 text-[#c7a17a] opacity-20">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M6.5 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35.208-.086.39-.16.539-.222.302-.125.474-.197.474-.197L9.758 4.03c0 0-.218.052-.597.144C8.97 4.222 8.737 4.278 8.472 4.345c-.271.05-.56.187-.882.312C7.272 4.799 6.904 4.895 6.562 5.123c-.344.218-.741.4-1.091.692C5.132 6.116 4.723 6.377 4.421 6.76c-.33.358-.656.734-.909 1.162C3.219 8.33 3.02 8.778 2.81 9.221c-.19.443-.343.896-.468 1.336-.237.882-.343 1.72-.384 2.437-.034.718-.014 1.315.028 1.747.015.204.043.402.063.539.017.109.025.168.025.168l.026-.006C2.535 17.474 4.338 19 6.5 19c2.485 0 4.5-2.015 4.5-4.5S8.985 10 6.5 10zM17.5 10c-.223 0-.437.034-.65.065.069-.232.14-.468.254-.68.114-.308.292-.575.469-.844.148-.291.409-.488.601-.737.201-.242.475-.403.692-.604.213-.21.492-.315.714-.463.232-.133.434-.28.65-.35.208-.086.39-.16.539-.222.302-.125.474-.197.474-.197L20.758 4.03c0 0-.218.052-.597.144-.191.048-.424.104-.689.171-.271.05-.56.187-.882.312-.317.143-.686.238-1.028.467-.344.218-.741.4-1.091.692-.339.301-.748.562-1.05.944-.33.358-.656.734-.909 1.162C14.219 8.33 14.02 8.778 13.81 9.221c-.19.443-.343.896-.468 1.336-.237.882-.343 1.72-.384 2.437-.034.718-.014 1.315.028 1.747.015.204.043.402.063.539.017.109.025.168.025.168l.026-.006C13.535 17.474 15.338 19 17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10z" />
@@ -458,8 +459,8 @@ function StoryDetails() {
                             {/* Call to action */}
                             <div className="my-16 text-center">
                                 <div className="inline-block mx-auto mb-6">
-                                    <div className="w-16 h-px bg-[#c7a17a] transform -rotate-45 inline-block mx-2"></div>
-                                    <div className="w-16 h-px bg-[#c7a17a] transform rotate-45 inline-block mx-2"></div>
+                                    <div className="w-16 h-px bg-black transform -rotate-45 inline-block mx-2"></div>
+                                    <div className="w-16 h-px bg-black transform rotate-45 inline-block mx-2"></div>
                                 </div>
                                 <h2 className="text-2xl font-serif text-[#3c3c3c] mb-6">Did you enjoy this story?</h2>
                             </div>

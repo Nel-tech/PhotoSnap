@@ -65,6 +65,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   } catch (err) {
   cookie.remove('user');
   cookie.remove('token');
+    cookie.remove('jwt');
   set({ user: null, isAuthenticated: false });
   console.error(err); 
   return null;

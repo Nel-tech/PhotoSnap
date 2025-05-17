@@ -63,13 +63,13 @@ app.use(
 );
 
 // 6️⃣ Limit repeated requests to public APIs
-const limiter = rateLimit({
-  max: 100, // max requests
-  windowMs: 60 * 60 * 1000, // per hour
-  message: 'Too many requests from this IP, please try again in an hour!',
-  keyGenerator: (req, res) => req.ip,
-});
-app.use('/api', limiter);
+// const limiter = rateLimit({
+//   max: 100, // max requests
+//   windowMs: 60 * 60 * 1000, // per hour
+//   message: 'Too many requests from this IP, please try again in an hour!',
+//   keyGenerator: (req, res) => req.ip,
+// });
+// app.use('/api', limiter);
 
 // 7️⃣ Log requests in development
 if (process.env.NODE_ENV === 'development') {

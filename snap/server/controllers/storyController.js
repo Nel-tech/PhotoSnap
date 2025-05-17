@@ -3,11 +3,13 @@ const Story = require('../models/storyModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cloudinary, upload } = require('../controllers/globalController');
-const cron = require('node-cron');
+
 
 /* -------------------------------- UTILITIES -------------------------------- */
 
 const filterObj = (obj, ...allowedFields) => {
+  if (!obj) return {};
+  
   const newObj = {};
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
@@ -108,9 +110,17 @@ exports.getAllStories = catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true, data: stories });
 });
 
-// Get single story by ID
 exports.getStory = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
+  const { storyId } = req.params; 
+  const story = await Story.findById(storyId);
+  if (!story) return next(new AppError('Story not found', 404));
+
+  res.status(200).json({ status: 'success', data: story });
+});
+
+
+exports.StoriesDetails = catchAsync(async (req, res, next) => {
+  const { id } = req.params; 
   const story = await Story.findById(id);
   if (!story) return next(new AppError('Story not found', 404));
 
@@ -118,8 +128,8 @@ exports.getStory = catchAsync(async (req, res, next) => {
 });
 
 
-// Alias for story details (if needed elsewhere)
-exports.StoriesDetails = exports.getStory;
+
+// exports.StoriesDetails = exports.getStory;
 
 // Upload single image file
 exports.upload = upload.single('image');
@@ -246,10 +256,13 @@ exports.getUserUploads = catchAsync(async (req, res, next) => {
   });
 });
 
-// Update a user's own story
 exports.updateStory = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;
   const { storyId } = req.params;
+  
+  if (!req.body) {
+    return next(new AppError('No data provided for update', 400));
+  }
 
   const filteredBody = filterObj(
     req.body,
@@ -257,6 +270,10 @@ exports.updateStory = catchAsync(async (req, res, next) => {
     'categories', 'tags', 'estimatedReadingTime',
     'location', 'language'
   );
+  
+  if (Object.keys(filteredBody).length === 0) {
+    return next(new AppError('No valid fields to update', 400));
+  }
 
   const updatedStory = await Story.findOneAndUpdate(
     { _id: storyId, user: userId },
@@ -349,16 +366,14 @@ exports.getUserBookMarkedStories = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;
 
   const bookmarks = await Story.find({ bookmarkedBy: userId });
-  if (!bookmarks.length) {
-    return res.status(200).json({ success: false, message: 'No bookmarks found' });
-  }
-
+  
   res.status(200).json({
     success: true,
     message: 'Bookmarked stories retrieved successfully',
-    data: bookmarks,
+    data: bookmarks || [], 
   });
 });
+
 
 
 exports.likeStory = catchAsync(async (req, res, next) => {
@@ -384,6 +399,20 @@ exports.likeStory = catchAsync(async (req, res, next) => {
 });
 
 
+exports.getUserLikedStories = catchAsync(async (req, res, next) => {
+  const userId = req.user?._id;
+
+  const likes = await Story.find({ likedBy: userId });
+  if (!likes.length) {
+    return res.status(200).json({ success: false, message: 'No bookmarks found' });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Bookmarked stories retrieved successfully',
+    data: likes,
+  });
+});
 exports.getStoriesByLikeStatus = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;  
   const stories = await Story.find();
@@ -400,6 +429,29 @@ exports.getStoriesByLikeStatus = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: storiesWithLikeStatus,
+  });
+});
+
+exports.deleteLikes = catchAsync(async (req, res, next) => {
+  const { id } = req.params;  
+  const userId = req.user?._id;
+
+  const likes = await Story.findOneAndUpdate(
+    { _id: id, bookmarkedBy: userId },  
+    { $pull: { bookmarkedBy: userId } },
+    { new: true } 
+  );
+
+  if (!likes) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Bookmark not found or you do not have permission to delete it'
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Bookmark deleted successfully'
   });
 });
 
@@ -463,7 +515,6 @@ exports.updateStoryStatus = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  // 1. Authorization check
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
@@ -471,15 +522,12 @@ exports.updateStoryStatus = catchAsync(async (req, res, next) => {
     });
   }
 
-  // 2. Validate status
   if (!status || !['Published', 'rejected'].includes(status)) {
     return res.status(400).json({
       success: false,
       message: 'Invalid or missing status value.',
     });
   }
-
-  // 3. Update the story
   const story = await Story.findByIdAndUpdate(id, { status }, { new: true });
 
   if (!story) {
@@ -488,8 +536,6 @@ exports.updateStoryStatus = catchAsync(async (req, res, next) => {
       message: 'Story not found.',
     });
   }
-
-  // 4. Send response
   res.status(200).json({
     success: true,
     message: `Story has been successfully ${status}.`,

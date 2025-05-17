@@ -11,9 +11,9 @@ router.get('/logout', authController.logout);
 // Protect all routes after this middleware
 router.use(authController.protect);
 
-// router.patch('/updateMyPassword', authController.updatePassword);
+ router.patch('/updatePassword',authController.restrictTo('user'), authController.updateMyPassword);
 router.get('/getMe', userController.getMe);
-  // router.patch('/updateMe', authController.restrictTo('user'), userController.updateMe);
+router.patch('/updateMe', authController.restrictTo('user'), userController.updateMe);
 
 
 module.exports = router;

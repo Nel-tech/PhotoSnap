@@ -19,12 +19,12 @@ function Nav() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
 
- 
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  if (!hasMounted) return null; 
+  if (!hasMounted) return null;
 
 
   const handleLogout = () => {
@@ -81,14 +81,23 @@ function Nav() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-56 bg-white border-none" align="end" forceMount>
-                
+
                 <DropdownMenuItem>
 
-                  <Link href="/bookmark">
+                  <Link href="/collection">
 
-                    <span>Bookmarks</span>
+                    <span>Collections</span>
                   </Link>
                 </DropdownMenuItem>
+
+                <DropdownMenuItem>
+
+                  <Link href="/profile">
+
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+
 
                 <DropdownMenuItem>
 
@@ -176,18 +185,25 @@ function Nav() {
                     {isAuthenticated ? (
                       <div className="space-y-3">
                         <Link
-                          href="/bookmark"
-                          className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
+                          href="/collection"
+                          className={`block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary ${pathname === "/bookmark" ? "text-primary underline" : "hover:text-primary hover:underline"}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
-                          Bookmarks
+                          COLLECTIONS
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className={`block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary ${pathname === "/profile" ? "text-primary underline" : "hover:text-primary hover:underline"}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          PROFILE
                         </Link>
                         <Link
                           href="/upload-story"
-                          className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
+                          className={`block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary ${pathname === "/upload-story" ? "text-primary underline" : "hover:text-primary hover:underline"}`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
-                          Upload Your Story
+                          UPLOAD YOUR STORY
                         </Link>
                         <Link
                           href="#"
@@ -198,7 +214,7 @@ function Nav() {
                           }}
                           className="block text-sm font-semibold leading-6 text-black transition duration-300 hover:text-primary"
                         >
-                          Logout
+                          LOGOUT
                         </Link>
                       </div>
                     ) : (
@@ -228,7 +244,7 @@ function Nav() {
                 </div>
               </div>
             </Dialog.Panel>
-          </motion.div> {/* End of motion.div */}
+          </motion.div>
         </Dialog>
       </AnimatePresence>
 

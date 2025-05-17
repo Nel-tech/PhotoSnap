@@ -1,142 +1,127 @@
-"use client"
-
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, Mail, Lock } from "lucide-react"
-import toast from "react-hot-toast"
-import { useAuthStore } from '@/store/useAuthStore';
-import Nav from "@/components/Nav"
+'use client'
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Mail, Lock, AlertTriangle } from "lucide-react";
+import toast from "react-hot-toast";
+import Nav from "@/components/Nav";
+import { handleSave, fetchUserProfile, handlePasswordUpdate } from "../Api/Api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Cookies from "js-cookie";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 type Profile = {
-  email: string;
-  password: string;
-  name:string;
-}
+  data: {
+    user: {
+      email: string;
+      password?: string;
+      name: string;
+    };
+  };
+};
 
 export default function ProfilePage() {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-  const user = useAuthStore((state) => state.user);
-  const fetchUserProfile = useAuthStore((state) => state.fetchUserProfile);
+  const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [profileData, setProfileData] = useState<Profile | null>(null);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    passwordConfirm: ''
   });
 
-  const [mounted, setMounted] = useState(false);
+  const { data, isLoading, error, refetch } = useQuery<Profile, Error>({
+    queryKey: ['user-profile'],
+    queryFn: fetchUserProfile,
+    enabled: !!Cookies.get('token'),
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-    if (token && !user) {
-      fetchUserProfile(token); 
+    if (data) {
+      setProfileData(data);
     }
-  }, [user, fetchUserProfile]);
+  }, [data]);
 
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        name:user.name,
-        email: user.email,
-        password: ''
-      });
-    }
-  }, [user]);
+  const { mutate: updateProfile } = useMutation({
+    mutationFn: handleSave,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      toast.success("Profile updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to update profile");
+    },
+  });
 
-  const handleSave = async () => {
-    try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      const response = await fetch(`${API_BASE_URL}api/v1/users/updateMe`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify(profileData)
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile')
-      }
-
-      setIsEditing(false)
-      toast.success('Profile updated successfully')
-    } catch (error) {
-      toast.error('Failed to update profile')
-      return error
-    }
-  }
+  const { mutate: updatePassword } = useMutation({
+    mutationFn: handlePasswordUpdate,
+    onSuccess: () => {
+      toast.success("Password updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to update password");
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (profileData) {
-      setProfileData(prev => prev ? { ...prev, [name]: value } : null);
+      setProfileData((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              user: {
+                ...prev.data.user,
+                [name]: value,
+              },
+            },
+          };
+        }
+        return prev;
+      });
     }
-  }
+  };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPasswordData(prev => ({ ...prev, [name]: value }));
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const isPasswordValid = passwordData.currentPassword && passwordData.newPassword && passwordData.passwordConfirm && (passwordData.newPassword === passwordData.passwordConfirm);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (isLoading || !isClient) {
+    return (
+      <section className="max-w-3xl mx-auto py-8 px-4">
+        <Skeleton height={40} width="50%" className="mb-4" />
+        <Skeleton height={20} width="80%" className="mb-4" />
+        <Skeleton height={20} width="80%" className="mb-4" />
+        <Skeleton height={20} width="80%" className="mb-4" />
+      </section>
+    );
   }
 
-  const handlePasswordUpdate = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('New passwords do not match');
-      return;
-    }
-
-    try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (!token) throw new Error('No token found');
-      const response = await fetch(`${API_BASE_URL}/api/v1/users/updatePassword`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update password');
-      }
-
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-      toast.success('Password updated successfully');
-    } catch (error) {
-      toast.error('Failed to update password');
-      return error
-    }
+  if (error) {
+    return (
+      <section className="max-w-3xl mx-auto py-8 px-4 text-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-red-500 mx-auto" />
+        <h2 className="text-2xl font-bold">Something went wrong</h2>
+        <p className="text-gray-600">We couldn't load your profile. Please try again later.</p>
+        <Button onClick={() => refetch()} variant="secondary">Retry</Button>
+      </section>
+    );
   }
-
-  if (!mounted) {
-    return null; // or <div>Loading...</div> if you want
-  }
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
 
   return (
     <section>
@@ -152,7 +137,7 @@ export default function ProfilePage() {
             <Tabs defaultValue="info" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="info">Personal Info</TabsTrigger>
-                <TabsTrigger value="security">Security</TabsTrigger>
+                <TabsTrigger value="security">Password</TabsTrigger>
               </TabsList>
 
               <TabsContent value="info" className="space-y-4 pt-4">
@@ -169,7 +154,7 @@ export default function ProfilePage() {
                       <Input
                         id="name"
                         name="name"
-                        value={profileData?.name || ""}
+                        value={profileData?.data?.user?.name || ""}
                         onChange={handleChange}
                         className="border rounded-md px-3 py-2"
                         disabled={!isEditing}
@@ -184,7 +169,7 @@ export default function ProfilePage() {
                         id="email"
                         name="email"
                         type="email"
-                        value={profileData?.email || ""}
+                        value={profileData?.data?.user?.email || ""}
                         onChange={handleChange}
                         className="border rounded-md px-3 py-2"
                         disabled={!isEditing}
@@ -194,8 +179,28 @@ export default function ProfilePage() {
                   <CardFooter>
                     {isEditing ? (
                       <div className="flex gap-2">
-                        <Button onClick={handleSave}>Save Changes</Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        <Button
+                          onClick={() => {
+                            if (profileData?.data?.user) {
+                              updateProfile({
+                                name: profileData.data.user.name,
+                                email: profileData.data.user.email,
+                              });
+                              setIsEditing(false);
+                            } else {
+                              toast.error("No profile data available");
+                            }
+                          }}
+                        >
+                          Save Changes
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setIsEditing(false);
+                            refetch();
+                          }}
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -206,56 +211,27 @@ export default function ProfilePage() {
                 </Card>
               </TabsContent>
 
+              {/* Password tab */}
               <TabsContent value="security" className="space-y-4 pt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Security Settings</CardTitle>
-                    <CardDescription>Manage your password and security preferences.</CardDescription>
+                    <CardTitle>Password Change</CardTitle>
+                    <CardDescription>Update your password here.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="current-password" className="flex items-center gap-2">
-                        <Lock className="h-4 w-4" /> Current Password
-                      </Label>
-                      <Input
-                        id="current-password"
-                        name="currentPassword"
-                        type="password"
-                        value={passwordData.currentPassword}
-                        onChange={handlePasswordChange}
-                        className="border rounded-md px-3 py-2"
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <Label>Current Password</Label>
+                    <Input type="password" name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} />
 
-                    <div className="space-y-2">
-                      <Label htmlFor="new-password">New Password</Label>
-                      <Input
-                        id="new-password"
-                        name="newPassword"
-                        type="password"
-                        value={passwordData.newPassword}
-                        onChange={handlePasswordChange}
-                        className="border rounded-md px-3 py-2"
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <Label>New Password</Label>
+                    <Input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} />
 
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm New Password</Label>
-                      <Input
-                        id="confirm-password"
-                        name="confirmPassword"
-                        type="password"
-                        value={passwordData.confirmPassword}
-                        onChange={handlePasswordChange}
-                        className="border rounded-md px-3 py-2"
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <Label>Confirm Password</Label>
+                    <Input type="password" name="passwordConfirm" value={passwordData.passwordConfirm} onChange={handlePasswordChange} />
+
+                    {!isPasswordValid && <p className="text-red-500">Passwords do not match or fields are empty.</p>}
                   </CardContent>
                   <CardFooter>
-                    <Button onClick={handlePasswordUpdate}>Update Password</Button>
+                    <Button onClick={() => updatePassword(passwordData)} disabled={!isPasswordValid}>Change Password</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -264,5 +240,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </section>
-  )
+  );
 }
