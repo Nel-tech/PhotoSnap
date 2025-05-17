@@ -66,8 +66,8 @@ function Stories() {
         );
     }
 
-    if (error) return <div>Error: {error.message}</div>
-    if (!stories || stories.length === 0) return <div>No stories found</div>
+    if (error) return <div className="text-center">Error: {error.message}</div>
+    if (!stories || stories.length === 0) return <div className="text-center">No stories found</div>
 
 
     return (
