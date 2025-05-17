@@ -22,7 +22,7 @@ export interface StoryFormData {
     title: string;
     author: string;
     description: string;
-    image: FileList;
+    image: FileList | null;
     categories: string;
     estimatedReadingTime: string;
     location: string;
