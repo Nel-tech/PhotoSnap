@@ -1,6 +1,6 @@
 'use client'
 // import { useState } from "react"
-import { Label } from "@/components/ui/label"
+// import { Label } from "@/components/ui/label"
 import { Fragment } from "react"
 
 export default function PricingTable() {

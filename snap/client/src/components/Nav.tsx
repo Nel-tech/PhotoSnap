@@ -6,7 +6,7 @@ import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, User, Upload, BookOpen, LogOut, ChevronDown, Settings } from "lucide-react"
+import { Menu, X, User, Upload, BookOpen, LogOut, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion';
 // import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Image from 'next/image';
