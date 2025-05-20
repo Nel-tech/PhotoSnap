@@ -45,14 +45,14 @@ function HeroSection() {
                 </Card>
 
                 {/* Right Image Section */}
-                <div className="relative w-full h-[83vh]">
+                <div className="relative w-full">
                     <Image
                         src={DesktopPricingImage}
                         alt="Features"
                         className=" shadow-lg hidden lg:block lg:h-[600px] lg:object-cover md:hidden"
                         priority
                         width={990}
-                        height={800} // Ensures image height matches card
+                        height={800} 
                     />
                     <Image
                         src={TabletPricingImage}

@@ -3,6 +3,8 @@ const Story = require('../models/storyModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cloudinary, upload } = require('../controllers/globalController');
+const path = require('path')
+
 
 
 /* -------------------------------- UTILITIES -------------------------------- */
@@ -101,6 +103,57 @@ async function loadStories() {
   }
 }
 loadStories();
+
+
+// const folderPath = path.join(process.cwd(), "public/images");
+// const cacheFilePath = path.join(process.cwd(), "upload_cache.json");
+
+// // Load cache file (if it exists)
+// let uploadedImages = [];
+// if (fs.existsSync(cacheFilePath)) {
+//   uploadedImages = JSON.parse(fs.readFileSync(cacheFilePath, "utf8"));
+// }
+
+// // Automatically create the folder if it doesn't exist
+// if (!fs.existsSync(folderPath)) {
+//   fs.mkdirSync(folderPath, { recursive: true });
+//   console.log("Created folder:", folderPath);
+// }
+
+// // Function to recursively upload images
+// async function uploadLocalImages(dir) {
+//   const files = fs.readdirSync(dir);
+
+//   for (const file of files) {
+//     const filePath = path.join(dir, file);
+//     const stat = fs.statSync(filePath);
+
+//     if (stat.isDirectory()) {
+//       await uploadLocalImages(filePath);
+//     } else if (stat.isFile()) {
+//       if (uploadedImages.includes(filePath)) {
+//         console.log("Already uploaded:", filePath);
+//         continue;
+//       }
+
+//       try {
+//         const result = await cloudinary.uploader.upload(filePath, {
+//           folder: "images",
+//         });
+//         console.log("Uploaded:", result.secure_url);
+//         uploadedImages.push(filePath);
+//         fs.writeFileSync(cacheFilePath, JSON.stringify(uploadedImages, null, 2));
+//       } catch (err) {
+//         console.error("Upload failed for:", filePath, err);
+//       }
+//     }
+//   }
+// }
+
+// uploadLocalImages(folderPath).catch((err) =>
+//   console.error("Upload process failed:", err)
+// );
+
 
 /* --------------------------- PUBLIC / USER ROUTES -------------------------- */
 

@@ -50,7 +50,6 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
         return (
             <div className="flex flex-col items-center justify-center h-60">
                 <Loader2 className="h-8 w-8 text-gray-500 mb-2 animate-spin" />
-                <p className="text-sm text-gray-500">Loading please wait...</p>
             </div>
         );
     }
