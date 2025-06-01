@@ -1,5 +1,5 @@
 'use client'
-import { Github, Linkedin, X } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import FooterLogo from '../../public/images/shared/desktop/Footerlogo.svg'
