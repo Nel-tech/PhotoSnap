@@ -29,6 +29,7 @@ type StoryFormData = {
     estimatedReadingTime: string;
     location: string;
     language: string;
+    embedUrl:string;
     tags: string[];
 };
 
