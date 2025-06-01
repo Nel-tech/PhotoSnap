@@ -78,6 +78,10 @@ tags:{
   type: mongoose.Schema.Types.ObjectId,
   ref: 'User'
 }],
+ embedUrl:{
+type:String,
+required: false,
+ },
 
   status: {
     type: String,

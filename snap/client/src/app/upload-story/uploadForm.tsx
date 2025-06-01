@@ -16,8 +16,8 @@ import toast from "react-hot-toast";
 import { useStoryForm } from "../hooks/useStoryForm";
 import { Countries, Languages } from '@/app/_Mock_/Helper'
 import Image from "next/image";
+import EmbedPreview from "@/components/EmbedPreview";
 
-// Define the StoryFormData interface with proper types
 export interface StoryFormData {
     title: string;
     author: string;
@@ -28,6 +28,8 @@ export interface StoryFormData {
     location: string;
     language: string;
     tags: string[];
+    embedUrl:string;
+
 }
 
 export type UploadProps = {
@@ -67,7 +69,7 @@ export default function UploadForm({ onSuccess }: UploadProps) {
         handleImageChange,
     } = useStoryForm(formMethods);
 
-    const { register, handleSubmit, control, formState: { errors } } = formMethods;
+    const { register, handleSubmit, watch, control, formState: { errors } } = formMethods;
 
     const { mutate, isPending } = useUploadStory();
 
@@ -285,6 +287,27 @@ export default function UploadForm({ onSuccess }: UploadProps) {
                                 ))}
                             </div>
                         </div>
+
+                        {/* Embed URL */}
+<div>
+  <Label className="mb-2">Embed (Optional)</Label>
+  <Input
+                                placeholder="Want to embed a tweet or video? Paste it here"
+    {...register("embedUrl", {
+      validate: (value) => {
+        if (!value) return true; 
+        const supported = /(youtube\.com|youtu\.be|twitter\.com|x\.com|instagram\.com)/i.test(value);
+        return supported || "Only YouTube, Twitter, or Instagram links are supported";
+      },
+    })}
+    className="placeholder:text-sm"
+  />
+  {errors.embedUrl && <p className="text-red-500 text-sm">{errors.embedUrl.message}</p>}
+
+                            {watch("embedUrl") && <EmbedPreview url={watch("embedUrl")} />}
+
+</div>
+
                     </CardContent>
 
                     <CardFooter className="justify-end">

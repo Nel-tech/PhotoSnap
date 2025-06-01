@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
 import {UseFormSetValue } from "react-hook-form";
 
-// Make sure the types match exactly with what's used in the form component
+
 type StoryFormData = {
   title: string;
   author: string;
   description: string;
-  image: FileList | null; // Added null to match the EditStoryForm component
+  image: FileList | null; 
   categories: string;
   estimatedReadingTime: string;
   location: string;
   language: string;
   tags: string[];
+  embedUrl:string;
 };
 
-// Create an interface for the props to ensure proper typing
+
 interface UseStoryFormProps {
   setValue: UseFormSetValue<StoryFormData>;
   initialTags?: string[];
@@ -22,12 +23,12 @@ interface UseStoryFormProps {
 }
 
 export const useStoryForm = ({ setValue, initialTags = [], initialImagePreview = null }: UseStoryFormProps) => {
-  // Initialize state with props if provided
+ 
   const [tags, setTags] = useState<string[]>(initialTags);
   const [imagePreview, setImagePreview] = useState<string | null>(initialImagePreview);
   const [inputTag, setInputTag] = useState("");
 
-  // Update form value when tags change
+
   useEffect(() => {
     setValue("tags", tags);
   }, [tags, setValue]);

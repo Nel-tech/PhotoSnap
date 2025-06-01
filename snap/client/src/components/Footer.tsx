@@ -18,13 +18,23 @@ function Footer() {
 
                         {/* Social Icons */}
                         <div className="flex gap-4">
-                            <a href="#" className="text-gray-400 hover:text-white transition">
+                            {/* <a href="#" target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Visit Nelson Adegbasa's GitHub Profile" className="text-gray-400 hover:text-white transition">
                                 <X className="w-6 h-6" />
-                            </a>
-                            <a href="#" className="text-gray-400 hover:text-white transition">
+                            </a> */}
+                            <a href="https://github.com/Nel-tech" target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Visit Nelson Adegbasa's GitHub Profile" className="text-gray-400 hover:text-white transition">
                                 <Github className="w-6 h-6" />
                             </a>
-                            <a href="#" className="text-gray-400 hover:text-white transition">
+                            <a
+                                href="https://www.linkedin.com/in/nelson-adegbasa-858b88365/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Visit Nelson Adegbasa's LinkedIn Profile"
+                                className="text-gray-400 hover:text-white transition"
+                            >
                                 <Linkedin className="w-6 h-6" />
                             </a>
                         </div>

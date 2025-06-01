@@ -201,7 +201,30 @@ exports.uploadStory = catchAsync(async (req, res, next) => {
     estimatedReadingTime,
     location,
     language,
+    embedUrl,
   } = req.body;
+
+  if(embedUrl){
+    const supportedDomains = [
+    'youtube.com',
+    'youtu.be',
+    'twitter.com',
+    'x.com',
+    'instagram.com',
+  ];
+
+   const isValidEmbed = supportedDomains.some((domain) =>
+    embedUrl.includes(domain)
+  );
+
+  if (!isValidEmbed) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Only YouTube, Twitter, or Instagram links are allowed for embedUrl.',
+    });
+  }
+
+  }
 
   const file = req.file;
   if (!file) return res.status(400).json({ message: 'No file uploaded' });
@@ -252,7 +275,7 @@ if (Array.isArray(categories)) {
   if (
     !title || !author || !description ||
     !normalizedCategories || !normalizedTags?.length ||
-    !estimatedReadingTime || !location || !language
+    !estimatedReadingTime || !location || !language 
   ) {
     return next(new AppError('Missing required fields', 400));
   }
@@ -285,6 +308,7 @@ if (Array.isArray(categories)) {
     location,
      status: 'pending',
     language,
+    embedUrl,
   });
 
   res.status(201).json({

@@ -29,7 +29,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 import StorySkeleton from '@/components/StorySkeleton'
 import { LikeStoryAPI, viewStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/Api/Api'
 import InteractionButton from '@/components/InteractionButton'
-
+import EmbedPreview from '@/components/EmbedPreview'
 
 interface Story {
     id: string;
@@ -416,6 +416,8 @@ function StoryDetails() {
                                         {story.description}
                                     </p>
                                 </div>
+                                
+                                {story.embedUrl && <EmbedPreview url={story.embedUrl} />}
 
                                
                               
