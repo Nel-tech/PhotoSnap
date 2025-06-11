@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/components/AuthProvider";
 import Providers from "@/app/providers";
+import { Analytics } from "@vercel/analytics/next"
 
 
 // Load Poppins with a CSS variable
@@ -36,6 +37,7 @@ export default function RootLayout({
             {children}
             <Footer /> 
             <Toaster position="top-right" reverseOrder={false} />
+            <Analytics />
           </Providers>
         </AuthProvider>
       </body>
