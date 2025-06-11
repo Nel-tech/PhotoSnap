@@ -15,9 +15,13 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
+
 export const metadata: Metadata = {
   title: "PhotoSnap - Capture Your Moments",
   description: "A photography storytelling platform.",
+  verification: {
+    google: "mr6DpKGyOAKnB0eQH0DQByStxObAfiiRoG9BWEtTkAs", 
+  },
 };
 
 export default function RootLayout({
