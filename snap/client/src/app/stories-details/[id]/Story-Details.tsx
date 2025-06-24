@@ -24,7 +24,7 @@ import { motion } from "framer-motion"
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore'
 import StorySkeleton from '@/components/StorySkeleton'
-import { LikeStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/api/api'
+import { LikeStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/lib/api'
 import InteractionButton from '@/components/InteractionButton'
 import EmbedPreview from '@/components/EmbedPreview'
 import { Story } from '@/app/types/typed'

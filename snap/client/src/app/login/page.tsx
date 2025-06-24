@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { LoginData } from "../types/typed";
-import { Login } from "@/app/api/api";
+import { Login } from "@/lib/api";
 
 
 
@@ -42,7 +42,7 @@ export default function SignIn() {
             if (response.user) {
                 await loginStore(response.user);
 
-                const role = response.user.role; 
+                const role = response.user.role;
 
                 if (role === "admin") {
                     toast.success("Admin logged in successfully");

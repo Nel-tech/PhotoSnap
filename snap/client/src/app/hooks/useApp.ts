@@ -26,7 +26,7 @@ import {
  getPendingStories,
  UpdateStoryStatus
 
-} from "../api/api";
+} from "../../lib/api";
 import { Story, Profile } from "../types/typed";
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";

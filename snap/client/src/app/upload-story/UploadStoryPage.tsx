@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { StoryFormData, Story } from "../types/typed"
 import { useUploadedStories } from "../hooks/useApp"
-import { DeleteUserUploads } from "@/app/api/api"
+import { DeleteUserUploads } from "@/lib/api"
 
 
 
@@ -139,7 +139,7 @@ function UploadStoryPage() {
                                                         <p className="font-bold mb-1">Story Rejected</p>
                                                         <p>
                                                             Unfortunately, your story couldn't be approved.
-                                                             Please review and revise before resubmitting.
+                                                            Please review and revise before resubmitting.
                                                         </p>
                                                     </div>
                                                 )}
@@ -182,7 +182,7 @@ function UploadStoryPage() {
                                                         ))}
                                                     </div>
                                                 )}
-                                                
+
                                                 <div className="flex justify-end gap-2 pt-2 mt-auto">
                                                     <Button
                                                         variant="outline"

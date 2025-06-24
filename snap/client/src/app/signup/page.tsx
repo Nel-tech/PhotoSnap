@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
 import { useAuthStore } from '@/store/useAuthStore';
 import Footer from "@/components/Footer";
-import { Signup } from "@/app/api/api"
+import { Signup } from "@/lib/api"
 import { validateEmailClient } from "@/components/ValidateEmail";
 import { SignupData } from "../types/typed";
 
@@ -63,16 +63,16 @@ export default function SignUpPage() {
                 passwordConfirm
             });
 
-            
 
-        
+
+
             if (!response || response.status !== "success") {
                 const errorMessage = response?.message || "Signup failed";
                 toast.error(errorMessage);
                 return;
             }
 
-           
+
             const userData = response.user || response.data || response;
 
             if (!userData || !userData._id) {
@@ -84,10 +84,10 @@ export default function SignUpPage() {
                 _id: userData._id,
                 name: userData.name,
                 email: userData.email,
-                role: userData.role || 'user' 
+                role: userData.role || 'user'
             };
 
-            
+
             if (!user._id || !user.email) {
                 toast.error("Signup failed: Invalid user data");
                 return;
@@ -122,7 +122,7 @@ export default function SignUpPage() {
             toast.error(message);
 
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse} from '../types/typed';
+import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse} from '../app/types/typed';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
