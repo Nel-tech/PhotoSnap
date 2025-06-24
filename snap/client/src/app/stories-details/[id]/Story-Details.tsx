@@ -21,11 +21,10 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
-import toast from "react-hot-toast"
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore'
 import StorySkeleton from '@/components/StorySkeleton'
-import { LikeStoryAPI, viewStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/api/api'
+import { LikeStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/api/api'
 import InteractionButton from '@/components/InteractionButton'
 import EmbedPreview from '@/components/EmbedPreview'
 import { Story } from '@/app/types/typed'

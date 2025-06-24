@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { StoryFormData, Story } from "../types/typed"
 import { useUploadedStories } from "../hooks/useApp"
-import { DeleteUserUploads } from "../api/api"
+import { DeleteUserUploads } from "@/app/api/api"
 
 
 

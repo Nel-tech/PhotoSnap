@@ -27,7 +27,7 @@ import {
  UpdateStoryStatus
 
 } from "../api/api";
-import { Story, Profile,StoryStatus } from "../types/typed";
+import { Story, Profile } from "../types/typed";
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";

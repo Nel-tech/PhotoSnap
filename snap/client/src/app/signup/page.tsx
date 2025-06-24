@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
 import { useAuthStore } from '@/store/useAuthStore';
 import Footer from "@/components/Footer";
-import { Signup } from "../api/api"
+import { Signup } from "@/app/api/api"
 import { validateEmailClient } from "@/components/ValidateEmail";
 import { SignupData } from "../types/typed";
 

@@ -61,6 +61,12 @@ export interface RequestToken {
 email:string
 }
 
+export interface DeleteLikesResponse {
+  success: boolean;
+  message: string;
+  // Add other properties that your API returns
+}
+
 export interface ResetPasswordRequest{
   resetToken:string; 
   newPassword:string;

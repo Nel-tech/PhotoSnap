@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryStatus} from '../types/typed';
+import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse} from '../types/typed';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
@@ -204,17 +204,17 @@ export const  DeleteUserBookmarks = async (id: string) => {
   }
 };
 
-export const DeleteUserLikes = async (id: string) => {
+export const DeleteUserLikes = async (id: string): Promise<DeleteLikesResponse> => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-likes/${id}`, {
       headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+        "Content-Type": "application/json",
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
-     throw new Error(error?.response?.data?.message || "Error deleting user likes bookmark");
+    throw new Error(error?.response?.data?.message || "Error deleting user likes bookmark");
   }
 };
 

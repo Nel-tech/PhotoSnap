@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { LoginData } from "../types/typed";
-import { Login } from "../api/api";
+import { Login } from "@/app/api/api";
 
 
 
