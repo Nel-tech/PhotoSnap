@@ -1,8 +1,7 @@
 "use client"
 import Protected from '@/components/Protected'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from "next/navigation"
-import axios from "axios"
 import {
     Calendar,
     Clock,
@@ -15,8 +14,7 @@ import {
     Eye,
 
 } from "lucide-react"
-import { useState, useEffect, useCallback} from "react"
-import cookie from "js-cookie"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -27,47 +25,28 @@ import toast from "react-hot-toast"
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore'
 import StorySkeleton from '@/components/StorySkeleton'
-import { LikeStoryAPI, viewStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/Api/Api'
+import { LikeStoryAPI, viewStoryAPI, getStoryStatus, getBookmarkedbyStatus, toggleBookmark } from '@/app/api/api'
 import InteractionButton from '@/components/InteractionButton'
 import EmbedPreview from '@/components/EmbedPreview'
+import { Story } from '@/app/types/typed'
+import { useGetStory, useStoriesDetails, useViewStories } from '@/app/hooks/useApp'
 
-interface Story {
-    id: string;
-    _id: string;
-    title: string;
-    author: string;
-    image: string;
-    description: string;
-    summary?: string;
-    date: string;
-    estimatedReadingTime: string;
-    categories?: string[];
-    tags?: string[];
-    location?: string;
-    language?: string;
-    bookmarked?: boolean;
-    views: number;
-    like: number;
-}
 
 function StoryDetails() {
     const { id } = useParams() as { id: string };
     const router = useRouter()
-    const queryClient = useQueryClient();
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
     const user = useAuthStore((state) => state.user)
-    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-    const [token, setToken] = useState(cookie.get("token") || "")
     const [showScrollTop, setShowScrollTop] = useState(false)
     const [randomStories, setRandomStories] = useState<Story[]>([])
 
 
 
     // Re-fetch token on mount and when authentication status changes
-    useEffect(() => {
-        const currentToken = cookie.get("token")
-        setToken(currentToken || "")
-    }, [isAuthenticated])
+    // useEffect(() => {
+    //     const currentToken = cookie.get("token")
+    //     setToken(currentToken || "")
+    // }, [isAuthenticated])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -85,34 +64,9 @@ function StoryDetails() {
         data: story,
         isLoading,
         error,
-    } = useQuery({
-        queryKey: ["get-story-by-id", id, token],
-        enabled: !!id && !!token && isAuthenticated,
-        queryFn: () =>
-            axios
-                .get(`${API_URL}api/v1/stories/stories-details/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    const storyData = res.data.data
-                    return storyData
-                }),
-    })
+    } = useStoriesDetails(id)
+    const { data: allStories } = useGetStory()
 
-    const { data: allStories } = useQuery({
-        queryKey: ["get-all-stories", token],
-        enabled: !!token && isAuthenticated,
-        queryFn: () =>
-            axios
-                .get(`${API_URL}api/v1/stories/get-all-stories`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => res.data.data),
-    })
 
 
     const getRandomStories = useCallback((stories: Story[], count = 2): Story[] => {
@@ -137,52 +91,15 @@ function StoryDetails() {
     }, [allStories, getRandomStories])
 
 
-   
-    const viewQueryKey = ['view-story', id];
-    const storyQueryKey = ['get-story-by-id', id, token];
-
-    const { mutate: view } = useMutation({
-        mutationFn: () => viewStoryAPI(id),
-        onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: viewQueryKey });
-            await queryClient.cancelQueries({ queryKey: storyQueryKey });
-            const previousData = queryClient.getQueryData(storyQueryKey);
-
-            queryClient.setQueryData(storyQueryKey, (old: any) => {
-                if (old) {
-                    return {
-                        ...old,
-                        views: typeof old.views === 'number' ? old.views + 1 : 1
-                    };
-                }
-                return old;
-            });
-
-            return { previousData };
-        },
-        onError: (error: any, _, context) => {
-            if (error.message === 'No token found') {
-                toast.error('Please login to view story');
-                router.push('/login');
-            } else {
-                toast.error('Failed to record story view');
-            }
-            queryClient.setQueryData(storyQueryKey, context?.previousData);
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: viewQueryKey });
-            queryClient.invalidateQueries({ queryKey: storyQueryKey });
-        },
-    });
-
+    const { mutate: view } = useViewStories(id)
 
 
 
     useEffect(() => {
-        if (id && token && isAuthenticated) {
+        if (id && isAuthenticated) {
             view();
         }
-    }, [id, token, isAuthenticated, view]);
+    }, [id, isAuthenticated, view]);
 
 
     if (isLoading) {
@@ -218,39 +135,6 @@ function StoryDetails() {
         );
     }
 
-    // Not found state
-    if (!story) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#f8f7f4]">
-                <div className="text-center p-12 max-w-md bg-white rounded-lg shadow-xl border border-[#e9e1d4]">
-                    <div className="w-20 h-20 mx-auto mb-6 text-[#c7a17a]">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M12 16v-4M12 8h.01" />
-                        </svg>
-                    </div>
-                    <h2 className="text-2xl font-serif text-[#3c3c3c] mb-4">Story Not Found</h2>
-                    <p className="text-[#6b6b6b] mb-8 font-light">
-                        The story you&apos;re looking for doesn&apos;t exist or has been removed.
-                    </p>
-                    <Button
-                        variant="outline"
-                        asChild
-                        className="border-black text-black hover:bg-black hover:text-white"
-                    >
-                        <Link href="/">Browse Stories</Link>
-                    </Button>
-                </div>
-            </div>
-        )
-    }
-
-    // Bookmark-Story API
-
-
-
-
-
 
     const formatDate = (dateString: string): string => {
         const options: Intl.DateTimeFormatOptions = {
@@ -282,7 +166,6 @@ function StoryDetails() {
                                 <InteractionButton
                                     id={id}
                                     user={user}
-                                    token={token}
                                     isAuthenticated={isAuthenticated}
                                     type="like"
                                     getStatusFn={getStoryStatus}
@@ -294,7 +177,6 @@ function StoryDetails() {
                                 <InteractionButton
                                     id={id}
                                     user={user}
-                                    token={token}
                                     isAuthenticated={isAuthenticated}
                                     type="bookmark"
                                     getStatusFn={getBookmarkedbyStatus}
@@ -327,7 +209,7 @@ function StoryDetails() {
                         <div
                             className="absolute inset-0 bg-cover bg-no-repeat bg-center"
                             style={{
-                                backgroundImage: `url(${story.image})`,
+                                backgroundImage: `url(${story?.image})`,
                                 transform: "translateZ(0)",
                             }}
                         ></div>
@@ -336,7 +218,7 @@ function StoryDetails() {
                             <div className="container mx-auto px-4 pb-16 md:pb-24">
                                 <div className="max-w-3xl">
                                     <div className="flex flex-wrap gap-2 mb-4">
-                                        {story.categories.map((category: string, index: number) => (
+                                        {story?.categories?.map((category: string, index: number) => (
                                             <Badge
                                                 key={index}
                                                 variant="secondary"
@@ -347,7 +229,7 @@ function StoryDetails() {
                                         ))}
                                     </div>
                                     <h1 className="text-4xl  md:text-5xl lg:text-6xl font-bold text-white  leading-tight">
-                                        {story.title}
+                                        {story?.title}
                                     </h1>
 
                                     {/* Author and Metadata Section */}
@@ -356,11 +238,11 @@ function StoryDetails() {
                                         <div className="flex items-center gap-4 text-white">
                                             <Avatar className="h-16 w-16 border-2 border-white/30">
                                                 <AvatarFallback className="bg-white/10 text-white text-xl font-serif">
-                                                    {story.author.charAt(0)}
+                                                    {story?.author.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <h2 className="font-serif text-lg text-white">{story.author}</h2>
+                                                <h2 className="font-serif text-lg text-white">{story?.author}</h2>
                                                 <div className="text-xs text-white/80 italic">Storyteller</div>
                                             </div>
                                         </div>
@@ -369,22 +251,22 @@ function StoryDetails() {
                                         <div className="flex flex-wrap items-center gap-6 text-white/90 text-sm">
                                             <div className="flex items-center">
                                                 <Calendar size={16} className="mr-2" />
-                                                {formatDate(story.date)}
+                                                {formatDate(story?.date)}
                                             </div>
                                             <div className="flex items-center">
                                                 <Clock size={16} className="mr-2" />
-                                                {story.estimatedReadingTime}
+                                                {story?.estimatedReadingTime}
                                             </div>
-                                            {story.location && (
+                                            {story?.location && (
                                                 <div className="flex items-center">
                                                     <MapPin size={16} className="mr-2" />
-                                                    {story.location}
+                                                    {story?.location}
                                                 </div>
                                             )}
-                                            {story.language && (
+                                            {story?.language && (
                                                 <div className="flex items-center">
                                                     <Globe size={16} className="mr-2" />
-                                                    {story.language}
+                                                    {story?.language}
                                                 </div>
                                             )}
                                         </div>
@@ -393,11 +275,11 @@ function StoryDetails() {
                                     {/* Stats */}
                                     <div className="mt-6 grid grid-cols-2 gap-4 max-w-[200px]">
                                         <div className="bg-white/10 backdrop-blur-sm p-3 text-center">
-                                            <div className="text-2xl font-serif font-bold text-white">{story.views?.toLocaleString()}</div>
+                                            <div className="text-2xl font-serif font-bold text-white">{story?.views?.toLocaleString()}</div>
                                             <div className="text-xs text-white uppercase tracking-wider">Views</div>
                                         </div>
                                         <div className="bg-white/10 backdrop-blur-sm p-3 text-center">
-                                            <div className="text-2xl font-serif font-bold text-white">{story.like?.toLocaleString()}</div>
+                                            <div className="text-2xl font-serif font-bold text-white">{story?.like?.toLocaleString()}</div>
                                             <div className="text-xs text-white uppercase tracking-wider">Likes</div>
                                         </div>
                                     </div>
@@ -413,14 +295,14 @@ function StoryDetails() {
                                 {/* First Letter Styling */}
                                 <div className="prose prose-lg max-w-none">
                                     <p className="text-[#3c3c3c] leading-relaxed text-lg first-letter:text-7xl first-letter:font-serif first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left">
-                                        {story.description}
+                                        {story?.description}
                                     </p>
                                 </div>
-                                
-                                {story.embedUrl && <EmbedPreview url={story.embedUrl} />}
 
-                               
-                              
+                                {story?.embedUrl && <EmbedPreview url={story?.embedUrl} />}
+
+
+
                             </div>
 
                             {/* Tags with decorative elements */}
@@ -432,7 +314,7 @@ function StoryDetails() {
                                     </div>
                                 </div>
                                 <div className="mt-8 flex flex-wrap justify-center gap-3">
-                                    {story.tags?.map((tag: string, index: number) => (
+                                    {story?.tags?.map((tag: string, index: number) => (
                                         <div
                                             key={index}
                                             className="flex items-center px-4 py-2 bg-white border border-black text-[#3c3c3c] text-sm font-medium hover:bg-[#f8f3ea] hover:text-[#c7a17a] transition-colors"
@@ -476,7 +358,7 @@ function StoryDetails() {
                                     </Link>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {randomStories.map((randomStory) => (
+                                    {randomStories?.map((randomStory) => (
                                         <Link
                                             key={randomStory._id}
                                             href={`/stories-details/${randomStory._id}`}
@@ -484,32 +366,32 @@ function StoryDetails() {
                                         >
                                             <div className="relative h-48 overflow-hidden">
                                                 <Image
-                                                    src={randomStory.image}
-                                                    alt={randomStory.title}
+                                                    src={randomStory?.image}
+                                                    alt={randomStory?.title}
                                                     fill
                                                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                                                 />
                                             </div>
                                             <div className="p-6">
                                                 <h3 className="font-serif text-lg font-medium text-[#3c3c3c] mb-2 group-hover:text-[#c7a17a] transition-colors">
-                                                    {randomStory.title}
+                                                    {randomStory?.title}
                                                 </h3>
                                                 <p className="text-sm text-[#6b6b6b] mb-4 line-clamp-2">
-                                                    {randomStory.summary || randomStory.description.substring(0, 150) + "..."}
+                                                    {randomStory?.summary || randomStory?.description.substring(0, 150) + "..."}
                                                 </p>
                                                 <div className="flex items-center justify-between">
-                                                    <div className="text-xs text-[#6b6b6b]">{randomStory.estimatedReadingTime}</div>
+                                                    <div className="text-xs text-[#6b6b6b]">{randomStory?.estimatedReadingTime}</div>
 
                                                     <div className='flex items-center gap-3'>
-                                                    <div className="flex items-center gap-2">
-                                                        <Eye size={15}/>
-                                                        <span className='text-sm'>{randomStory.views}</span>
-                                                    </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Eye size={15} />
+                                                            <span className='text-sm'>{randomStory?.views}</span>
+                                                        </div>
 
                                                         <div className="flex items-center gap-2">
                                                             <Heart size={15} />
-                                                        <span className='text-sm'>{randomStory.like}</span>
-                                                    </div>
+                                                            <span className='text-sm'>{randomStory?.like}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

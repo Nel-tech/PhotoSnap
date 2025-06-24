@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
- import Footer from "@/components/Footer";
+//  import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "@/components/AuthProvider";
 import Providers from "@/app/providers";
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script";
+import OneSignalWrapper from "@/components/OneSignalWrapper";
 
 
 // Load Poppins with a CSS variable
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   title: "PhotoSnap - Capture Your Moments",
   description: "A photography storytelling platform.",
   verification: {
-    google: "mr6DpKGyOAKnB0eQH0DQByStxObAfiiRoG9BWEtTkAs", 
+    google: process.env.NEXT_PUBLIC_GOOGLE_TOKEN, 
   },
 };
 
@@ -34,16 +35,18 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={poppins.variable}>
+      <Script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></Script>
       <body className="antialiased">
         
-        <AuthProvider>
           <Providers>
+        <OneSignalWrapper>
             {children}
-            <Footer /> 
+            {/* <Footer />  */}
             <Toaster position="top-right" reverseOrder={false} />
             <Analytics />
+        </OneSignalWrapper>
           </Providers>
-        </AuthProvider>
+       
       </body>
     </html>
   );

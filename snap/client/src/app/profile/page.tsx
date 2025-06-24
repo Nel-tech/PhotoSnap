@@ -8,40 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Mail, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 import Nav from "@/components/Nav";
-import { handleSave, fetchUserProfile, handlePasswordUpdate } from "../Api/Api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Footer from "@/components/Footer";
+import { Profile } from "../types/typed";
+import { useProfile, useProfileUpdate } from "../hooks/useApp";
 
-type Profile = {
-  data: {
-    user: {
-      email: string;
-      password?: string;
-      name: string;
-    };
-  };
-};
+
+
 
 export default function ProfilePage() {
-  const queryClient = useQueryClient();
+
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [profileData, setProfileData] = useState<Profile | null>(null);
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    passwordConfirm: ''
-  });
+  
 
-  const { data, isLoading, error, refetch } = useQuery<Profile, Error>({
-    queryKey: ['user-profile'],
-    queryFn: fetchUserProfile,
-    enabled: !!Cookies.get('token'),
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data, isLoading, error, refetch } = useProfile() 
 
   useEffect(() => {
     if (data) {
@@ -49,26 +32,8 @@ export default function ProfilePage() {
     }
   }, [data]);
 
-  const { mutate: updateProfile } = useMutation({
-    mutationFn: handleSave,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-      toast.success("Profile updated successfully");
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to update profile");
-    },
-  });
+  const { mutate: updateProfile } = useProfileUpdate()
 
-  const { mutate: updatePassword } = useMutation({
-    mutationFn: handlePasswordUpdate,
-    onSuccess: () => {
-      toast.success("Password updated successfully");
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to update password");
-    },
-  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -91,26 +56,18 @@ export default function ProfilePage() {
     }
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({ ...prev, [name]: value }));
-  };
 
-  const isPasswordValid = passwordData.currentPassword && passwordData.newPassword && passwordData.passwordConfirm && (passwordData.newPassword === passwordData.passwordConfirm);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (isLoading || !isClient) {
+  if (isLoading) {
     return (
-      <section className="max-w-3xl mx-auto py-8 px-4">
-        <Skeleton height={40} width="50%" className="mb-4" />
-        <Skeleton height={20} width="80%" className="mb-4" />
-        <Skeleton height={20} width="80%" className="mb-4" />
-        <Skeleton height={20} width="80%" className="mb-4" />
+      <section className="max-w-xl mx-auto py-8 px-4">
+        <div className="space-y-4 animate-pulse">
+          <div className="h-8 w-2/3 bg-gray-300 rounded" />
+          <div className="h-6 w-1/2 bg-gray-200 rounded" />
+        </div>
       </section>
     );
   }
+
 
   if (error) {
     return (
@@ -136,10 +93,7 @@ export default function ProfilePage() {
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="flex-1">
             <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="info">Personal Info</TabsTrigger>
-                <TabsTrigger value="security">Password</TabsTrigger>
-              </TabsList>
+              
 
               <TabsContent value="info" className="space-y-4 pt-4">
                 <Card>
@@ -212,34 +166,13 @@ export default function ProfilePage() {
                 </Card>
               </TabsContent>
 
-              {/* Password tab */}
-              <TabsContent value="security" className="space-y-4 pt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Password Change</CardTitle>
-                    <CardDescription>Update your password here.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Label>Current Password</Label>
-                    <Input type="password" name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} />
-
-                    <Label>New Password</Label>
-                    <Input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} />
-
-                    <Label>Confirm Password</Label>
-                    <Input type="password" name="passwordConfirm" value={passwordData.passwordConfirm} onChange={handlePasswordChange} />
-
-                    {!isPasswordValid && <p className="text-red-500">Passwords do not match or fields are empty.</p>}
-                  </CardContent>
-                  <CardFooter>
-                    <Button onClick={() => updatePassword(passwordData)} disabled={!isPasswordValid}>Change Password</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
+             
             </Tabs>
           </div>
         </div>
       </div>
+
+      <Footer />
     </section>
   );
 }

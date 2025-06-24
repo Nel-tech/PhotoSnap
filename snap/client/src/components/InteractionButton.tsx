@@ -23,7 +23,6 @@ interface StoryStatusResponse {
 interface InteractionButtonProps {
   id: string;
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   type: InteractionType;
   getStatusFn: (id: string) => Promise<StoryStatusResponse>;
@@ -37,7 +36,6 @@ interface InteractionButtonProps {
 const InteractionButton: React.FC<InteractionButtonProps> = ({
   id,
   user,
-  token,
   isAuthenticated,
   type,
   getStatusFn,
@@ -67,8 +65,8 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
     refetch,
     isLoading
   } = useQuery({
-    queryKey: [...queryKey, id, token],
-    enabled: !!id && !!token && isAuthenticated,
+    queryKey: [...queryKey, id],
+    enabled: !!id && isAuthenticated,
     queryFn: () => getStatusFn(id),
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -119,26 +117,6 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
       localStorage.setItem(storageKey, optimisticState.toString());
     }
   }, [optimisticState, isAuthenticated, user, id, type]);
-
-
-//   const isDevelopment = process.env.NEXT_NODE_ENV !== 'production';
-
-// useEffect(() => {
-//   if (isDevelopment) {
-//     ({
-//       optimisticState,
-//       serverStateActive: isActive,
-//       userId: user?._id,
-//       storageKey: getStorageKey(),
-//       localStorage: typeof window !== 'undefined' && getStorageKey() 
-//         ? localStorage.getItem(getStorageKey() || '') 
-//         : 'not-available'
-//     });
-//   }
-// }, [optimisticState, isActive, user, id, type]);
-
-
-
 
   // Handle interaction toggle
   const { mutate: toggleInteraction } = useMutation<any, Error, void, MutationContext>({

@@ -85,8 +85,8 @@ required: false,
 
   status: {
     type: String,
-    enum:['pending', 'Published', 'rejected'],
-    default:'pending'
+    enum:['Pending', 'Published', 'Rejected'],
+    default:'Pending'
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

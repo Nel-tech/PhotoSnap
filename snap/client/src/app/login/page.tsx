@@ -2,68 +2,61 @@
 
 import Nav from "@/components/Nav";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import Footer from "@/components/Footer";
+import { LoginData } from "../types/typed";
+import { Login } from "../api/api";
 
 
-type FormData = {
-    email: string;
-    password: string;
-};
 
 export default function SignIn() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginData>();
+    const loginStore = useAuthStore((state) => state.login)
     const router = useRouter();
-    const login = useAuthStore((state) => state.login);
-    //  const user = useAuthStore((state) => state.user);
-    
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get('redirectTo');
 
+    const onSubmit = async (formData: LoginData) => {
+        const { email, password } = formData;
 
-    const onSubmit = async (data: FormData) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v1/users/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(data),
-            });
+            const response = await Login({ email, password });
 
-            const resData = await response.json();
+            if (!response || response.status !== "success") {
+                const errorMessage = response?.message || "Login failed";
 
-            if (!response.ok) {
-
-                if (response.status === 401 || (resData.message && resData.message.toLowerCase().includes('incorrect'))) {
-                    toast.error('Incorrect email or password.', {
-                        duration: 4000 
-                    });
+                if (
+                    response?.status === 401 ||
+                    errorMessage.toLowerCase().includes("incorrect")
+                ) {
+                    toast.error("Incorrect email or password.", { duration: 4000 });
                 } else {
-                    toast.error(resData.message || 'Login failed', {
-                        duration: 4000
-                    });
+                    toast.error(errorMessage, { duration: 4000 });
                 }
                 return;
             }
-           if (resData.token) {
-    await login(resData.token); 
 
-    const role = useAuthStore.getState().user?.role;
-   
-    if (role === 'admin') {
-        toast.success('Admin Logged-In successfully');
-        router.push('/admin');
-    } else {
-        toast.success('Login successful');
-        router.push('/');
-    }
-}
+            if (response.user) {
+                await loginStore(response.user);
 
+                const role = response.user.role; 
+
+                if (role === "admin") {
+                    toast.success("Admin logged in successfully");
+                    router.push("/admin");
+                } else {
+                    toast.success("Login successful");
+                    router.push(redirectTo || "/");
+                }
+            } else {
+                toast.error("Login failed: No user data received");
+            }
         } catch (error) {
-            toast.error('Something went wrong. Please try again.');
-            return error;
+            console.error("Login error:", error);
+            toast.error("Something went wrong. Please try again.");
         }
     };
 
@@ -103,9 +96,9 @@ export default function SignIn() {
                                     Password
                                 </label>
                                 <div className="text-sm">
-                                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    <Link href="/request-reset" className="font-semibold text-indigo-600 hover:text-indigo-500">
                                         Forgot password?
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                             <div className="mt-2">
@@ -139,6 +132,7 @@ export default function SignIn() {
                     </p>
                 </div>
             </div>
+            <Footer />
         </>
     );
 }

@@ -9,49 +9,16 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { X, Clock, Globe } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import cookie from "js-cookie";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useStoryForm } from "../hooks/useStoryForm";
 import { Countries, Languages } from '@/app/_Mock_/Helper'
 import Image from "next/image";
 import EmbedPreview from "@/components/EmbedPreview";
-
-export interface StoryFormData {
-    title: string;
-    author: string;
-    description: string;
-    image: FileList | null;
-    categories: string;
-    estimatedReadingTime: string;
-    location: string;
-    language: string;
-    tags: string[];
-    embedUrl:string;
-
-}
+import { StoryFormData } from "../types/typed";
+import { useUploadStory } from "../hooks/useApp";
 
 export type UploadProps = {
     onSuccess: () => void;
-};
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const useUploadStory = () => {
-    return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const token = cookie.get("token");
-            const response = await axios.post(`${API_BASE_URL}api/v1/stories/upload-story`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`
-                },
-                withCredentials: true
-            });
-            return response.data;
-        }
-    });
 };
 
 export default function UploadForm({ onSuccess }: UploadProps) {
@@ -101,7 +68,6 @@ export default function UploadForm({ onSuccess }: UploadProps) {
         // Pass the FormData directly
         mutate(formData, {
             onSuccess: () => {
-                toast.success("Story uploaded successfully");
                 onSuccess();
             },
             onError: (error) => {

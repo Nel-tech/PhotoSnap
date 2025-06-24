@@ -4,7 +4,7 @@ const storyController = require('../controllers/storyController');
 const authController = require('../controllers/authController');
 
 // ─── 1. PUBLIC ROUTES ───────────────────────────────
-router.get('/public-stories', storyController.getAllStories);
+ router.get('/public-stories', storyController.getAllStories);
 
 // ─── 2. PROTECTED ROUTES ────────────────────────────
 router.use(authController.protect);
@@ -45,7 +45,7 @@ router.put(
 router.delete(
   '/delete-user-story/:storyId',
   authController.restrictTo('user'),
-  storyController.deleteUserStory
+  storyController.deleteUploadedStory
 );
 
 router.get(
@@ -118,5 +118,7 @@ router.patch(
   authController.restrictTo('admin'),
   storyController.updateStoryStatus
 );
+
+router.get('/send-notification', authController.restrictTo('admin'), storyController.notifyAdmins)
 
 module.exports = router;

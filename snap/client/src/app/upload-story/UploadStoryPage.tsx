@@ -5,56 +5,25 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Nav from "@/components/Nav"
 import UploadForm from "./uploadForm"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import cookie from "js-cookie"
+
 import { FormProvider, useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import type { StoryFormData } from "./uploadForm"
+import { StoryFormData, Story } from "../types/typed"
+import { useUploadedStories } from "../hooks/useApp"
+import { DeleteUserUploads } from "../api/api"
 
-interface Story {
-    id: string
-    _id: string
-    title: string
-    author: string
-    image: string
-    description: string
-    summary?: string
-    date: string
-    estimatedReadingTime: string
-    categories?: string[]
-    tags?: string[]
-    location?: string
-    language?: string
-    bookmarked?: boolean
-    status: string
-}
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
-export const useUserStories = () => {
-    return useQuery({
-        queryKey: ["userStories"],
-        queryFn: async () => {
-            const token = cookie.get("token")
-            const response = await axios.get(`${API_BASE_URL}api/v1/stories/get-user-stories`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-            })
-            return response.data.data
-        },
-    })
-}
+
 
 function UploadStoryPage() {
     const router = useRouter()
     const methods = useForm<StoryFormData>()
     const [showForm, setShowForm] = useState(false)
 
-    const { data: stories, isLoading, isError, refetch } = useUserStories()
+    const { data: stories, isPending, isError, refetch } = useUploadedStories()
+
 
     const handleUploadSuccess = () => {
         setShowForm(false)
@@ -69,20 +38,11 @@ function UploadStoryPage() {
         const confirm = window.confirm("Are you sure you want to delete this story?")
         if (!confirm) return
 
-        try {
-            const token = cookie.get("token")
-            await axios.delete(`${API_BASE_URL}api/v1/stories/delete-User-Story/${storyId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-                withCredentials: true,
-            })
-            refetch()
-        } catch (error) {
-            alert("Failed to delete story.")
-            return error
-        }
+        DeleteUserUploads(storyId)
+        refetch()
     }
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <div className="flex flex-col items-center justify-center h-80">
                 <Loader2 className="h-10 w-10 text-gray-400 mb-4 animate-spin" />
@@ -173,6 +133,16 @@ function UploadStoryPage() {
                                                         Published
                                                     </span>
                                                 )}
+
+                                                {story.status === "Rejected" && (
+                                                    <div className="absolute top-3 right-3 max-w-xs bg-red-100 text-red-800 text-xs font-medium px-3 py-2 rounded-lg shadow">
+                                                        <p className="font-bold mb-1">Story Rejected</p>
+                                                        <p>
+                                                            Unfortunately, your story couldn't be approved.
+                                                             Please review and revise before resubmitting.
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="p-5 space-y-4 flex-1 flex flex-col">
@@ -212,11 +182,13 @@ function UploadStoryPage() {
                                                         ))}
                                                     </div>
                                                 )}
-
+                                                
                                                 <div className="flex justify-end gap-2 pt-2 mt-auto">
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
+                                                        disabled={story?.status == 'Published'}
+                                                        title={story?.status == 'Published' ? 'Cannot edit a published story' : 'Edit'}
                                                         className="text-xs font-medium"
                                                         onClick={() => handleEdit(story._id)}
                                                     >
@@ -225,6 +197,8 @@ function UploadStoryPage() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
+                                                        disabled={story?.status == 'Published'}
+                                                        title={story?.status == 'Published' ? 'Cannot delete a published story' : 'Delete'}
                                                         className="text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                                                         onClick={() => handleDelete(story._id)}
                                                     >

@@ -4,32 +4,78 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const bcrypt = require('bcryptjs');
+const PasswordReset = require('../models/passwordReset');
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcryptjs')
 
-const signToken = (id) =>
+const signToken = (id) => 
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-
+  const isDev = process.env.NODE_ENV === 'development';
+  
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
-  res.cookie('jwt', token, {
+  
+  const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true,
-    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-  });
+   secure: !isDev, 
+  sameSite: isDev ? 'none' : 'lax', 
+  };
 
+  // For SameSite=none, secure must be true
+  if (process.env.NODE_ENV === 'development') {
+    cookieOptions.secure = false; 
+    cookieOptions.sameSite = 'lax'; 
+  }
+
+  res.cookie('jwt', token, cookieOptions);
+
+
+  // Remove password from output
   user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
-    token,
-    data: {
-      user,
-    },
+    user,
   });
 };
+
+const validateEmail = (email) => {
+  if (!email) {
+    return { isValid: false, message: "Email is required" };
+  }
+
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { isValid: false, message: "Please enter a valid email address" };
+  }
+
+  const allowedDomains = [
+    '@gmail.com', 
+    '@yahoo.com',
+    '@outlook.com',
+    '@hotmail.com'
+  ];
+
+  const isAllowedDomain = allowedDomains.some(domain =>
+    email.toLowerCase().endsWith(domain)
+  );
+
+  if (!isAllowedDomain) {
+    return {
+      isValid: false,
+      message: "Only Gmail, Outlook, HotMail, Yahoo email addresses are allowed"
+    };
+  }
+
+  return { isValid: true };
+};
+
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm, role } = req.body;
@@ -40,6 +86,11 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   if (password !== passwordConfirm) {
     return next(new AppError('Passwords do not match!', 400));
+  }
+
+  const emailValidation = validateEmail(email)
+  if(!emailValidation.isValid){
+    return next(new AppError(emailValidation.message, 400)); 
   }
 
   const existingUser = await User.findOne({ email });
@@ -87,7 +138,7 @@ exports.logout = (req, res) => {
   res.status(200).json({ status: 'success' });
 };
 exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Getting token and check of it's there
+  // 1) Getting token and check if it's there
   let token;
   if (
     req.headers.authorization &&
@@ -124,14 +175,11 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError('User recently changed password! Please log in again.', 401),
     );
   }
-
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   res.locals.user = currentUser;
   next();
 });
-
-//  Only for rendered pages, no errors
 exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
     try {
@@ -165,7 +213,7 @@ exports.isLoggedIn = async (req, res, next) => {
 exports.restrictTo =
   (...roles) =>
   (req, res, next) => {
-    // roles ['admin', 'lead-guide']. role='user'
+   
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError('You do not have permission to perform this action', 403),
@@ -175,25 +223,90 @@ exports.restrictTo =
     next();
   };
 
-exports.updateMyPassword = async (req, res, next) => {
+
+  exports.HandleRequestToken = async (req, res, next) => {
   try {
-    const { currentPassword, newPassword, passwordConfirm } = req.body;
-    
-    if (!currentPassword || !newPassword || !passwordConfirm) {
-      return next(new AppError('Please provide current password, new password and password confirmation', 400));
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
-    const user = await User.findById(req.user.id).select('+password');
-    
-    if (!(await user.correctPassword(currentPassword, user.password))) {
-      return next(new AppError('Your current password is wrong', 401));
+
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      return res.status(400).json({ error: emailValidation.message });
     }
-  
-    user.password = newPassword;
-    user.passwordConfirm = passwordConfirm;
-  
-    await user.save();
-    createSendToken(user, 200, req, res);
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    const existingToken = await PasswordReset.findOne({
+      userId: user.id,
+      used: false,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (existingToken) {
+      const waitTime = Math.ceil(
+        (new Date(existingToken.expiresAt).getTime() - Date.now()) / 60000
+      );
+      return res.status(200).json({
+        alreadyExists: true,
+        waitTime,
+        expiresAt: existingToken.expiresAt,
+        message: `A reset token has already been requested. Please wait ${waitTime} minute(s) before requesting a new one.`,
+      });
+    }
+
+    const resetToken = uuidv4();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    const tokenRecord = await PasswordReset.create({
+      token: resetToken,
+      userId: user.id,
+      expiresAt,
+      used: false,
+    });
+
+    return res.status(200).json({
+      message: "Token successfully generated",
+      token: resetToken,
+      tokenId: tokenRecord._id,
+      expiresAt: expiresAt.toISOString(),
+    });
   } catch (err) {
-    return next(new AppError(err.message || 'An error occurred updating password', 500));
+    console.error("Request token error:", err);
+    next(new AppError('Internal Server Error', 500));
+  }
+};
+
+exports.ResetPassword = async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+
+  try {
+    const tokenRecord = await PasswordReset.findOne({ token: resetToken }).populate('user');
+
+    if (!tokenRecord || tokenRecord.used || tokenRecord.expiresAt < new Date()) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.updateOne(
+      { _id: tokenRecord.user },
+      { $set: { password: hashedPassword } }
+    );
+
+    await PasswordReset.updateOne(
+      { token: resetToken },
+      { $set: { used: true } }
+    );
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

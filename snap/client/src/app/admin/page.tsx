@@ -1,92 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactNode } from "react"
 import { Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useQuery, useMutation } from "@tanstack/react-query"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import cookie from 'js-cookie'
-import axios from "axios"
 import toast from "react-hot-toast"
 import Image from "next/image"
 import Protected from '@/components/Protected'
-
-interface Story {
-    _id: string
-    title: string;
-    author: string;
-    description: string;
-    image: FileList;
-    categories: string;
-    estimatedReadingTime: string;
-    location: string;
-    language: string;
-    tags: string[];
-    status: "pending" | "Published" | "rejected"
-
-}
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const useFetchStories = () => {
-    return useQuery({
-        queryKey: ['get-stories'],
-        queryFn: async () => {
-            const token = cookie.get("token");
-            if (!token) throw new Error('No token found');
-
-            const response = await axios.get(`${API_BASE_URL}api/v1/stories/get-all-pending-stories`, {
-                headers: { Authorization: `Bearer ${token}` },
-                withCredentials: true,
-            });
-            return response.data;
-
-        },
-        staleTime: 5 * 60 * 1000,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-    });
-};
+import { useNotification, usePendingStories, useUpdateStoryStatus } from "../hooks/useApp"
+import { AdminResponse, SignalProps } from "../types/typed"
 
 
 
-const useUpdateStoryStatus = () => {
-    return useMutation({
-        mutationFn: async ({ storyId, status }: { storyId: string; status: "Published" | "rejected" | "pending" }) => {
-            const token = cookie.get("token");
 
-            const response = await axios.patch(
-                `${API_BASE_URL}api/v1/stories/update-story-status/${storyId}`,
-                { status }, 
-                {
-                    headers: {
-                        "Content-Type": "application/json", // <--- important!
-                        Authorization: `Bearer ${token}`,
-                    },
-                    withCredentials: true,
-                }
-            );
-
-            return response.data;
-        },
-    });
-};
+export default function AdminPage(children:SignalProps) {
+    const [stories, setStories] = useState<AdminResponse[]>([])
+    const { data:PendingStories, isLoading, isError } = usePendingStories()
 
 
-export default function AdminPage() {
-    const [stories, setStories] = useState<Story[]>([])
-    const { data, isLoading, isError } = useFetchStories()
     const { mutate } = useUpdateStoryStatus()
+     useNotification();
+   
 
     useEffect(() => {
-        if (data?.data) {
-            setStories(data.data);
+        if (PendingStories) {
+            setStories(PendingStories);
         }
-    }, [data]);
+    }, [PendingStories]);
 
 
     const handleAccept = (id: string) => {
-        setStories(stories.map((story: Story) => (story._id === id ? { ...story, status: "Published" } : story)))
+        setStories(stories.map((story: AdminResponse) => (story._id === id ? { ...story, status: "Published" } : story)))
         mutate(
             { storyId: id, status: "Published" },
             {
@@ -102,9 +46,9 @@ export default function AdminPage() {
     }
 
     const handleReject = (id: string) => {
-        setStories(stories.map((story) => (story._id === id ? { ...story, status: "rejected" } : story)))
+        setStories(stories.map((story) => (story._id === id ? { ...story, status: "Rejected" } : story)))
         mutate(
-            { storyId: id, status: "rejected" },
+            { storyId: id, status: "Rejected" },
             {
                 onSuccess: () => {
                     toast("The story has been rejected. An email will be sent to the author with feedback.");
@@ -121,6 +65,7 @@ export default function AdminPage() {
     return (
 
         <Protected allowedRoles={["admin"]}>
+            
 
         <div className="container mx-auto py-10">
             <div className="mb-8">
@@ -129,10 +74,10 @@ export default function AdminPage() {
             </div>
 
             <div className="grid gap-6">
-                {stories.map((story: Story) => (
+                {stories.map((story: AdminResponse) => (
                     <Card
                         key={story._id}
-                        className={`rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-opacity ${story.status !== "pending" ? "opacity-70" : "opacity-100"
+                        className={`rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-opacity ${story.status !== "Pending" ? "opacity-70" : "opacity-100"
                             }`}
                     >
                         {/* Story Image */}
@@ -171,12 +116,12 @@ export default function AdminPage() {
                                         Accepted
                                     </div>
                                 )}
-                                {story.status === "rejected" && (
+                                {story.status === "Rejected" && (
                                     <div className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                         Rejected
                                     </div>
                                 )}
-                                {story.status === "pending" && (
+                                {story.status === "Pending" && (
                                     <div className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                         Pending
                                     </div>
@@ -206,7 +151,7 @@ export default function AdminPage() {
                         </CardContent>
 
                         <CardFooter className="flex justify-end gap-2">
-                            {story.status === "pending" ? (
+                            {story.status === "Pending" ? (
                                 <>
                                     <Button
                                         variant="outline"
@@ -229,7 +174,7 @@ export default function AdminPage() {
                                     variant="outline"
                                     onClick={() =>
                                         setStories(stories.map((s) =>
-                                            s._id === story._id ? { ...s, status: "pending" } : s
+                                            s._id === story._id ? { ...s, status: "Pending" } : s
                                         ))
                                     }
                                 >

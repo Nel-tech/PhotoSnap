@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { cloudinary, upload } = require('../controllers/globalController');
 const path = require('path')
-
+const axios  = require('axios');
 
 
 /* -------------------------------- UTILITIES -------------------------------- */
@@ -160,7 +160,7 @@ loadStories();
 // Get all stories
 exports.getAllStories = catchAsync(async (req, res, next) => {
   const stories = await Story.find({ status: 'Published' });
-  res.status(200).json({ success: true, data: stories });
+  res.status(200).json({ success: true,  stories });
 });
 
 exports.getStory = catchAsync(async (req, res, next) => {
@@ -168,16 +168,17 @@ exports.getStory = catchAsync(async (req, res, next) => {
   const story = await Story.findById(storyId);
   if (!story) return next(new AppError('Story not found', 404));
 
-  res.status(200).json({ status: 'success', data: story });
+  res.status(200).json({ status: 'success',  story });
 });
 
 
 exports.StoriesDetails = catchAsync(async (req, res, next) => {
+
   const { id } = req.params; 
   const story = await Story.findById(id);
   if (!story) return next(new AppError('Story not found', 404));
 
-  res.status(200).json({ status: 'success', data: story });
+  res.status(200).json({ status: 'success', story });
 });
 
 
@@ -306,7 +307,7 @@ if (Array.isArray(categories)) {
     tags: normalizedTags,
     estimatedReadingTime,
     location,
-     status: 'pending',
+     status:'Pending',
     language,
     embedUrl,
   });
@@ -314,7 +315,7 @@ if (Array.isArray(categories)) {
   res.status(201).json({
     success: true,
     message: 'Story uploaded successfully',
-    data: story,
+     story,
     photo: result.secure_url,
   });
 });
@@ -329,7 +330,7 @@ exports.getUserUploads = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     results: stories.length,
-    data: stories,
+     stories,
   });
 });
 
@@ -360,11 +361,11 @@ exports.updateStory = catchAsync(async (req, res, next) => {
 
   if (!updatedStory) return next(new AppError('Story not found or unauthorized.', 404));
 
-  res.status(200).json({ status: 'success', data: updatedStory });
+  res.status(200).json({ status: 'success',  updatedStory });
 });
 
 // Delete a user's own story
-exports.deleteUserStory = catchAsync(async (req, res, next) => {
+exports.deleteUploadedStory = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;
   const { storyId } = req.params;
 
@@ -432,7 +433,7 @@ exports.getBookmarkedStoriesStatus = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: BookmarkedStatus,
+     BookmarkedStatus,
   });
 });
 
@@ -447,7 +448,7 @@ exports.getUserBookMarkedStories = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Bookmarked stories retrieved successfully',
-    data: bookmarks || [], 
+     bookmarks 
   });
 });
 
@@ -487,7 +488,7 @@ exports.getUserLikedStories = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Bookmarked stories retrieved successfully',
-    data: likes,
+     likes,
   });
 });
 exports.getStoriesByLikeStatus = catchAsync(async (req, res, next) => {
@@ -505,7 +506,7 @@ exports.getStoriesByLikeStatus = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: storiesWithLikeStatus,
+    storiesWithLikeStatus,
   });
 });
 
@@ -567,24 +568,24 @@ exports.getAllPendingStories = catchAsync(async (req, res, next) => {
   }
 
   const stories = await Story.find();
-  res.status(200).json({ success: true, data: stories });
+  res.status(200).json({ success: true,  stories });
 });
 
 // Admin - Get all bookmarked stories (marked true)
 exports.getAllBookMarkedStories = catchAsync(async (req, res, next) => {
   const stories = await Story.find({ bookmarked: true });
-  res.status(200).json({ success: true, data: stories });
+  res.status(200).json({ success: true,  stories });
 });
 
 // Admin - Accept or reject story
 // Get all pending stories (admin view)
 exports.getAllPendingStories = catchAsync(async (req, res, next) => {
-  const stories = await Story.find({ status: 'pending' }).sort({ createdAt: -1 });
+  const stories = await Story.find({ status: 'Pending' }).sort({ createdAt: -1 });
 
   res.status(200).json({
     status: 'success',
     results: stories.length,
-    data: stories,
+     stories,
   });
 });
 
@@ -616,6 +617,36 @@ exports.updateStoryStatus = catchAsync(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: `Story has been successfully ${status}.`,
-    data: story,
+     story,
   });
 });
+
+
+// NotifyAdmins
+exports.notifyAdmins = async (req, res, next) => {
+  try {
+    await axios.post(
+      "https://onesignal.com/api/v1/notifications",
+      {
+        app_id: process.env.ONE_SIGNAL_APP_ID,
+        headings: { en: "📝 New Story Uploaded" },
+        contents: { en: "A new story was submitted by a user." },
+        filters: [
+          { field: "tag", key: "role", relation: "=", value: "admin" },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Basic ${process.env.ONE_SIGNAL_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.status(200).json({ success: true, message: "Admins notified successfully." });
+  } catch (error) {
+    console.error("Notification error:", error.response?.data || error.message);
+    res.status(500).json({ success: false, message: "Failed to notify admins." });
+  }
+};
+

@@ -11,19 +11,8 @@ import toast from "react-hot-toast"
 import Link from "next/link"
 import StoryCard from '@/components/StoryCard'
 import StorySkeleton from "@/components/StorySkeleton"
-import { removeBookmark, fetchUserBookmarks,fetchUserLikes, removeLikes } from "@/app/Api/Api"
-
-type Story = {
-    _id: string
-    title: string
-    description: string
-    image: string
-    author: string
-    categories: string[]
-    readingTime: string
-    location: string
-    language: string
-}
+import { Story } from "../types/typed"
+import { useDeleteUserBookmarks, useDeleteUserLikes, useUserBookmarkedStories, useUserLikedStories } from "../hooks/useApp"
 
 
 export default function BookmarksPage() {
@@ -33,82 +22,29 @@ export default function BookmarksPage() {
 
     // Get User Bookmarks
     const {
-        data: bookmarksData = [], 
+        data: bookmarksData = [],
         isLoading: isLoadingBookmarks,
         error,
-    } = useQuery<Story[], Error>({
-        queryKey: ['get-user-bookmarks'],
-        queryFn: fetchUserBookmarks,
-        enabled: isAuthenticated,
-        staleTime: 1000 * 60 * 5,
-        retry: 3,
-        refetchOnWindowFocus: false,
-    });
+    } = useUserBookmarkedStories()
+
+    
     // Get User Likes
     const {
         data: likesData,
         isLoading: isLoadingLikes,
-    } = useQuery<Story[], Error>({
-        queryKey: ['get-user-likes'],
-        queryFn: fetchUserLikes,
-        enabled: isAuthenticated,
-        staleTime: 1000 * 60 * 5,
-        retry: 3,
-        refetchOnWindowFocus: false,
-    });
-    // Remove/Delete Bookmarks
-    const queryClient = useQueryClient();
-    const { mutate: deleteLikes} = useMutation({
-        mutationFn: (id: string) => removeLikes(id),
-        onMutate: async (id: string) => {
-            await queryClient.cancelQueries({ queryKey: ['get-user-likes'] });
-            const previousBookmarks = queryClient.getQueryData<Story[]>(['get-user-bookmarks']);
-            queryClient.setQueryData<Story[]>(['get-user-bookmarks'], (old) =>
-                old ? old.filter((bookmark) => bookmark._id !== id) : []
-            );
+    } = useUserLikedStories()
 
-            return { previousBookmarks };
-        },
-        onError: (error: any, _, context) => {
-            toast.error("Failed to delete bookmark.");
-            queryClient.setQueryData(['get-user-bookmarks'], context?.previousBookmarks);
-        },
-        onSuccess: () => {
-            toast.success("Bookmark deleted successfully.");
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['get-user-likes'] });
-        },
-    });
+
+    // Delete Bookmarks
+   
+    const { mutate: deleteLikes } = useDeleteUserLikes()
 
     // Remove/Delete Bookmarks;
-    const { mutate: deleteBookmark } = useMutation({
-        mutationFn: (id: string) => removeBookmark(id),
-        onMutate: async (id: string) => {
-            await queryClient.cancelQueries({ queryKey: ['get-user-bookmarks'] });
-
-            const previousBookmarks = queryClient.getQueryData<Story[]>(['get-user-bookmarks']);
-            queryClient.setQueryData<Story[]>(['get-user-bookmarks'], (old) =>
-                old ? old.filter((bookmark) => bookmark._id !== id) : []
-            );
-
-            return { previousBookmarks };
-        },
-        onError: (error: any, _, context) => {
-            toast.error("Failed to delete bookmark.");
-            queryClient.setQueryData(['get-user-bookmarks'], context?.previousBookmarks);
-        },
-        onSuccess: () => {
-            toast.success("Bookmark deleted successfully.");
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
-        },
-    });
+    const { mutate: deleteBookmark } = useDeleteUserBookmarks()
 
 
     if (error) return <div>Error: {error.message}</div>
-  
+
     return (
         <Protected allowedRoles={["user"]}>
             <div>
@@ -116,17 +52,7 @@ export default function BookmarksPage() {
                     <Nav />
                 </header>
 
-                {/* <div className="ml-[2rem] py-5 flex items-center justify-between mb-6 lg:ml-[7rem]">
-                    <div className="flex items-center text-sm text-gray-500 gap-1 flex-wrap">
-                        <Link href="/" className="hover:underline text-gray-600">
-                            Home
-                        </Link>
-                        <span className="mx-1 text-gray-400">/</span>
-                        <span className="text-gray-600">Dashboard</span>
-                        <span className="mx-1 text-gray-400">/</span>
-                        <span className="text-gray-400">Collections</span>
-                    </div>
-                </div> */}
+                
 
                 <div className="max-w-6xl mx-auto py-8 px-4">
                     <h1 className="text-lg text-center font-bold mb-8 lg:text-3xl">Your Personal Collections</h1>

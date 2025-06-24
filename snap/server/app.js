@@ -28,24 +28,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 4️⃣ Enable CORS
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:3001',
-  process.env.PROD_CLIENT_URL || 'https://photosnap-gallery.vercel.app',
+  'http://localhost:3000',
+  'https://photosnap-gallery.vercel.app',
 ];
 
+app.use(cors({
+  origin: function (origin, callback) {
+    const cleanedOrigin = origin?.replace(/\/$/, ''); // remove trailing slash if present
+    if (!cleanedOrigin || allowedOrigins.includes(cleanedOrigin)) {
+      callback(null, true);
+    } else {
+      console.error(`❌ Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.error(`Blocked by CORS: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  })
-);
 
 
 

@@ -3,37 +3,17 @@
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
-import axios from "axios"
-// import { Loader2 } from 'lucide-react'
-// import { Skeleton } from "@/components/ui/skeleton";
-//import { useAuth } from "@/store/AuthContext"
-import cookie from "js-cookie"
-//import { useAuth } from "@/hooks/AuthContext"
-//import { useParams } from "next/navigation"
+import { Story } from "../types/typed"
+import { useGetStory } from "../hooks/useApp"
 
- interface Story {
-    _id: string;
-    title: string;
-    image: string;
-    author: string;
-}
+
 
 
 function PostStories() {
-    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-    const token = cookie.get('token')
+    
 
-    const { data: stories, isLoading, error } = useQuery({
-        queryKey: ['get-all-stories'],
-        queryFn: () =>
-            axios.get(`${API_URL}api/v1/stories/get-all-stories`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(res => res.data.data)
-    })
+    const { data: stories, isLoading, error } = useGetStory()
 
     const [showStories, setShowStories] = useState(false)
 

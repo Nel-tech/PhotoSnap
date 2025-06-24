@@ -3,31 +3,20 @@
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useGetStory } from "../hooks/useApp"
 import { useState, useEffect } from 'react'
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
-
-interface Story {
-    _id: string;
-    title: string;
-    image: string;
-    author: string;
-}
+import { Story } from "../types/typed"
 
 
 function Stories() {
-    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL
     const router = useRouter();
 
 
     const user = useAuthStore((state) => state.user);
 
-    const { data: stories, isLoading, error } = useQuery({
-        queryKey: ['public-stories'],
-        queryFn: () => axios.get(`${API_URL}api/v1/stories/public-stories`).then(res => res.data.data)
-    })
+    const { data: stories = [], isLoading, error } = useGetStory();
 
     const [showStories, setShowStories] = useState(false)
 
@@ -72,7 +61,7 @@ function Stories() {
 
     return (
         <section className="flex flex-wrap lg:flex-nowrap">
-            {stories.slice(0, 4).map((story:Story) => (
+            {stories?.slice(0, 4).map((story:Story) => (
                 <div
                     key={story._id}
                     className="w-full md:w-1/2"
@@ -103,7 +92,9 @@ function Stories() {
                                 onClick={(e) => {
                                     if (!user) {
                                         e.preventDefault();
-                                        router.push('/login'); 
+                                        router.push(
+                                            `/login?redirectTo=${encodeURIComponent(`/stories-details/${story._id}`)}`
+                                        );
                                     }
                                 }}
                                 className="text-sm tracking-wider pt-2 inline-block"

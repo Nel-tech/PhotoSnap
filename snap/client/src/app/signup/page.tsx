@@ -6,27 +6,22 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
-//import fetcher from "@/lib/fetcher";
-import cookie from "js-cookie";
-import axios from "axios";
 import { useAuthStore } from '@/store/useAuthStore';
-import { AxiosError } from "axios";
+import Footer from "@/components/Footer";
+import { Signup } from "../api/api"
+import { validateEmailClient } from "@/components/ValidateEmail";
+import { SignupData } from "../types/typed";
 
 
-type FormData = {
-    name: string;
-    email: string;
-    password: string;
-    passwordConfirm: string;
-};
 
-export default function SignUp() {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-    const [, setServerMessage] = useState("");
+
+export default function SignUpPage() {
+    const [isLoading, setIsLoading] = useState(false);
     const [passwordVisibility, setPasswordVisibility] = useState({
         password: false,
         passwordConfirm: false,
     });
+    const login = useAuthStore((state) => state.login)
 
     const toggleVisibility = (field: "password" | "passwordConfirm") => {
         setPasswordVisibility(prevState => ({
@@ -37,70 +32,98 @@ export default function SignUp() {
 
 
     const router = useRouter()
-    const login = useAuthStore((state) => state.login);
 
     const {
         register,
         handleSubmit,
         watch,
-        formState: { errors,isSubmitting },
-    } = useForm<FormData>();
+        formState: { errors, isSubmitting },
+    } = useForm<SignupData>();
 
-    const onSubmit = async (data: FormData) => {
-        setServerMessage("");
+    const onSubmit = async (formData: SignupData) => {
+        setIsLoading(true);
 
-        if (data.password !== data.passwordConfirm) {
-            toast.error("Passwords do not match");
-            return;
-        }
+        const { name, email, password, passwordConfirm } = formData;
 
         try {
-            const res = await axios.post(`${API_BASE_URL}api/v1/users/signup`, {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-                passwordConfirm: data.passwordConfirm,
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
+            // Email validation
+            if (email.trim()) {
+                const validation = validateEmailClient(email);
+                if (!validation.isValid) {
+                    toast.error(validation.message);
+                    setIsLoading(false); // ✅ Don't forget this!
+                    return;
                 }
-            });
-            if (res.data.token) {
-                cookie.set("token", res.data.token, { expires: 7, path: "/" });
-                login(res.data.token);
             }
 
-           
-            setServerMessage(res.data.message || "Signup successful");
+            const response = await Signup({
+                name,
+                email,
+                password,
+                passwordConfirm
+            });
 
-            if (res.data.status !== "success") {
-                if (res.data.message === "Email already exists") {
-                    toast.error("This email is already registered");
-                } else {
-                    toast.error(res.data.message || "Something went wrong");
-                }
+            
+
+        
+            if (!response || response.status !== "success") {
+                const errorMessage = response?.message || "Signup failed";
+                toast.error(errorMessage);
                 return;
             }
 
-            toast.success("Account Successfully Created");
-            router.push("/");
-        } catch (error: unknown) {
-            const axiosError = error as AxiosError<{ message: string }>;
+           
+            const userData = response.user || response.data || response;
 
-            if (axiosError.response && axiosError.response.data) {
-                const errorMsg = axiosError.response.data.message || "Something went wrong. Please try again.";
-                toast.error(errorMsg);
-
-                if (errorMsg === "Email already exists") {
-                    toast.error("This email is already registered");
-                }
-            } else {
-                toast.error("Something went wrong. Please try again.");
+            if (!userData || !userData._id) {
+                toast.error("Signup failed: No user data received");
+                return;
             }
 
-            
-        }
+            const user = {
+                _id: userData._id,
+                name: userData.name,
+                email: userData.email,
+                role: userData.role || 'user' 
+            };
 
+            
+            if (!user._id || !user.email) {
+                toast.error("Signup failed: Invalid user data");
+                return;
+            }
+
+            login(user);
+
+            toast.success("Account created successfully! Welcome aboard!");
+            router.push('/');
+
+        } catch (err: any) {
+            console.error("Signup error:", err);
+
+            let message = "Something went wrong";
+
+            if (err.response?.status === 409 || err.response?.status === 400) {
+                const errorMessage = err.response?.data?.message || "";
+                if (errorMessage.toLowerCase().includes('email') &&
+                    (errorMessage.toLowerCase().includes('exist') ||
+                        errorMessage.toLowerCase().includes('taken') ||
+                        errorMessage.toLowerCase().includes('registered'))) {
+                    message = "An account with this email already exists. Please use a different email or try signing in.";
+                } else {
+                    message = errorMessage || "Invalid registration details";
+                }
+            } else if (err.response?.data?.message) {
+                message = err.response.data.message;
+            } else if (err.message) {
+                message = err.message;
+            }
+
+            toast.error(message);
+
+        } finally {
+            setIsLoading(false); 
+        }
     };
 
 
@@ -242,6 +265,8 @@ export default function SignUp() {
                     </p>
                 </div>
             </div>
+
+            <Footer />
         </>
     );
 }

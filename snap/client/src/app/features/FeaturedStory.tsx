@@ -36,7 +36,7 @@ function FeaturedStory() {
                     backgroundImage: "url('/images/shared/desktop/bg-beta.jpg')",
                 }}
             >
-                <p className="text-3xl font-bold tracking-wider leading-relaxed uppercase max-w-[15rem]  text-left md:text-left lg:text-center lg:tracking-widest lg:leading-relaxed">
+                <p className="text-3xl font-bold tracking-wider leading-relaxed uppercase max-w-[15rem] md:text-left lg:text-left lg:tracking-widest lg:leading-relaxed">
                     we&apos;re in beta get your invite today
                 </p>
                 <Link href="/">

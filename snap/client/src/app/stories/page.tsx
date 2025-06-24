@@ -3,6 +3,7 @@ import HeroSection from './HeroSection'
 import Nav from '@/components/Nav'
 import PostStories from '@/app/stories/PostStories'
 import Protected from '@/components/Protected'
+import Footer from '@/components/Footer'
 function Stories() {
   return (
 
@@ -13,8 +14,9 @@ function Stories() {
 
    
     <PostStories />
-   
+   <Footer/>
     </div>
+
     </Protected>
   )
 }

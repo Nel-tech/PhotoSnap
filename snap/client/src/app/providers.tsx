@@ -1,12 +1,20 @@
-// app/providers.tsx (App Router)
 'use client';
 
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode, useState } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
 
-
-export default function Providers({ children }: { children: ReactNode }) {
+export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
+    const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    useEffect(() => {
+        initializeAuth();
+    }, [initializeAuth]);
+
+    return (
+        <QueryClientProvider client={queryClient}>
+            {children}
+        </QueryClientProvider>
+    );
 }

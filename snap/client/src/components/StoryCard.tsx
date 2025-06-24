@@ -4,19 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Bookmark, Trash2, Heart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-
-
-type Story = {
-    _id: string
-    title: string
-    description: string
-    image: string
-    author: string
-    categories: string[]
-    readingTime: string
-    location: string
-    language: string
-}
+import { Story } from "@/app/types/typed"
 const StoryCard = ({
     story,
     onRemove,
