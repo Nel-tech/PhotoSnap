@@ -7,7 +7,7 @@ import toast from "react-hot-toast"
 import Image from "next/image"
 import Protected from '@/components/Protected'
 import { useNotification, usePendingStories, useUpdateStoryStatus } from "../hooks/useApp"
-import { AdminResponse, SignalProps } from "../types/typed"
+import { AdminResponse} from "../types/typed"
 
 export default function AdminPage() {
     const [stories, setStories] = useState<AdminResponse[]>([])

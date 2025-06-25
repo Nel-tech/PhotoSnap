@@ -116,11 +116,11 @@ export default function EditStoryForm() {
             requestPayload = formDataToSend;
         }
 
-        console.log("Data being sent:",
-            requestPayload instanceof FormData
-                ? "[FormData with image]"
-                : requestPayload
-        );
+        // console.log("Data being sent:",
+        //     requestPayload instanceof FormData
+        //         ? "[FormData with image]"
+        //         : requestPayload
+        // );
         mutate({ storyId: storyId, storyData: requestPayload });
     };
 
