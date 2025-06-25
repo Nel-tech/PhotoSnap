@@ -10,10 +10,9 @@ interface User {
 
 interface AuthState {
   user: User | null;
- 
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User, jwt?: string) => void; // Added optional jwt parameter
+  login: (user: User, jwt?: string) => void; 
   logout: () => void;
   initializeAuth: () => void;
   setUser: (user: User) => void;
@@ -31,7 +30,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isLoading: false,
 
-  login: (user, jwt) => {
+  login: (user) => {
      
     const cleanUser = {
       _id: user._id,

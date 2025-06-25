@@ -1,6 +1,5 @@
 "use client"
 import Protected from '@/components/Protected'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from "next/navigation"
 import {
     Calendar,
@@ -38,14 +37,6 @@ function StoryDetails() {
     const user = useAuthStore((state) => state.user)
     const [showScrollTop, setShowScrollTop] = useState(false)
     const [randomStories, setRandomStories] = useState<Story[]>([])
-
-
-
-    // Re-fetch token on mount and when authentication status changes
-    // useEffect(() => {
-    //     const currentToken = cookie.get("token")
-    //     setToken(currentToken || "")
-    // }, [isAuthenticated])
 
     useEffect(() => {
         const handleScroll = () => {

@@ -1,13 +1,10 @@
 "use client"
 import Protected from "@/components/Protected"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, } from "react"
 import { Bookmark, Heart } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import Nav from "@/components/Nav"
-import { useAuthStore } from "@/store/useAuthStore"
-import toast from "react-hot-toast"
 import Link from "next/link"
 import StoryCard from '@/components/StoryCard'
 import StorySkeleton from "@/components/StorySkeleton"
@@ -16,30 +13,24 @@ import { useDeleteUserBookmarks, useDeleteUserLikes, useUserBookmarkedStories, u
 
 
 export default function BookmarksPage() {
-    // const [bookmarks, setBookmarks] = useState<Story[]>([])
+   
     const [activeTab, setActiveTab] = useState("bookmarks")
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
-    // Get User Bookmarks
     const {
         data: bookmarksData = [],
         isLoading: isLoadingBookmarks,
         error,
     } = useUserBookmarkedStories()
 
-    
-    // Get User Likes
+
     const {
         data: likesData,
         isLoading: isLoadingLikes,
     } = useUserLikedStories()
 
-
-    // Delete Bookmarks
    
     const { mutate: deleteLikes } = useDeleteUserLikes()
 
-    // Remove/Delete Bookmarks;
     const { mutate: deleteBookmark } = useDeleteUserBookmarks()
 
 

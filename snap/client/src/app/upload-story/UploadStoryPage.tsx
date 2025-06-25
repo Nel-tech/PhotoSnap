@@ -5,7 +5,6 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Nav from "@/components/Nav"
 import UploadForm from "./uploadForm"
-
 import { FormProvider, useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
@@ -138,7 +137,7 @@ function UploadStoryPage() {
                                                     <div className="absolute top-3 right-3 max-w-xs bg-red-100 text-red-800 text-xs font-medium px-3 py-2 rounded-lg shadow">
                                                         <p className="font-bold mb-1">Story Rejected</p>
                                                         <p>
-                                                            Unfortunately, your story couldn't be approved.
+                                                            Unfortunately, your story couldn&apos;t be approved.
                                                             Please review and revise before resubmitting.
                                                         </p>
                                                     </div>

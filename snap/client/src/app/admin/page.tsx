@@ -1,6 +1,5 @@
 "use client"
-
-import { useState, useEffect, ReactNode } from "react"
+import { useState, useEffect } from "react"
 import { Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,10 +9,7 @@ import Protected from '@/components/Protected'
 import { useNotification, usePendingStories, useUpdateStoryStatus } from "../hooks/useApp"
 import { AdminResponse, SignalProps } from "../types/typed"
 
-
-
-
-export default function AdminPage(children:SignalProps) {
+export default function AdminPage() {
     const [stories, setStories] = useState<AdminResponse[]>([])
     const { data:PendingStories, isLoading, isError } = usePendingStories()
 

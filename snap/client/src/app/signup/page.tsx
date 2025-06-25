@@ -16,7 +16,7 @@ import { SignupData } from "../types/typed";
 
 
 export default function SignUpPage() {
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useState(false);
     const [passwordVisibility, setPasswordVisibility] = useState({
         password: false,
         passwordConfirm: false,
