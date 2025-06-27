@@ -45,8 +45,7 @@ function HeroSection() {
           CREATE AND SHARE YOUR PHOTO STORIES.
         </h1>
         <p className="text-gray-500 tracking-wider leading-relaxed text-sm text-left md:text-left lg:text-base">
-          Photosnap is a platform for photographers and visual storytellers. We
-          make it easy to share photos, tell stories, and connect with others.
+          Photosnap is a creative platform for photographers and visual storytellers to showcase stunning images, share compelling stories, and build meaningful connections with a global community.
         </p>
 
 
