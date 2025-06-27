@@ -4,7 +4,7 @@ import { useEffect, ReactNode } from "react";
 
 interface SignalProps {
     children: ReactNode;
-    erapper:string;
+   
 }
 
 const OneSignalWrapper = ({ children }: SignalProps) => {
