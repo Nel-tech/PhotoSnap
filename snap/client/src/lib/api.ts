@@ -66,7 +66,9 @@ export const getAllStory = async (): Promise<Story[] | null> => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/public-stories`, {
       headers: { "Content-Type": "application/json" },
+      withCredentials:true
     });
+    
 
     return response.data.stories;
   } catch (error) {
