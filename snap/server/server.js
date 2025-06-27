@@ -6,7 +6,7 @@ const app = require('./app');
 dotenv.config({ path: './.env' });
 // Connect to local MongoDB
   const DB = process.env.DATABASE_CONNECTION;
-// const DB = process.env.DATABASE_LOCAL
+//  const DB = process.env.DATABASE_LOCAL
 
 mongoose
   .connect(DB)
