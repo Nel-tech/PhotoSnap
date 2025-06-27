@@ -289,16 +289,20 @@ export const fetchUserLikes = async () => {
 };
 
 
-export const viewStoryAPI = async (id: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/api/v1/stories/story-views/${id}`, {}, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(extractErrorMessage(error, "Unable to record story view"));
-  }
+export const viewStoryAPI = async (id: string) => { 
+  try { 
+    const response = await axios.post(
+      `${API_URL}/api/v1/stories/story-views/${id}`,
+      {}, 
+      { 
+        headers: { "Content-Type": "application/json" }, 
+        withCredentials: true, 
+      }
+    ); 
+    return response.data; 
+  } catch (error: any) { 
+    throw new Error(extractErrorMessage(error, "Unable to record story view")); 
+  } 
 };
 
 
@@ -398,7 +402,6 @@ export const handleRequest = async (data: RequestToken) => {
   }
 };
 
-
 export const handlePasswordReset = async (userData: ResetPasswordRequest) => {
   try {
     const response = await axios.post(`${API_URL}/api/v1/users/reset-password`, userData, {
@@ -440,19 +443,18 @@ try {
 export const UpdateStoryStatus = async({storyId, status}: StoryStatus) => {
   try {
    const response = await axios.patch(
-    `${API_URL}api/v1/stories/update-story-status/${storyId}`,
+    `${API_URL}/api/v1/stories/update-story-status/${storyId}`,
       { status }, 
-              {
-                    headers: {
-                        "Content-Type": "application/json", 
-                      
-                    },
-                    withCredentials: true,
-                }
-            );
+      {
+        headers: {
+          "Content-Type": "application/json", 
+        },
+        withCredentials: true,
+      }
+    );
 
-            return response.data.story;
-} catch (error: any) {
-    throw new Error(extractErrorMessage(error, "Failed to notify admins"));
+    return response.data.story;
+  } catch (error: any) {
+    throw new Error(extractErrorMessage(error, "Failed to update story status"));
   }
 }
