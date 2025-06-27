@@ -99,6 +99,39 @@ export const getStory = async (storyId: string) => {
     throw new Error(error.response?.data?.message || "Error fetching story");
   }
 };
+export const featuredStory = async() => {   
+  try {     
+    const response = await axios.get(`${API_URL}/api/v1/stories/featured-stories`, {       
+      headers: { "Content-Type": "application/json" },       
+      withCredentials: true,     
+    });     
+    
+
+    const data = response.data;
+    
+    if (data.firstValidStory) {
+      return data.firstValidStory;
+    }
+    
+
+    if (data.data && data.data.featuredStory) {
+      return data.data.featuredStory;
+    }
+    
+
+    if (data._id) {
+      console.log('Response is the story itself:', data);
+      return data;
+    }
+    
+
+    return null;
+  } catch (error: any) {
+    console.error('Error fetching featured story:', error);     
+    throw new Error(extractErrorMessage(error, "Failed to fetch featured story"));   
+  } 
+};
+
 
 
 

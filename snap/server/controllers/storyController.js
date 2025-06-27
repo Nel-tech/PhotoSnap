@@ -18,73 +18,116 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-exports.rotateFeaturedStory = catchAsync(async (req, res, next) => {
+
+const handleFeaturedStoryRotation = async () => {
   const currentDate = new Date();
-
   let featuredStory = await Story.findOne({ featured: true });
-
+  
   if (featuredStory) {
     const featuredDate = new Date(featuredStory.featuredAt);
-    const daysSinceFeatured = (currentDate - featuredDate) / (1000 * 60 * 60 * 24); 
+    const daysSinceFeatured = (currentDate - featuredDate) / (1000 * 60 * 60 * 24);
+    
     if (daysSinceFeatured >= 7) {
-      featuredStory.featured = false;
-      await featuredStory.save();
-
-      const newFeaturedStory = await Story.findOne({ featured: false });
-
-      if (newFeaturedStory) {
-        newFeaturedStory.featured = true;
-        newFeaturedStory.featuredAt = currentDate;
-        await newFeaturedStory.save();
-
-        
-
-        return res.status(200).json({
-          status: 'success',
-          message: `Story '${newFeaturedStory.title}' is now featured.`,
-          data: newFeaturedStory
-        });
-      } else {
-        return res.status(200).json({
-          status: 'info',
-          message: 'No new story to feature. Returning the current featured story.',
-          data: featuredStory
-        });
-      }
-    } else {
+      const session = await Story.startSession();
       
-      return res.status(200).json({
-        status: 'success',
-        message: 'Returning current featured story.',
-        data: featuredStory
-      });
+      try {
+        await session.withTransaction(async () => {
+         
+          featuredStory.featured = false;
+          await featuredStory.save({ session });
+          
+         
+          const newFeaturedStory = await Story.findOne({
+            _id: { $ne: featuredStory._id },
+            featured: false,
+            user: { $exists: true, $ne: null },
+            description: { $exists: true, $ne: null },
+            title: { $exists: true, $ne: null },
+            status: 'Published'
+          }).sort({ createdAt: 1 }).session(session);
+          
+          if (newFeaturedStory) {
+            newFeaturedStory.featured = true;
+            newFeaturedStory.featuredAt = currentDate;
+            await newFeaturedStory.save({ session });
+          } else {
+           
+            featuredStory.featured = true;
+            await featuredStory.save({ session });
+          }
+        });
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        await session.endSession();
+      }
     }
-  } else {
-   const firstStory = await Story.findOne({
-  createdBy: { $exists: true, $ne: null },
-  description: { $exists: true, $ne: null }
-});
-
-if (firstStory) {
-  firstStory.featured = true;
-  firstStory.featuredAt = currentDate;
-  await firstStory.save();
-
-  return res.status(200).json({
-    status: 'success',
-    message: `No previous featured story. '${firstStory.title}' is now featured.`,
-    data: firstStory
-  });
-} else {
-  return res.status(404).json({
-    status: 'fail',
-    message: 'No valid stories found to feature.'
-  });
-}
-
+  } else {  
+   
+    const firstValidStory = await Story.findOne({
+      user: { $exists: true, $ne: null },
+      description: { $exists: true, $ne: null },
+      title: { $exists: true, $ne: null },
+      status: 'Published'
+    }).sort({ createdAt: 1 });
+    
+    if (firstValidStory) {
+      firstValidStory.featured = true;
+      firstValidStory.featuredAt = currentDate;
+      await firstValidStory.save();
+    }
   }
+};
+
+
+exports.rotateFeaturedStory = catchAsync(async (req, res, next) => {
+  await handleFeaturedStoryRotation();
+  
+  const featuredStory = await Story.findOne({ featured: true })
+    .populate('user', 'name') 
+    .select('title description image author createdAt featuredAt');
+  
+  if (!featuredStory) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'No featured story available after rotation'
+    });
+  }
+  
+  res.status(200).json({
+    status: 'success',
+    message: 'Featured story rotation completed',
+    data: {
+      featuredStory
+    }
+  });
 });
 
+// Main API endpoint for getting featured story
+exports.getFeaturedStory = catchAsync(async (req, res, next) => {
+ 
+  await handleFeaturedStoryRotation();
+  
+  
+  const featuredStory = await Story.findOne({ featured: true })
+    .populate('user', 'name') 
+    .select('title description image author createdAt featuredAt');
+  
+  if (!featuredStory) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'No featured story available'
+    });
+  }
+  
+  res.status(200).json({
+    status: 'success',
+    data: {
+      featuredStory
+    }
+  });
+});
 /* ------------------------------ INITIAL SEEDER ----------------------------- */
 
 async function loadStories() {

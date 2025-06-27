@@ -14,15 +14,10 @@ function Footer() {
 
                     {/* Logo & Socials */}
                     <div className="flex flex-col items-center md:items-start gap-6">
-                        <Image src={FooterLogo} alt="Logo" width={160} height={50} />
+                        <Image src={FooterLogo} alt="Logo" width={160} height={50}  priority />
 
                         {/* Social Icons */}
                         <div className="flex gap-4">
-                            {/* <a href="#" target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="Visit Nelson Adegbasa's GitHub Profile" className="text-gray-400 hover:text-white transition">
-                                <X className="w-6 h-6" />
-                            </a> */}
                             <a href="https://github.com/Nel-tech" target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Visit Nelson Adegbasa's GitHub Profile" className="text-gray-400 hover:text-white transition">

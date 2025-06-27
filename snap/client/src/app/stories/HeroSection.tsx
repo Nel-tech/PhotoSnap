@@ -1,107 +1,150 @@
 'use client'
-// import BackgroundImage from '../../../public/images/stories/desktop/moon-of-appalacia.jpg'
-// import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import axios from "axios"
-import { useQuery } from "@tanstack/react-query"
-import cookie from 'js-cookie'
-import { useAuthStore } from "@/store/useAuthStore"
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useFeaturedStories } from '../hooks/useApp'
+import Image from 'next/image'
 function HeroSection() {
-    const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+   
 
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['get-featured-stories'],
-        queryFn: async () => {
-            try {
-                const token = cookie.get('token');
-
-                if (!token) throw new Error("No token found");
-
-                const res = await axios.get(`${API_URL}api/v1/stories/featured-stories`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    withCredentials: true,
-                });
-
-        
-                return res.data.data;
-            } catch (err) {
-                throw err; 
-            }
-        },
-        enabled: isAuthenticated,
-      
-    });
-    if (isLoading || !data) {
+    const { data, isLoading, isError } = useFeaturedStories()
+    if (isLoading) {
         return (
-            <section className="h-screen flex items-center justify-center text-center">
-                <Loader2 style={{ animation: 'spin 1s linear infinite' }} className="h-8 w-8 text-gray-500 mb-2" />
+            <section className="h-screen flex flex-col items-center justify-center text-center">
+                <Loader2 className="h-8 w-8 text-gray-500 mb-2 animate-spin" />
                 <p className="text-gray-500">Loading featured story...</p>
             </section>
         );
     }
-   
 
+    // Error state
+    if (isError) {
+        return (
+            <section className="h-screen flex flex-col items-center justify-center text-center">
+                <p className="text-red-500 mb-4">Failed to load featured story</p>
+                <Button onClick={() => window.location.reload()} variant="outline">
+                    Try Again
+                </Button>
+            </section>
+        );
+    }
+
+    // No data state
+    if (!data) {
+        return (
+            <section className="h-screen flex flex-col items-center justify-center text-center">
+                <p className="text-gray-500">No featured story available</p>
+            </section>
+        );
+    }
+
+   
+    const truncateDescription = (text: string, maxLength: number = 150) => {
+        if (!text) return "";
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    };
     return (
         <section className="relative">
-            <div
-                className="relative bg-cover bg-center h-screen w-full pt-[6rem]"
-                style={{ backgroundImage: `url(${data?.image})` }}
-            >
-                {/* Overlay */}
-                {/* <div className="absolute inset-0 bg-black bg-opacity-40 z-0" /> */}
+            {/* Desktop/Tablet version */}
+            <div className="relative h-screen w-full pt-[6rem] hidden md:block">
+                {/* Background Image */}
+                <div className="absolute inset-0 -z-10">
+                    <Image
+                        src={data.image || "/placeholder-hero.jpg"}
+                        alt={data.title || "Featured story"}
+                        fill
+                        className="object-cover"
+                        priority
+                        sizes="100vw"
+                    />
+                    {/* Overlay directly on top of the image */}
+                    <div className="absolute inset-0 bg-black/40" />
+                </div>
 
-                {/* Text Content */}
-                <div className="relative text-black ml-[1rem] lg:ml-[5rem] hidden md:block lg:block">
-                    <h1 className=" text-sm tracking-widest">FEATURED STORY</h1>
-                    <h2 className=" text-4xl tracking-widest leading-normal uppercase pt-[1rem]">
-                        {data?.title}
+                {/* Text Content - selectable and in front */}
+                <div className="relative z-10 text-white ml-4 lg:ml-20 pt-20 select-text">
+                    <h1 className="text-sm tracking-widest font-medium uppercase">
+                        Featured Story
+                    </h1>
+                    <h2 className="text-4xl lg:text-5xl tracking-widest leading-tight uppercase pt-4 max-w-4xl">
+                        {data.title}
                     </h2>
-                    <div className="pt-[1rem] flex items-center gap-2">
-                        <span className=" text-sm">By {data?.author}</span>
+
+                    {data.author && (
+                        <div className="pt-4 flex items-center gap-2">
+                            <span className="text-sm">By {data.author}</span>
+                        </div>
+                    )}
+
+                    {data.description && (
+                        <p className="pt-4 text-sm tracking-wide leading-6 max-w-md">
+                            {truncateDescription(data.description)}
+                        </p>
+                    )}
+
+                    <div className="pt-6">
+                        <Link href={`/stories-details/${data._id}`}>
+                            <Button
+                                className="text-sm uppercase cursor-pointer hover:shadow-lg transition-all duration-200"
+                                size="lg"
+                            >
+                                Read the story <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
                     </div>
-                    <p className="pt-[1rem]  text-sm tracking-wide leading-[24px] max-w-[27rem]">
-                        {data?.description.substring(0, 150) + "..."}
-                    </p>
-                    <Link href={`/stories-details/${data?._id}`}>
-                        <Button className=" -ml-[1rem] text-sm uppercase cursor-pointer">
-                            Read the story <ArrowRight />
-                        </Button>
-                    </Link>
                 </div>
             </div>
 
-            {/* Mobile version */}
-            <Card className="rounded-none bg-black h-[400px] md:hidden lg:hidden">
-                <div className="ml-[1rem] lg:ml-[5rem]">
-                    <h1 className="text-white text-sm tracking-widest">FEATURED STORY</h1>
-                    <h2 className="text-white text-4xl max-w-[15rem] tracking-widest leading-normal uppercase pt-[1rem]">
-                        {data?.title}
-                    </h2>
-                    <div className="pt-[1rem] flex items-center gap-2">
-                        <span className="text-white text-sm">By {data?.author}</span>
-                    </div>
-                    <p className="pt-[1rem] text-white text-sm tracking-wide leading-[30px] max-w-[27rem] opacity-55">
-                        {data?.description.substring(0, 150) + "..."}
-                    </p>
-                    <Link
-                        href={`/stories-details/${data?._id}`}
-                        className="text-sm tracking-wider text-white pt-4 inline-block"
-                    >
-                        READ STORY <span aria-hidden="true">&rarr;</span>
-                    </Link>
-                </div>
-            </Card>
-        </section>
 
+            {/* Mobile version */}
+            <div className="md:hidden">
+                <Card className="rounded-none bg-black min-h-[400px] relative overflow-hidden">
+                    {/* Background image for mobile */}
+                    {data.image && (
+                        <div className="absolute inset-0 opacity-30">
+                            <Image
+                                src={data.image}
+                                alt={data.title || "Featured story"}
+                                fill
+                                className="object-cover"
+                                sizes="100vw"
+                            />
+                        </div>
+                    )}
+
+                    <div className="relative z-10 p-4 pt-8">
+                        <h1 className="text-white text-sm tracking-widest font-medium uppercase">
+                            Featured Story
+                        </h1>
+                        <h2 className="text-white text-2xl max-w-xs tracking-widest leading-tight uppercase pt-4">
+                            {data.title}
+                        </h2>
+
+                        {data.author && (
+                            <div className="pt-4 flex items-center gap-2">
+                                <span className="text-white text-sm">By {data.author}</span>
+                            </div>
+                        )}
+
+                        {data.description && (
+                            <p className="pt-4 text-white text-sm tracking-wide leading-7 max-w-sm opacity-90">
+                                {truncateDescription(data.description)}
+                            </p>
+                        )}
+
+                        <Link
+                            href={`/stories-details/${data._id}`}
+                            className="text-sm tracking-wider text-white pt-6 inline-block hover:underline transition-all duration-200"
+                        >
+                            READ STORY <span aria-hidden="true">&rarr;</span>
+                        </Link>
+                    </div>
+                </Card>
+            </div>
+        </section>
     );
 }
-
 export default HeroSection;

@@ -11,8 +11,7 @@ import Footer from "@/components/Footer";
 import { Signup } from "@/lib/api"
 import { validateEmailClient } from "@/components/ValidateEmail";
 import { SignupData } from "../types/typed";
-
-
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 
 
 export default function SignUpPage() {
@@ -29,7 +28,8 @@ export default function SignUpPage() {
             [field]: !prevState[field],
         }));
     };
-
+    const { getAuthUrls, handleAuthSuccess } = useAuthRedirect();
+    const { loginUrl } = getAuthUrls();
 
     const router = useRouter()
 
@@ -96,7 +96,7 @@ export default function SignUpPage() {
             login(user);
 
             toast.success("Account created successfully! Welcome aboard!");
-            router.push('/');
+           handleAuthSuccess()
 
         } catch (err: any) {
             console.error("Signup error:", err);
@@ -259,7 +259,7 @@ export default function SignUpPage() {
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Already have an account?{" "}
-                        <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        <Link href={loginUrl} className="font-semibold text-indigo-600 hover:text-indigo-500">
                             Log in here
                         </Link>
                     </p>

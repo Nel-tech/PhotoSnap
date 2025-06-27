@@ -31,7 +31,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
 
   login: (user) => {
-     
     const cleanUser = {
       _id: user._id,
       name: user.name,
@@ -39,14 +38,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       role: user.role
     };
     
+   
     Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
     Cookies.set('isAuthenticated', 'true', COOKIE_OPTIONS);
     
+  
+    set({ 
+      user: cleanUser, 
+      isAuthenticated: true,
+      isLoading: false 
+    });
   },
 
   logout: async () => {
-    
-    
     set({ isLoading: true });
     
     try {
@@ -63,7 +67,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   clearAuthState: () => {
-
     Cookies.remove('user', { path: '/' });
     Cookies.remove('isAuthenticated', { path: '/' });
     
@@ -78,13 +81,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const userCookie = Cookies.get('user');
     const isAuthCookie = Cookies.get('isAuthenticated');
     
-   
     if (userCookie && isAuthCookie === 'true') {
       try {
         const user = JSON.parse(userCookie);
         set({ 
           user, 
-          isAuthenticated: true 
+          isAuthenticated: true,
+          isLoading: false 
         });
       } catch (err) {
         console.error('❌ Failed to parse user cookie:', err);
@@ -93,7 +96,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } else {
       set({ 
         user: null, 
-        isAuthenticated: false 
+        isAuthenticated: false,
+        isLoading: false 
       });
     }
   },
@@ -108,6 +112,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     
     // Update cookie and state
     Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
-    set({ user: cleanUser });
+    Cookies.set('isAuthenticated', 'true', COOKIE_OPTIONS);
+    
+    set({ 
+      user: cleanUser,
+      isAuthenticated: true 
+    });
   },
 }));

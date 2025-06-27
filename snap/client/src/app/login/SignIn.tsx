@@ -2,23 +2,22 @@
 
 import Nav from "@/components/Nav";
 import { useForm } from "react-hook-form";
-import { useSearchParams, useRouter } from 'next/navigation';
+import {useRouter } from 'next/navigation';
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { LoginData } from "../types/typed";
 import { Login } from "@/lib/api";
-
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 
 
 export default function SignIn() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginData>();
     const loginStore = useAuthStore((state) => state.login)
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams.get('redirectTo');
-
+    const { getAuthUrls, handleAuthSuccess } = useAuthRedirect();
+    const { signupUrl } = getAuthUrls();
     const onSubmit = async (formData: LoginData) => {
         const { email, password } = formData;
 
@@ -49,7 +48,7 @@ export default function SignIn() {
                     router.push("/admin");
                 } else {
                     toast.success("Login successful");
-                    router.push(redirectTo || "/");
+                    handleAuthSuccess()
                 }
             } else {
                 toast.error("Login failed: No user data received");
@@ -128,7 +127,7 @@ export default function SignIn() {
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Don&#39;t have an account?{' '}
-                        <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        <Link href={signupUrl} className="font-semibold text-indigo-600 hover:text-indigo-500">
                             Create one
                         </Link>
                     </p>

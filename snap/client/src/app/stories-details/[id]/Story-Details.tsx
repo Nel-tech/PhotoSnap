@@ -147,7 +147,7 @@ function StoryDetails() {
                             <Button
                                 type="button"
                                 onClick={() => router.back()}
-                                className="flex items-center gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors"
+                                className="flex items-center gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors cursor-pointer"
                             >
                                 <ChevronLeft className="h-5 w-5" />
                                 <span className="font-medium">Back</span>

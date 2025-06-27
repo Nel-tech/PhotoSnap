@@ -14,7 +14,6 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     const [isInitialized, setIsInitialized] = useState(false);
     const router = useRouter();
 
-    // Use reactive selectors
     const user = useAuthStore((state) => state.user);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const initializeAuth = useAuthStore((state) => state.initializeAuth);

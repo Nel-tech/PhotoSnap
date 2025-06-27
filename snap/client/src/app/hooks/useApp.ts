@@ -12,6 +12,7 @@ import {
   fetchUserProfile,
   getStory,
   updateStory,
+  featuredStory,
   storyDetails,
   viewStoryAPI,
   uploadStory,
@@ -157,6 +158,21 @@ export const useViewStories = (id: string) => {
     },
   });
 };
+
+export const useFeaturedStories = () => {
+  const user = useAuthStore((state) => state.user);
+  
+  return useQuery({
+    queryKey: ['featured-stories'],
+    queryFn: featuredStory,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5, 
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+  });
+};
+
 
 export const useUploadStory = () => {
   return useMutation<FormData, any, FormData>({

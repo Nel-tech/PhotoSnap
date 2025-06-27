@@ -104,7 +104,7 @@ router.post(
 router.get(
   '/featured-stories',
   authController.restrictTo('user'),
-  storyController.rotateFeaturedStory
+  storyController.getFeaturedStory
 );
 
 // ─── 4. ADMIN ROUTES ────────────────────────────────
