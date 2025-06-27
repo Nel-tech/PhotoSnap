@@ -120,7 +120,6 @@ export const featuredStory = async() => {
     
 
     if (data._id) {
-      console.log('Response is the story itself:', data);
       return data;
     }
     
