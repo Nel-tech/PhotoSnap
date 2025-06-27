@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
 import { useAuthStore } from '@/store/useAuthStore';
 import Footer from "@/components/Footer";
@@ -31,7 +30,6 @@ export default function SignUpPage() {
     const { getAuthUrls, handleAuthSuccess } = useAuthRedirect();
     const { loginUrl } = getAuthUrls();
 
-    const router = useRouter()
 
     const {
         register,
