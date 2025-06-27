@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Copy, Loader2, CheckCircle } from "lucide-react"
 import toast from "react-hot-toast"
+import Nav from "@/components/Nav"
+import Footer from "@/components/Footer"
 
 function RequestResetForm() {
     const [email, setEmail] = useState('')
@@ -30,9 +32,12 @@ function RequestResetForm() {
 
         mutation.mutate({ email }, {
             onSuccess: (data) => {
-
                 if (data?.token) {
+                  
                     setIsDialogOpen(true)
+                } else if (data?.alreadyExists) {
+                    
+                    toast.custom(data.message || `A reset token already exists. Please wait ${data.waitTime} minute(s) before requesting a new one.`)
                 }
             }
         })
@@ -49,8 +54,13 @@ function RequestResetForm() {
     const tokenValue = mutation.data?.token || mutation.data?.Token?.token
 
     return (
-        <div className="max-w-md mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white rounded-lg border shadow-sm">
+      <>
+      <header>
+        <Nav/>
+      </header>
+
+        <div className="max-w-md mx-auto mt-[7rem]">
+                <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white  rounded-lg border shadow-sm">
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">Request Reset Token</h2>
                     <p className="text-sm text-gray-600 mb-4">
@@ -94,71 +104,83 @@ function RequestResetForm() {
                             Your reset token has been generated. Click the button below to view and copy it.
                         </p>
 
-                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="w-full">View Reset Token</Button>
-                            </DialogTrigger>
+                            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="w-full">View Reset Token</Button>
+                                </DialogTrigger>
 
-                            <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>Your Reset Token</DialogTitle>
-                                    <DialogDescription>
-                                        Copy this token to reset your password. This token expires in 15 minutes.
-                                    </DialogDescription>
-                                </DialogHeader>
+                                <DialogContent className="max-w-md bg-white">
+                                    <DialogHeader>
+                                        <DialogTitle>Your Reset Token</DialogTitle>
+                                        <DialogDescription>
+                                            Copy this token to reset your password. This token expires in 15 minutes.
+                                        </DialogDescription>
+                                    </DialogHeader>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Reset Token:
-                                        </label>
-                                        <div className="relative">
-                                            <code className="block break-all bg-gray-50 p-3 rounded-md border text-sm pr-12 font-mono">
-                                                {tokenValue}
-                                            </code>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={handleCopy}
-                                                className="absolute top-2 right-2 h-8 w-8"
-                                                title="Copy token"
-                                            >
-                                                <Copy className="w-4 h-4" />
-                                            </Button>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Reset Token:
+                                            </label>
+                                            <div className="relative">
+                                                <code className="block break-all bg-gray-50 p-3 rounded-md border text-sm pr-12 font-mono">
+                                                    {tokenValue}
+                                                </code>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={handleCopy}
+                                                    className="absolute top-2 right-2 h-8 w-8"
+                                                    title="Copy token"
+                                                >
+                                                    <Copy className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
+                                            <p className="text-amber-800 text-xs">
+                                                <strong>Important:</strong> This token will expire in 15 minutes.
+                                                Copy it now and use it to reset your password.
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
-                                        <p className="text-amber-800 text-xs">
-                                            <strong>Important:</strong> This token will expire in 15 minutes.
-                                            Copy it now and use it to reset your password.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <DialogFooter className="flex-col gap-2">
-                                    <Link
-                                        href="/reset-password"
-                                        className="w-full"
-                                        onClick={() => setIsDialogOpen(false)}
-                                    >
-                                        <Button className="w-full">
-                                            Go to Reset Password
+                                    <DialogFooter className="flex-col gap-2">
+                                        <Link
+                                            href="/reset-password"
+                                            className="w-full"
+                                            onClick={() => setIsDialogOpen(false)}
+                                        >
+                                            <Button className="w-full">
+                                                Go to Reset Password
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => setIsDialogOpen(false)}
+                                        >
+                                            Close
                                         </Button>
-                                    </Link>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={() => setIsDialogOpen(false)}
-                                    >
-                                        Close
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                     </div>
                 )}
+
+                    {mutation.isSuccess && mutation.data?.alreadyExists && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <CheckCircle className="w-5 h-5 text-amber-600" />
+                                <span className="text-amber-800 font-medium">Token Already Exists</span>
+                            </div>
+                            <p className="text-amber-700 text-sm">
+                                {mutation.data.message}
+                            </p>
+                        </div>
+                    )}
 
                 {/* Error State */}
                 {mutation.isError && (
@@ -170,7 +192,14 @@ function RequestResetForm() {
                 )}
             </form>
         </div>
+
+        <footer>
+            <Footer/>
+        </footer>
+         </>
+
     )
 }
+
 
 export default RequestResetForm

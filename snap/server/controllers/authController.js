@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const PasswordReset = require('../models/passwordReset');
+const PasswordReset = require('../models/PasswordResetModel');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs')
 
@@ -223,8 +223,7 @@ exports.restrictTo =
     next();
   };
 
-
-  exports.HandleRequestToken = async (req, res, next) => {
+exports.HandleRequestToken = async (req, res, next) => {
   try {
     const { email } = req.body;
 
@@ -242,8 +241,9 @@ exports.restrictTo =
       return next(new AppError('User not found', 404));
     }
 
+    
     const existingToken = await PasswordReset.findOne({
-      userId: user.id,
+      user: user._id, 
       used: false,
       expiresAt: { $gt: new Date() },
     });
@@ -252,7 +252,8 @@ exports.restrictTo =
       const waitTime = Math.ceil(
         (new Date(existingToken.expiresAt).getTime() - Date.now()) / 60000
       );
-      return res.status(200).json({
+      
+      return res.status(429).json({ 
         alreadyExists: true,
         waitTime,
         expiresAt: existingToken.expiresAt,
@@ -265,7 +266,7 @@ exports.restrictTo =
 
     const tokenRecord = await PasswordReset.create({
       token: resetToken,
-      userId: user.id,
+      user: user._id, 
       expiresAt,
       used: false,
     });
@@ -295,7 +296,7 @@ exports.ResetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await User.updateOne(
-      { _id: tokenRecord.user },
+      { _id: tokenRecord.user._id }, 
       { $set: { password: hashedPassword } }
     );
 
