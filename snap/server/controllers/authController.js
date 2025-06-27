@@ -22,8 +22,8 @@ const createSendToken = (user, statusCode, req, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true,
-    secure: !isDev, 
-    sameSite: isDev ? 'lax' : 'none',
+    secure: !isDev,
+    sameSite: isDev ? 'lax' : 'none'
   };
 
   if (!isDev) {
@@ -32,7 +32,7 @@ const createSendToken = (user, statusCode, req, res) => {
   }
 
   res.cookie('jwt', token, cookieOptions);
-
+  
   user.password = undefined;
 
   res.status(statusCode).json({

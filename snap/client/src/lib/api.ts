@@ -40,12 +40,17 @@ export const Signup = async (data: SignupData) => {
 
 
 export const Login = async (data: LoginData) => {
-  try {
+   try {
+    console.log('Making login request to:', `${API_URL}/api/v1/users/login`);
+    console.log('With credentials:', true);
+    
     const response = await axios.post(`${API_URL}/api/v1/users/login`, data, {
       headers: { "Content-Type": "application/json" },
       withCredentials: true,
     });
 
+    console.log('Login response headers:', response.headers);
+    console.log('Set-Cookie header:', response.headers['set-cookie']);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
