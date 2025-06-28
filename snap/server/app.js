@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 4️⃣ Enable CORS
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://photosnap-gallery.vercel.app',
+  'https://photo-snap-gallery.vercel.app',
 ];
 
 app.use(cors({
