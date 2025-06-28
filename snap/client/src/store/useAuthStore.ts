@@ -12,17 +12,17 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User) => void; 
-  logout: () => void;
+  login: (user: User) => void;
+  logout: () => Promise<void>;
   initializeAuth: () => void;
-  setUser: (user: User) => void;
-  clearAuthState: () => void; 
+  clearAuth: () => void;
 }
 
 const COOKIE_OPTIONS = {
   expires: 7,
   path: '/',
-  sameSite: 'lax' as const
+  sameSite: 'lax' as const,
+  secure: process.env.NODE_ENV === 'production'
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -31,8 +31,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
 
   login: (user) => {
-   
-    
     const cleanUser = {
       _id: user._id,
       name: user.name,
@@ -40,21 +38,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       role: user.role
     };
     
-    
     Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
     Cookies.set('isAuthenticated', 'true', COOKIE_OPTIONS);
     
-  
-    
-    set({ 
-      user: cleanUser, 
-      isAuthenticated: true 
-    });
+    set({ user: cleanUser, isAuthenticated: true });
   },
 
   logout: async () => {
-   
-    
     set({ isLoading: true });
     
     try {
@@ -63,57 +53,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         credentials: 'include'
       });
     } catch (error) {
-      console.error('Logout API call failed:', error);
-    } finally {
-      get().clearAuthState();
-      set({ isLoading: false });
+      console.error('Logout failed:', error);
     }
+    
+    get().clearAuth();
+    set({ isLoading: false });
   },
 
-  clearAuthState: () => {
+  clearAuth: () => {
     Cookies.remove('user', { path: '/' });
     Cookies.remove('isAuthenticated', { path: '/' });
-    
-    
-    set({ 
-      user: null,  
-      isAuthenticated: false, 
-      isLoading: false 
-    });
+    set({ user: null, isAuthenticated: false });
   },
 
   initializeAuth: () => {
-    const userCookie = Cookies.get('user');
-    const isAuthCookie = Cookies.get('isAuthenticated');
-    if (userCookie && isAuthCookie === 'true') {
-      try {
+    try {
+      const userCookie = Cookies.get('user');
+      const isAuthCookie = Cookies.get('isAuthenticated');
+      
+      if (userCookie && isAuthCookie === 'true') {
         const user = JSON.parse(userCookie);
-        set({ 
-          user, 
-          isAuthenticated: true 
-        });
-      } catch (err) {
-        console.error('❌ Failed to parse user cookie:', err);
-        get().clearAuthState();
+        set({ user, isAuthenticated: true });
       }
-    } else {
-      set({ 
-        user: null, 
-        isAuthenticated: false 
-      });
+    } catch (error) {
+      console.error('Auth initialization failed:', error);
+      get().clearAuth();
     }
-  },
-
-  setUser: (user) => {
-    const cleanUser = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    };
-    
-   
-    Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
-    set({ user: cleanUser });
-  },
+  }
 }));
