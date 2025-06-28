@@ -34,7 +34,7 @@ function HeroSection() {
   md:top-[8rem]
   md:bg-gradient-to-b
 
-  lg:h-[15rem] 
+  lg:h-[17rem] 
   lg:w-[0.3rem] 
   lg:rotate-180 
   lg:top-[12rem]

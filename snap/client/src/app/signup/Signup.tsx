@@ -245,7 +245,7 @@ export default function SignUpPage() {
                         <div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-md cursor-pointer bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+                                className="flex w-full justify-center rounded-md cursor-pointer bg-black px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs  transition-all duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Creating...' : 'Create Account'}
@@ -257,7 +257,7 @@ export default function SignUpPage() {
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Already have an account?{" "}
-                        <Link href={loginUrl} className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        <Link href={loginUrl} className="font-semibold text-blue-600 hover:text-blue-500">
                             Log in here
                         </Link>
                     </p>

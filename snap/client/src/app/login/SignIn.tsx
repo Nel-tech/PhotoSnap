@@ -97,7 +97,7 @@ export default function SignIn() {
                                     Password
                                 </label>
                                 <div className="text-sm">
-                                    <Link href="/request-reset" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    <Link href="/request-reset" className="font-semibold text-blue-600 hover:text-blue-500">
                                         Forgot password?
                                     </Link>
                                 </div>
@@ -117,7 +117,7 @@ export default function SignIn() {
                         <div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-md cursor-pointer bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+                                className="flex w-full justify-center rounded-md cursor-pointer bg-black px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs  transition-all duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign in'}
@@ -127,7 +127,7 @@ export default function SignIn() {
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Don&#39;t have an account?{' '}
-                        <Link href={signupUrl} className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        <Link href={signupUrl} className="font-semibold text-blue-600 hover:text-blue-500">
                             Create one
                         </Link>
                     </p>
