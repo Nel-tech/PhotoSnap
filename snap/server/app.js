@@ -44,7 +44,6 @@ app.use(cors({
     if (allowedOrigins.includes(cleanedOrigin)) {
       callback(null, true);
     } else {
-      console.log('❌ Origin blocked:', cleanedOrigin);
       callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
