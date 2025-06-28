@@ -5,15 +5,9 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "snap/server/server.js"
+      "destination": "https://photosnap-7p6p.onrender.com/api/:path*"
     }
   ],
-  "functions": {
-    "snap/server/server.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
