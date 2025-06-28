@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Providers from "@/app/providers";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Script from "next/script";
 import OneSignalWrapper from "@/components/OneSignalWrapper";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             {/* <Footer />  */}
             <Toaster position="top-right" reverseOrder={false} />
             <Analytics />
+            <SpeedInsights/>
         </OneSignalWrapper>
           </Providers>
        
