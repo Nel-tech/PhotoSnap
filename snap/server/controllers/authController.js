@@ -23,13 +23,9 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     httpOnly: true,
     secure: !isDev,
-    sameSite: isDev ? 'lax' : 'none'
+    sameSite: isDev ? 'lax' : 'none', 
   };
 
-  if (!isDev) {
-    cookieOptions.secure = true;
-    cookieOptions.sameSite = 'none';
-  }
 
   res.cookie('jwt', token, cookieOptions);
   

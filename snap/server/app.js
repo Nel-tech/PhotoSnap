@@ -32,17 +32,26 @@ const allowedOrigins = [
   'https://photo-snap-gallery.vercel.app',
 ];
 
+
 app.use(cors({
   origin: function (origin, callback) {
-    const cleanedOrigin = origin?.replace(/\/$/, ''); // remove trailing slash if present
-    if (!cleanedOrigin || allowedOrigins.includes(cleanedOrigin)) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    const cleanedOrigin = origin.replace(/\/$/, ''); 
+    
+    if (allowedOrigins.includes(cleanedOrigin)) {
       callback(null, true);
     } else {
-      console.error(`❌ Blocked by CORS: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      console.log('❌ Origin blocked:', cleanedOrigin);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Set-Cookie'],
 }));
 
 
