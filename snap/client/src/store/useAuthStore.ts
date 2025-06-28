@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import Cookies from 'js-cookie';
 
 interface User {
   _id: string;
@@ -10,63 +9,37 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  jwt: string | null; 
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User, jwt?: string) => void; 
+  login: (user: User) => void;
   logout: () => void;
   initializeAuth: () => void;
   setUser: (user: User) => void;
-  clearAuthState: () => void; 
+  clearAuthState: () => void;
 }
-
-const COOKIE_OPTIONS = {
-  expires: 7,
-  path: '/',
-  sameSite: 'lax' as const
-};
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  jwt: null, 
   isAuthenticated: false,
   isLoading: false,
 
-  login: (user, jwt) => {
-   
-    
+  login: (user) => {
     const cleanUser = {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
-    
-    
-    Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
-    Cookies.set('isAuthenticated', 'true', COOKIE_OPTIONS);
-    
-    
-    if (jwt) {
-      Cookies.set('jwt', jwt, COOKIE_OPTIONS);
-    }
-    
-    set({ 
-      user: cleanUser, 
-      jwt: jwt || null, 
-      isAuthenticated: true 
-    });
+    set({ user: cleanUser, isAuthenticated: true });
   },
 
   logout: async () => {
-   
-    
     set({ isLoading: true });
-    
+
     try {
       await fetch(`${process.env.NEXT_PUBLIC_AUTH_API_URL}/api/v1/users/logout`, {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
       });
     } catch (error) {
       console.error('Logout API call failed:', error);
@@ -77,41 +50,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   clearAuthState: () => {
-    Cookies.remove('user', { path: '/' });
-    Cookies.remove('jwt', { path: '/' }); 
-    Cookies.remove('isAuthenticated', { path: '/' });
-    
-    
-    set({ 
-      user: null, 
-      jwt: null, 
-      isAuthenticated: false, 
-      isLoading: false 
-    });
+    set({ user: null, isAuthenticated: false, isLoading: false });
   },
 
-  initializeAuth: () => {
-    const userCookie = Cookies.get('user');
-    const jwtCookie = Cookies.get('jwt'); 
-    const isAuthCookie = Cookies.get('isAuthenticated');
-    if (userCookie && isAuthCookie === 'true') {
-      try {
-        const user = JSON.parse(userCookie);
-        set({ 
-          user, 
-          jwt: jwtCookie || null, 
-          isAuthenticated: true 
-        });
-      } catch (err) {
-        console.error('❌ Failed to parse user cookie:', err);
-        get().clearAuthState();
-      }
-    } else {
-      set({ 
-        user: null, 
-        jwt: null, 
-        isAuthenticated: false 
+  initializeAuth: async () => {
+    set({ isLoading: true });
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_API_URL}/api/v1/users/getMe`, {
+        credentials: 'include',
       });
+
+      if (!res.ok) throw new Error('Failed to fetch user');
+
+      const data = await res.json();
+      const user = data.user;
+
+      const cleanUser = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      };
+
+      set({ user: cleanUser, isAuthenticated: true, isLoading: false });
+    } catch (err) {
+      console.error('❌ Auth init failed:', err);
+      get().clearAuthState();
+      set({ isLoading: false });
     }
   },
 
@@ -120,11 +86,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
-    
-    // Update cookie and state
-    Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
     set({ user: cleanUser });
   },
 }));
