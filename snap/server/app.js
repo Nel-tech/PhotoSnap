@@ -11,7 +11,7 @@ const compression = require('compression');
 const cors = require('cors');
 const userRouter = require('./routes/userRoutes');
 const storyRouter = require('./routes/storyRoutes');
-// const AppError = require('./utils/appError');
+ const AppError = require('./utils/appError');
 
 
 const app = express();
@@ -22,29 +22,31 @@ app.enable('trust proxy');
 app.use(express.static(path.join(__dirname, 'public')));
 
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://photo-snap-gallery.vercel.app',
+  'http://localhost:3000',                            // dev
+  'https://photo-snap-gallery.vercel.app',           // production 
 ];
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(cors({
   origin: function (origin, callback) {
     console.log('🌐 CORS Origin check:', origin);
-    
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) {
-      console.log('✅ No origin - allowing');
-      return callback(null, true);
-    }
-    
-    const cleanedOrigin = origin.replace(/\/$/, ''); 
-    
+
+    if (!origin) return callback(null, true); // Allow Postman, mobile apps, curl
+
+    const cleanedOrigin = origin.replace(/\/$/, '');
+
     if (allowedOrigins.includes(cleanedOrigin)) {
       console.log('✅ Origin allowed:', cleanedOrigin);
       callback(null, true);
     } else {
-      console.log('❌ Origin blocked:', cleanedOrigin);
-      console.log('🔧 DEBUG MODE: Allowing blocked origin');
-      callback(null, true);
-
+      if (isProduction) {
+        console.log('❌ Origin blocked:', cleanedOrigin);
+        callback(new Error('Not allowed by CORS'));
+      } else {
+        console.log('🔧 Dev Mode: Allowing blocked origin:', cleanedOrigin);
+        callback(null, true); // Allow unknown origins in dev
+      }
     }
   },
   credentials: true,
@@ -53,8 +55,10 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie'],
 }));
 
+app.options('*path', cors())
 
-// 6️⃣ Limit repeated requests to public APIs (DISABLED FOR DEBUGGING)
+
+
 const limiter = rateLimit({
   max: 100, 
   windowMs: 60 * 60 * 1000, 
@@ -82,7 +86,9 @@ app.use((req, res, next) => {
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 
-app.all('*', (req, res, next) => {
+// ✅ Express 5.x syntax
+app.all('*path', (req, res, next) => {
+  console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

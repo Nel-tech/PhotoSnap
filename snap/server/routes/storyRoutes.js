@@ -4,7 +4,7 @@ const storyController = require('../controllers/storyController');
 const authController = require('../controllers/authController');
 
 // ─── 1. PUBLIC ROUTES ───────────────────────────────
- router.get('/public-stories', storyController.getAllStories);
+router.get('/public-stories', storyController.getAllStories);
 
 // ─── 2. PROTECTED ROUTES ────────────────────────────
 router.use(authController.protect);
@@ -59,7 +59,13 @@ router.post(
   authController.restrictTo('user'),
   storyController.BookMark
 );
-router.delete('/delete-bookmark/:id',authController.restrictTo('user'), storyController.deleteBookmark);
+
+router.delete(
+  '/delete-bookmark/:id', 
+  authController.restrictTo('user'), 
+  storyController.deleteBookmark
+);
+
 router.get(
   '/getUserBookMarkedStories',
   authController.restrictTo('user'),
@@ -83,12 +89,18 @@ router.post(
   authController.restrictTo('user'),
   storyController.likeStory
 );
+
 router.get(
   '/get-user-likes',
   authController.restrictTo('user'),
   storyController.getUserLikedStories
 );
-router.delete('/delete-likes/:id',authController.restrictTo('user'), storyController.deleteLikes);
+
+router.delete(
+  '/delete-likes/:id', 
+  authController.restrictTo('user'), 
+  storyController.deleteLikes
+);
 
 router.get(
   '/get-story-status/:id',
@@ -101,6 +113,7 @@ router.post(
   authController.restrictTo('user'),
   storyController.views
 );
+
 router.get(
   '/featured-stories',
   authController.restrictTo('user'),
@@ -113,12 +126,17 @@ router.get(
   authController.restrictTo('admin'),
   storyController.getAllPendingStories
 );
+
 router.patch(
   '/update-story-status/:id',
   authController.restrictTo('admin'),
   storyController.updateStoryStatus
 );
 
-router.get('/send-notification', authController.restrictTo('admin'), storyController.notifyAdmins)
+router.get(
+  '/send-notification', 
+  authController.restrictTo('admin'), 
+  storyController.notifyAdmins
+);
 
 module.exports = router;

@@ -273,15 +273,18 @@ exports.HandleRequestToken = async (req, res, next) => {
   }
 };
 
-exports.ResetPassword = async (req, res) => {
+exports.ResetPassword = async (req, res, next) => {
   const { resetToken, newPassword } = req.body;
 
   try {
     const tokenRecord = await PasswordReset.findOne({ token: resetToken }).populate('user');
 
     if (!tokenRecord || tokenRecord.used || tokenRecord.expiresAt < new Date()) {
-      return res.status(400).json({ error: "Invalid or expired token" });
+        return next(new AppError('Invalid or expired token', 400));
     }
+    if (!newPassword || newPassword.length < 8) { 
+  return next(new AppError('Password must be at least 8 characters long', 400));
+}
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -298,6 +301,6 @@ exports.ResetPassword = async (req, res) => {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("Reset password error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+     return next(new AppError('Internal Server Error', 500));
   }
 };
