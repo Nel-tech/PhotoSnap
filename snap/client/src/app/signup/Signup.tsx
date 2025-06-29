@@ -89,7 +89,7 @@ if (!user._id || !user.email) {
 
 
 login(user, response.token); 
- response.token here
+
 
 toast.success("Account created successfully! Welcome aboard!");
 handleAuthSuccess()
