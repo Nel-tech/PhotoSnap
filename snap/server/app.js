@@ -86,7 +86,19 @@ app.use((req, res, next) => {
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 
-// ✅ Express 5.x syntax
+// Add this BEFORE the catch-all route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'PhotoSnap API is running!',
+    version: '1.0.0',
+    endpoints: {
+      users: '/api/v1/users',
+      stories: '/api/v1/stories'
+    }
+  });
+});
+
 app.all('*path', (req, res, next) => {
   console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
