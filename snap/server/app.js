@@ -3,24 +3,19 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-//const mongoSanitize = require('express-mongo-sanitize');
-//const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
 const userRouter = require('./routes/userRoutes');
 const storyRouter = require('./routes/storyRoutes');
- const AppError = require('./utils/appError');
-
+const AppError = require('./utils/appError');
 
 const app = express();
 
-
 app.enable('trust proxy');
 
-app.use(express.static(path.join(__dirname, 'public')));
-
+// CORS configuration FIRST
 const allowedOrigins = [
   'http://localhost:3000',                            // dev
   'https://photo-snap-gallery.vercel.app',           // production 
@@ -28,7 +23,7 @@ const allowedOrigins = [
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     console.log('🌐 CORS Origin check:', origin);
 
@@ -53,11 +48,16 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Set-Cookie'],
-}));
+};
 
-app.options('*path', cors())
+// Apply CORS to all routes
+app.use(cors(corsOptions));
 
+// Handle preflight requests for all routes
+app.options('*path', cors(corsOptions));
 
+// Other middleware
+app.use(express.static(path.join(__dirname, 'public')));
 
 const limiter = rateLimit({
   max: 100, 
@@ -70,23 +70,19 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
-
 app.use(hpp());
-
-// 1️⃣2️⃣ Compress responses
 app.use(compression());
 
-// 1️⃣3️⃣ Add custom timestamp middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
-// 2️⃣0️⃣ ROUTES
+// API ROUTES FIRST
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 
-// Add this BEFORE the catch-all route
+// Root route AFTER API routes
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -99,6 +95,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// Catch-all route LAST
 app.all('*path', (req, res, next) => {
   console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
