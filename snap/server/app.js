@@ -48,13 +48,21 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Set-Cookie'],
+  preflightContinue: false,
+  optionsSuccessStatus: 200
 };
 
 // Apply CORS to all routes
 app.use(cors(corsOptions));
 
-// Handle preflight requests for all routes
-app.options('*path', cors(corsOptions));
+// Handle preflight requests - more specific approach
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 Handling OPTIONS preflight for:', req.path);
+    return cors(corsOptions)(req, res, next);
+  }
+  next();
+});
 
 // Other middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -95,7 +103,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Catch-all route LAST
+// Catch-all route LAST - keeping your original pattern
 app.all('*path', (req, res, next) => {
   console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
