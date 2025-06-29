@@ -54,47 +54,45 @@ export default function SignUpPage() {
                 }
             }
 
-            const response = await Signup({
-                name,
-                email,
-                password,
-                passwordConfirm
-            });
+        
+const response = await Signup({
+    name,
+    email,
+    password,
+    passwordConfirm
+});
+
+if (!response || response.status !== "success") {
+    const errorMessage = response?.message || "Signup failed";
+    toast.error(errorMessage);
+    return;
+}
+
+const userData = response.user || response.data || response;
+
+if (!userData || !userData._id) {
+    toast.error("Signup failed: No user data received");
+    return;
+}
+
+const user = {
+    _id: userData._id,
+    name: userData.name,
+    email: userData.email,
+    role: userData.role || 'user'
+};
+
+if (!user._id || !user.email) {
+    toast.error("Signup failed: Invalid user data");
+    return;
+}
 
 
+login(user, response.token); 
+ response.token here
 
-
-            if (!response || response.status !== "success") {
-                const errorMessage = response?.message || "Signup failed";
-                toast.error(errorMessage);
-                return;
-            }
-
-
-            const userData = response.user || response.data || response;
-
-            if (!userData || !userData._id) {
-                toast.error("Signup failed: No user data received");
-                return;
-            }
-
-            const user = {
-                _id: userData._id,
-                name: userData.name,
-                email: userData.email,
-                role: userData.role || 'user'
-            };
-
-
-            if (!user._id || !user.email) {
-                toast.error("Signup failed: Invalid user data");
-                return;
-            }
-
-            login(user);
-
-            toast.success("Account created successfully! Welcome aboard!");
-            handleAuthSuccess()
+toast.success("Account created successfully! Welcome aboard!");
+handleAuthSuccess()
 
         } catch (err: any) {
             console.error("Signup error:", err);
