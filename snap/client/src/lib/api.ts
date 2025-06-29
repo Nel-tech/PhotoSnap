@@ -3,7 +3,8 @@ import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryS
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL||'https://photosnap-3gd6.onrender.com'
+
 
 export const extractErrorMessage = (error: any, fallback = "Something went wrong") => {
   if (axios.isAxiosError(error)) {

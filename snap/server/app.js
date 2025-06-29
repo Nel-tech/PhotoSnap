@@ -17,29 +17,24 @@ app.enable('trust proxy');
 
 // CORS configuration FIRST
 const allowedOrigins = [
-  'http://localhost:3000',                            // dev
-  'https://photo-snap-gallery.vercel.app',           // production 
+  'http://localhost:3000',                            
+  'https://photo-snap-gallery.vercel.app',           
 ];
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log('🌐 CORS Origin check:', origin);
 
-    if (!origin) return callback(null, true); // Allow Postman, mobile apps, curl
-
+    if (!origin) return callback(null, true); 
     const cleanedOrigin = origin.replace(/\/$/, '');
 
     if (allowedOrigins.includes(cleanedOrigin)) {
-      console.log('✅ Origin allowed:', cleanedOrigin);
       callback(null, true);
     } else {
       if (isProduction) {
-        console.log('❌ Origin blocked:', cleanedOrigin);
         callback(new Error('Not allowed by CORS'));
       } else {
-        console.log('🔧 Dev Mode: Allowing blocked origin:', cleanedOrigin);
         callback(null, true); // Allow unknown origins in dev
       }
     }
@@ -55,10 +50,9 @@ const corsOptions = {
 // Apply CORS to all routes
 app.use(cors(corsOptions));
 
-// Handle preflight requests - more specific approach
+
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
-    console.log('🔄 Handling OPTIONS preflight for:', req.path);
     return cors(corsOptions)(req, res, next);
   }
   next();
