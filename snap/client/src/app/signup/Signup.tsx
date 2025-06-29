@@ -49,7 +49,7 @@ export default function SignUpPage() {
                 const validation = validateEmailClient(email);
                 if (!validation.isValid) {
                     toast.error(validation.message);
-                    setIsLoading(false); // ✅ Don't forget this!
+                    setIsLoading(false); 
                     return;
                 }
             }
