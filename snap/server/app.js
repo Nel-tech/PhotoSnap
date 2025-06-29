@@ -98,35 +98,19 @@ app.use(cors({
 // Handle preflight requests explicitly
 app.options('*', cors());
 
-// 5️⃣ FIXED: More permissive security headers for cross-origin requests
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        connectSrc: ["'self'", 'https:', 'wss:', 'ws:'],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-      },
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow cross-origin requests
-  })
-);
 
-// 6️⃣ Rate limiting (re-enable for production)
-const limiter = rateLimit({
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // More lenient in dev
-  windowMs: 60 * 60 * 1000, // per hour
-  message: 'Too many requests from this IP, please try again in an hour!',
-  keyGenerator: (req) => req.ip,
-  skip: (req) => {
-    // Skip rate limiting for health checks and options requests
-    return req.path === '/health' || req.method === 'OPTIONS';
-  }
-});
-app.use('/api', limiter);
+// // 6️⃣ Rate limiting (re-enable for production)
+// const limiter = rateLimit({
+//   max: process.env.NODE_ENV === 'production' ? 100 : 1000, // More lenient in dev
+//   windowMs: 60 * 60 * 1000, // per hour
+//   message: 'Too many requests from this IP, please try again in an hour!',
+//   keyGenerator: (req) => req.ip,
+//   skip: (req) => {
+//     // Skip rate limiting for health checks and options requests
+//     return req.path === '/health' || req.method === 'OPTIONS';
+//   }
+// });
+// app.use('/api', limiter);
 
 // 7️⃣ Log requests
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_LOGS === 'true') {
@@ -138,27 +122,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// 9️⃣ ENHANCED: API debugging middleware
-app.use('/api', (req, res, next) => {
-  console.log('🔍 API Route hit:', {
-    path: req.path,
-    method: req.method,
-    ip: req.ip,
-    userAgent: req.headers['user-agent']?.substring(0, 30),
-    headers: {
-      'content-type': req.headers['content-type'],
-      'authorization': req.headers.authorization ? 'Bearer [PRESENT]' : 'None',
-      'origin': req.headers.origin,
-      'referer': req.headers.referer,
-      'cookie': req.headers.cookie ? 'Present' : 'None',
-    },
-    body: req.method === 'POST' || req.method === 'PUT' ? 
-      { ...req.body, password: req.body.password ? '[HIDDEN]' : undefined } : 
-      undefined,
-    cookies: req.cookies
-  });
-  next();
-});
+
 
 // 1️⃣0️⃣ Data sanitization (uncomment when ready)
 // app.use(mongoSanitize());
@@ -178,36 +142,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2️⃣0️⃣ ROUTES
+
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 
-// 2️⃣1️⃣ Enhanced health check route
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    ip: req.ip,
-    environment: process.env.NODE_ENV,
-    allowedOrigins: cleanedAllowedOrigins,
-    headers: {
-      origin: req.headers.origin,
-      userAgent: req.headers['user-agent']?.substring(0, 50),
-      referer: req.headers.referer
-    }
-  });
-});
 
-// Add a test route for CORS debugging
-app.get('/api/test-cors', (req, res) => {
-  res.json({
-    message: 'CORS test successful',
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// 3️⃣0️⃣ Handle unknown routes
 app.all('*', (req, res, next) => {
   console.log('❓ Unknown route accessed:', req.originalUrl);
   res.status(404).json({
