@@ -69,7 +69,7 @@ if (!response || response.status !== "success") {
     return;
 }
 
-const userData = response.user || response.token || response;
+const userData = response.data?.user || response.user || response;
 
 if (!userData || !userData._id) {
     toast.error("Signup failed: No user data received");
