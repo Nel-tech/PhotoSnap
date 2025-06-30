@@ -140,6 +140,7 @@ export const updateStory = async ({ storyId, storyData }: { storyId: string; sto
     const headers = getAuthHeaders();
     if (storyData instanceof FormData) {
       
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { "Content-Type": _, ...headersWithoutContentType } = headers;
       const response = await axios.put(
         `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
@@ -332,6 +333,7 @@ export const handleSave = async (profileData: { name: string; email: string }) =
 export const uploadStory = async (formData: FormData) => {
   try {
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { "Content-Type": _, ...headersWithoutContentType } = getAuthHeaders();
 
     const response = await axios.post(`${API_URL}/api/v1/stories/upload-story`, formData, {
