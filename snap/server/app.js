@@ -15,55 +15,58 @@ const app = express();
 
 app.enable('trust proxy');
 
-// CORS configuration FIRST
+// CORS configuration - Simplified and more reliable
 const allowedOrigins = [
-  'http://localhost:3000',                            
-  'https://photo-snap-gallery.vercel.app',           
+  'http://localhost:3000',
+  'https://photo-snap-gallery.vercel.app'
 ];
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
   origin: function (origin, callback) {
-
-    if (!origin) return callback(null, true); 
-    const cleanedOrigin = origin.replace(/\/$/, '');
-
-    if (allowedOrigins.includes(cleanedOrigin)) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Remove trailing slash for comparison
+    const cleanOrigin = origin.replace(/\/$/, '');
+    
+    if (allowedOrigins.includes(cleanOrigin)) {
       callback(null, true);
     } else {
-      if (isProduction) {
-        callback(new Error('Not allowed by CORS'));
-      } else {
-        callback(null, true); // Allow unknown origins in dev
-      }
+      console.log(`❌ CORS blocked origin: ${origin}`);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
   exposedHeaders: ['Set-Cookie'],
   preflightContinue: false,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 204
 };
 
-// Apply CORS to all routes
+// Apply CORS before other middleware
 app.use(cors(corsOptions));
 
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return cors(corsOptions)(req, res, next);
-  }
-  next();
-});
+// Security and other middleware
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false
+}));
 
-// Other middleware
 app.use(express.static(path.join(__dirname, 'public')));
 
 const limiter = rateLimit({
-  max: 100, 
-  windowMs: 60 * 60 * 1000, 
+  max: 100,
+  windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!',
   keyGenerator: (req, res) => req.ip,
 });
@@ -75,21 +78,24 @@ app.use(cookieParser());
 app.use(hpp());
 app.use(compression());
 
+// Add logging middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(`${req.method} ${req.originalUrl} - Origin: ${req.get('Origin') || 'No Origin'}`);
   next();
 });
 
-// API ROUTES FIRST
+// API ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 
-// Root route AFTER API routes
+// Root route
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
     message: 'PhotoSnap API is running!',
     version: '1.0.0',
+    timestamp: new Date().toISOString(),
     endpoints: {
       users: '/api/v1/users',
       stories: '/api/v1/stories'
@@ -97,10 +103,32 @@ app.get('/', (req, res) => {
   });
 });
 
-// Catch-all route LAST - keeping your original pattern
-app.all('*path', (req, res, next) => {
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Catch-all route
+app.all('*', (req, res, next) => {
   console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('❌ Error:', err.message);
+  
+  const statusCode = err.statusCode || 500;
+  const status = err.status || 'error';
+  
+  res.status(statusCode).json({
+    status,
+    message: err.message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 module.exports = app;
