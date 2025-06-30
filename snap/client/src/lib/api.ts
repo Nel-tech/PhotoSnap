@@ -1,10 +1,30 @@
 import axios from 'axios';
-import { SignupData, LoginData, Story,RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse} from '../app/types/typed';
+import { SignupData, LoginData, Story, RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse } from '../app/types/typed';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL||'https://photosnap-3gd6.onrender.com'
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://photosnap-3gd6.onrender.com';
 
+const getAuthToken = () => {
+  return Cookies.get('jwt');
+};
+
+
+const getAuthHeaders = (includeAuth = true): Record<string, string> => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+  
+  if (includeAuth) {
+    const token = getAuthToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  
+  return headers;
+};
 
 export const extractErrorMessage = (error: any, fallback = "Something went wrong") => {
   if (axios.isAxiosError(error)) {
@@ -14,7 +34,6 @@ export const extractErrorMessage = (error: any, fallback = "Something went wrong
   }
   return fallback;
 };
-
 
 export const Signup = async (data: SignupData) => {
   try {
@@ -26,12 +45,9 @@ export const Signup = async (data: SignupData) => {
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
-
-    const message =
-      axiosError.response?.data?.message || "Something went wrong. Please try again.";
-
+    const message = axiosError.response?.data?.message || "Something went wrong. Please try again.";
     
-    if (process.env.NODE_ENV !== "production" || message === "Something went wrong. Please try again.") {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Signup error:", message);
     }
 
@@ -39,23 +55,19 @@ export const Signup = async (data: SignupData) => {
   }
 };
 
-
 export const Login = async (data: LoginData) => {
-   try {
-   
+  try {
     const response = await axios.post(`${API_URL}/api/v1/users/login`, data, {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }, 
       withCredentials: true,
     });
 
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
+    const message = axiosError.response?.data?.message || "Unable to login. Please try again later.";
 
-    const message =
-      axiosError.response?.data?.message || "Unable to login. Please try again later.";
-
-    if (process.env.NODE_ENV !== "production" || message.includes("unexpected")) {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Login error:", message);
     }
 
@@ -63,33 +75,28 @@ export const Login = async (data: LoginData) => {
   }
 };
 
-
 export const getAllStory = async (): Promise<Story[] | null> => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/public-stories`, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials:true
+      headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
-    
 
     return response.data.stories;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching stories:", error);
     }
-
     return null; 
   }
 };
-
-
 
 export const getStory = async (storyId: string) => {
   try {
     const response = await axios.get(
       `${API_URL}/api/v1/stories/get-story/${storyId}`,
       {
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(), 
         withCredentials: true,
       }
     );
@@ -97,37 +104,30 @@ export const getStory = async (storyId: string) => {
   } catch (error: any) {
     if (process.env.NODE_ENV !== "production") {
       console.error("API Error Response:", error.response?.data);
-      console.error("Request URL:", `${API_URL}/api/v1/stories/get-story/${storyId}`);
     }
-
     throw new Error(error.response?.data?.message || "Error fetching story");
   }
 };
-export const featuredStory = async() => {   
+
+export const featuredStory = async () => {   
   try {     
     const response = await axios.get(`${API_URL}/api/v1/stories/featured-stories`, {       
-      headers: { "Content-Type": "application/json" },       
+      headers: getAuthHeaders(), 
       withCredentials: true,     
     });     
-    
 
     const data = response.data;
     
     if (data.firstValidStory) {
       return data.firstValidStory;
     }
-    
-
     if (data.data && data.data.featuredStory) {
       return data.data.featuredStory;
     }
-    
-
     if (data._id) {
       return data;
     }
     
-
     return null;
   } catch (error: any) {
     console.error('Error fetching featured story:', error);     
@@ -135,33 +135,41 @@ export const featuredStory = async() => {
   } 
 };
 
-
-
-
 export const updateStory = async ({ storyId, storyData }: { storyId: string; storyData: FormData | any }) => {
   try {
-    const response = await axios.put(
-      `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
-      storyData,
-      {
-        headers: {
-          "Content-Type": storyData instanceof FormData ? "multipart/form-data" : "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-
-    return response.data;
+    const headers = getAuthHeaders();
+    if (storyData instanceof FormData) {
+      
+      const { "Content-Type": _, ...headersWithoutContentType } = headers;
+      const response = await axios.put(
+        `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
+        storyData,
+        {
+          headers: headersWithoutContentType,
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } else {
+      const response = await axios.put(
+        `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
+        storyData,
+        {
+          headers,
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    }
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Error updating story");
   }
 };
 
-
 export const fetchUserProfile = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/users/getMe`, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       withCredentials: true,
     });
     return response.data;
@@ -170,47 +178,35 @@ export const fetchUserProfile = async () => {
   }
 };
 
-
 export const storyDetails = async (id: string) => {
-  
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/stories-details/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(),
       withCredentials: true,
     });
-    return  response.data.story;
+    return response.data.story;
   } catch (error: any) {
-   throw new Error(error?.response?.data?.message || "Error fetching Story Details");
+    throw new Error(error?.response?.data?.message || "Error fetching Story Details");
   }
 };
 
 export const toggleBookmark = async (id: string) => {
   try {
-   
-    
     const response = await axios.post(`${API_URL}/api/v1/stories/book-mark/${id}`, {}, {
-      headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+      headers: getAuthHeaders(),
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
-     throw new Error(error?.response?.data?.message || "Error toggling bookmark");
+    throw new Error(error?.response?.data?.message || "Error toggling bookmark");
   }
 };
 
 export const fetchUserBookmarks = async () => {
   try {
-    
-
     const response = await axios.get(`${API_URL}/api/v1/stories/getUserBookMarkedStories`, {
-      headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+      headers: getAuthHeaders(), 
+      withCredentials: true
     });
 
     if (!response.data.success) {
@@ -223,16 +219,11 @@ export const fetchUserBookmarks = async () => {
   }
 };
 
-
-export const  DeleteUserBookmarks = async (id: string) => {
+export const DeleteUserBookmarks = async (id: string) => {
   try {
-    
-
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-bookmark/${id}`, {
-      headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+      headers: getAuthHeaders(), 
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
@@ -243,9 +234,7 @@ export const  DeleteUserBookmarks = async (id: string) => {
 export const DeleteUserLikes = async (id: string): Promise<DeleteLikesResponse> => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-likes/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: getAuthHeaders(), 
       withCredentials: true
     });
     return response.data;
@@ -254,19 +243,14 @@ export const DeleteUserLikes = async (id: string): Promise<DeleteLikesResponse> 
   }
 };
 
-
 export const LikeStoryAPI = async (id: string) => {
   try {
-   
-    
     const response = await axios.post(
       `${API_URL}/api/v1/stories/like-Story/${id}`,
       {},
       {
-       headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+        headers: getAuthHeaders(), 
+        withCredentials: true
       }
     );
     
@@ -278,13 +262,9 @@ export const LikeStoryAPI = async (id: string) => {
 
 export const fetchUserLikes = async () => {
   try {
-   
-
     const response = await axios.get(`${API_URL}/api/v1/stories/get-user-likes`, {
-      headers: {
-  "Content-Type": "application/json",
-  },
-  withCredentials:true
+      headers: getAuthHeaders(), 
+      withCredentials: true
     });
     return response.data.likes;
   } catch (error: any) {
@@ -292,14 +272,13 @@ export const fetchUserLikes = async () => {
   }
 };
 
-
 export const viewStoryAPI = async (id: string) => { 
   try { 
     const response = await axios.post(
       `${API_URL}/api/v1/stories/story-views/${id}`,
       {}, 
       { 
-        headers: { "Content-Type": "application/json" }, 
+        headers: getAuthHeaders(),
         withCredentials: true, 
       }
     ); 
@@ -309,11 +288,10 @@ export const viewStoryAPI = async (id: string) => {
   } 
 };
 
-
 export const getStoryStatus = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-story-status/${id}`, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(), 
       withCredentials: true,
     });
     return response.data;
@@ -322,11 +300,10 @@ export const getStoryStatus = async (id: string) => {
   }
 };
 
-
 export const getBookmarkedbyStatus = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/bookmarked-status/${id}`, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(), 
       withCredentials: true,
     });
     return response.data;
@@ -335,11 +312,10 @@ export const getBookmarkedbyStatus = async (id: string) => {
   }
 };
 
-
 export const handleSave = async (profileData: { name: string; email: string }) => {
   try {
     const response = await axios.patch(`${API_URL}/api/v1/users/updateMe`, profileData, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       withCredentials: true,
     });
 
@@ -353,12 +329,13 @@ export const handleSave = async (profileData: { name: string; email: string }) =
   }
 };
 
-
-
 export const uploadStory = async (formData: FormData) => {
   try {
+    
+    const { "Content-Type": _, ...headersWithoutContentType } = getAuthHeaders();
+
     const response = await axios.post(`${API_URL}/api/v1/stories/upload-story`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: headersWithoutContentType,
       withCredentials: true,
     });
     return response.data.story;
@@ -367,11 +344,10 @@ export const uploadStory = async (formData: FormData) => {
   }
 };
 
-
 export const getUserUploadedStory = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-user-stories`, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(), 
       withCredentials: true,
     });
     return response.data.stories;
@@ -380,11 +356,10 @@ export const getUserUploadedStory = async () => {
   }
 };
 
-
 export const DeleteUserUploads = async (storyId: string) => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-User-Story/${storyId}`, {
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(), 
       withCredentials: true,
     });
     return response.data;
@@ -394,11 +369,10 @@ export const DeleteUserUploads = async (storyId: string) => {
   }
 };
 
-
 export const handleRequest = async (data: RequestToken) => {
   try {
     const response = await axios.post(`${API_URL}/api/v1/users/send-reset-token`, data, {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }, 
     });
     return response.data;
   } catch (error: any) {
@@ -409,7 +383,7 @@ export const handleRequest = async (data: RequestToken) => {
 export const handlePasswordReset = async (userData: ResetPasswordRequest) => {
   try {
     const response = await axios.post(`${API_URL}/api/v1/users/reset-password`, userData, {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }, 
     });
     return response.data;
   } catch (error: any) {
@@ -417,42 +391,39 @@ export const handlePasswordReset = async (userData: ResetPasswordRequest) => {
   }
 };
 
-
 // ADMIN ------
-export const handleAdminNotification = async() => {
-try {
-   const response = await axios.get(`${API_URL}/api/v1/stories/send-notification`, {
-      headers: { "Content-Type": "application/json" },
-       withCredentials:true
+export const handleAdminNotification = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/v1/stories/send-notification`, {
+      headers: getAuthHeaders(),
+      withCredentials: true
     });
     
     return response.data;
-} catch (error: any) {
+  } catch (error: any) {
     throw new Error(extractErrorMessage(error, "Failed to notify admins"));
   }
-}
+};
 
-export const getPendingStories = async() => {
-try {
-   const response = await axios.get(`${API_URL}/api/v1/stories/get-all-pending-stories`, {
-      headers: { "Content-Type": "application/json" },
-      withCredentials:true
+export const getPendingStories = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/v1/stories/get-all-pending-stories`, {
+      headers: getAuthHeaders(), 
+      withCredentials: true
     });
     return response.data.stories;
-} catch (error: any) {
+  } catch (error: any) {
     throw new Error(extractErrorMessage(error, "Failed to get Pending stories"));
   }
-}
+};
 
-export const UpdateStoryStatus = async({storyId, status}: StoryStatus) => {
+export const UpdateStoryStatus = async ({ storyId, status }: StoryStatus) => {
   try {
-   const response = await axios.patch(
-    `${API_URL}/api/v1/stories/update-story-status/${storyId}`,
+    const response = await axios.patch(
+      `${API_URL}/api/v1/stories/update-story-status/${storyId}`,
       { status }, 
       {
-        headers: {
-          "Content-Type": "application/json", 
-        },
+        headers: getAuthHeaders(), 
         withCredentials: true,
       }
     );
@@ -461,4 +432,4 @@ export const UpdateStoryStatus = async({storyId, status}: StoryStatus) => {
   } catch (error: any) {
     throw new Error(extractErrorMessage(error, "Failed to update story status"));
   }
-}
+};

@@ -17,28 +17,29 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     const user = useAuthStore((state) => state.user);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const initializeAuth = useAuthStore((state) => state.initializeAuth);
+    const getToken = useAuthStore((state) => state.getToken);
 
     useEffect(() => {
-
         initializeAuth();
         setIsInitialized(true);
     }, [initializeAuth]);
 
-    // Handle redirects after initialization
     useEffect(() => {
         if (!isInitialized) return;
 
+        const token = getToken();
         const hasNoAccess =
             !isAuthenticated ||
             !user ||
+            !token ||
             (allowedRoles.length > 0 && !allowedRoles.includes(user.role));
 
         if (hasNoAccess) {
             router.push("/unauthorized");
-        } 
-    }, [isInitialized, isAuthenticated, user, allowedRoles, router]);
+        }
+    }, [isInitialized, isAuthenticated, user, allowedRoles, router, getToken]);
 
-    // Show loading while initializing
+    
     if (!isInitialized) {
         return (
             <div className="flex flex-col items-center justify-center h-60">
@@ -48,10 +49,12 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
         );
     }
 
-    // Check access before rendering
+
+    const token = getToken();
     const hasNoAccess =
         !isAuthenticated ||
         !user ||
+        !token ||
         (allowedRoles.length > 0 && !allowedRoles.includes(user.role));
 
     if (hasNoAccess) {

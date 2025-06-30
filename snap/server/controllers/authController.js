@@ -8,30 +8,32 @@ const PasswordReset = require('../models/PasswordResetModel');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs')
 
-const signToken = (id) => 
-  jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = (id, role) =>
+  jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
 const createSendToken = (user, statusCode, req, res) => {
-  const token = signToken(user._id);
-const cookieOptions = {
-  expires: new Date(
-    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
-  ),
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', 
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-};
-  res.cookie('jwt', token, cookieOptions);
-  
+  const token = signToken(user._id, user.role);
+
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
+
   user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
-    token, 
-    user,
+    token,
+    data: { user },
   });
 };
+
+
 const validateEmail = (email) => {
   if (!email) {
     return { isValid: false, message: "Email is required" };
