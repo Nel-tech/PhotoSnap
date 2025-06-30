@@ -61,6 +61,7 @@ const response = await Signup({
     password,
     passwordConfirm
 });
+            console.log('Signup API Response:', response);
 
 if (!response || response.status !== "success") {
     const errorMessage = response?.message || "Signup failed";
@@ -68,7 +69,7 @@ if (!response || response.status !== "success") {
     return;
 }
 
-const userData = response.user || response.data || response;
+const userData = response.user || response.token || response;
 
 if (!userData || !userData._id) {
     toast.error("Signup failed: No user data received");
