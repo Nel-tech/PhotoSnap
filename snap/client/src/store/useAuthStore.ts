@@ -39,7 +39,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       role: user.role
     };
 
-    // Store user data and token in cookies
     Cookies.set('user', JSON.stringify(cleanUser), COOKIE_OPTIONS);
     Cookies.set('jwt', token, COOKIE_OPTIONS);
     Cookies.set('isAuthenticated', 'true', COOKIE_OPTIONS);

@@ -38,8 +38,9 @@ export default function SignIn() {
                 return;
             }
 
-            if (response.user) {
-                await loginStore(response.user);
+            
+            if (response.user && response.token) {
+                await loginStore(response.user, response.token);
 
                 const role = response.user.role;
 
@@ -48,10 +49,10 @@ export default function SignIn() {
                     router.push("/admin");
                 } else {
                     toast.success("Login successful");
-                    handleAuthSuccess()
+                    handleAuthSuccess();
                 }
             } else {
-                toast.error("Login failed: No user data received");
+                toast.error("Login failed: No user data or token received");
             }
         } catch (error) {
             console.error("Login error:", error);
