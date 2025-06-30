@@ -54,7 +54,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
+app.options('*path', cors(corsOptions));
 
 // Security and other middleware
 app.use(helmet({
@@ -112,7 +112,7 @@ app.get('/health', (req, res) => {
 });
 
 // Catch-all route
-app.all('*', (req, res, next) => {
+app.all('*path', (req, res, next) => {
   console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
