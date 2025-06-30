@@ -61,7 +61,6 @@ const response = await Signup({
     password,
     passwordConfirm
 });
-            console.log('Signup API Response:', response);
 
 if (!response || response.status !== "success") {
     const errorMessage = response?.message || "Signup failed";
