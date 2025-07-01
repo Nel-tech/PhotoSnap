@@ -7,11 +7,10 @@ import { useGetStory } from "../hooks/useApp"
 import { useState, useEffect } from 'react'
 import { useAuthStore } from "@/store/useAuthStore"
 import { useAuthRedirect } from "../hooks/useAuthRedirect"
-import { useRouter } from "next/navigation"
 import { Story } from "../types/typed"
 
 function Stories() {
-    const router = useRouter();
+
     const { redirectToAuth } = useAuthRedirect();
     const user = useAuthStore((state) => state.user);
     

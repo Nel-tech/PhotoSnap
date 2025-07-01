@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
 
 
       initializeAuth: async () => {
-        // Prevent re-initialization if already done
+        
         if (get().isInitialized) {
           return;
         }
@@ -73,10 +73,11 @@ export const useAuthStore = create<AuthState>()(
               isInitialized: true,
             });
           } else {
-            // If the API call fails, the session is invalid.
+           
             throw new Error("Invalid session.");
           }
         } catch (error) {
+          console.error( error);
           get().clearAuth(); 
         }
       },
