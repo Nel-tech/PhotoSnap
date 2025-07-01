@@ -32,25 +32,23 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
             setIsReady(true);
             return;
         }
-        if (!isInitialized) {
-            return;
-        }
 
-        
+       
+        if (!isInitialized) return;
+
         if (!isAuthenticated || !user) {
             router.replace("/login");
             return;
         }
 
-        // Check role permissions
         if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
             router.replace("/unauthorized");
             return;
         }
 
         setIsReady(true);
+    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname]);
 
-    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname, initializeAuth]);
 
     // Show loading while checking auth
     if (!isReady) {
