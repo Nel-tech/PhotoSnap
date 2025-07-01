@@ -2,7 +2,7 @@
 
 import Nav from "@/components/Nav";
 import { useForm } from "react-hook-form";
-import {useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -37,12 +37,11 @@ export default function SignIn() {
                 }
                 return;
             }
+            if (response?.data?.user) {
+                
+                loginStore(response?.data?.user);
 
-            
-            if (response.user && response.token) {
-                await loginStore(response.user, response.token);
-
-                const role = response.user.role;
+                const role = response?.data?.user?.role;
 
                 if (role === "admin") {
                     toast.success("Admin logged in successfully");
@@ -61,9 +60,9 @@ export default function SignIn() {
     };
 
     return (
-     
-         <>
-        
+
+        <>
+
             <header>
                 <Nav />
             </header>

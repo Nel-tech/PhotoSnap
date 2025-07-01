@@ -14,6 +14,7 @@ function Stories() {
     const router = useRouter();
     const { redirectToAuth } = useAuthRedirect();
     const user = useAuthStore((state) => state.user);
+    
 
     const { data: stories = [], isLoading, error } = useGetStory();
     const [showStories, setShowStories] = useState(false);
@@ -75,8 +76,7 @@ function Stories() {
     const handleStoryClick = (e: React.MouseEvent<HTMLAnchorElement>, storyId: string) => {
         if (!user) {
             e.preventDefault();
-            const redirectPath = redirectToAuth(`/stories-details/${storyId}`);
-            router.push(`/${redirectPath}`);
+            redirectToAuth(`/stories-details/${storyId}`); 
         }
     };
 

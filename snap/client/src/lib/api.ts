@@ -2,29 +2,10 @@ import axios from 'axios';
 import { SignupData, LoginData, Story, RequestToken, ResetPasswordRequest, StoryStatus, DeleteLikesResponse } from '../app/types/typed';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import Cookies from 'js-cookie';
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://photosnap-3gd6.onrender.com';
 
-const getAuthToken = () => {
-  return Cookies.get('jwt');
-};
-
-
-const getAuthHeaders = (includeAuth = true): Record<string, string> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json"
-  };
-  
-  if (includeAuth) {
-    const token = getAuthToken();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  
-  return headers;
-};
 
 export const extractErrorMessage = (error: any, fallback = "Something went wrong") => {
   if (axios.isAxiosError(error)) {
@@ -96,8 +77,9 @@ export const getStory = async (storyId: string) => {
     const response = await axios.get(
       `${API_URL}/api/v1/stories/get-story/${storyId}`,
       {
-        headers: getAuthHeaders(), 
-        withCredentials: true,
+      
+         headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
       }
     );
     return response.data.story;
@@ -112,8 +94,8 @@ export const getStory = async (storyId: string) => {
 export const featuredStory = async () => {   
   try {     
     const response = await axios.get(`${API_URL}/api/v1/stories/featured-stories`, {       
-      headers: getAuthHeaders(), 
-      withCredentials: true,     
+       headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });     
 
     const data = response.data;
@@ -137,17 +119,17 @@ export const featuredStory = async () => {
 
 export const updateStory = async ({ storyId, storyData }: { storyId: string; storyData: FormData | any }) => {
   try {
-    const headers = getAuthHeaders();
+  
     if (storyData instanceof FormData) {
       
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { "Content-Type": _, ...headersWithoutContentType } = headers;
+    
       const response = await axios.put(
         `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
         storyData,
         {
-          headers: headersWithoutContentType,
-          withCredentials: true,
+           headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
         }
       );
       return response.data;
@@ -156,8 +138,8 @@ export const updateStory = async ({ storyId, storyData }: { storyId: string; sto
         `${API_URL}/api/v1/stories/edit-stories/${storyId}`,
         storyData,
         {
-          headers,
-          withCredentials: true,
+           headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
         }
       );
       return response.data;
@@ -170,8 +152,8 @@ export const updateStory = async ({ storyId, storyData }: { storyId: string; sto
 export const fetchUserProfile = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/users/getMe`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
+      headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
@@ -182,8 +164,8 @@ export const fetchUserProfile = async () => {
 export const storyDetails = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/stories-details/${id}`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
+       headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data.story;
   } catch (error: any) {
@@ -194,7 +176,7 @@ export const storyDetails = async (id: string) => {
 export const toggleBookmark = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/api/v1/stories/book-mark/${id}`, {}, {
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     return response.data;
@@ -206,7 +188,7 @@ export const toggleBookmark = async (id: string) => {
 export const fetchUserBookmarks = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/getUserBookMarkedStories`, {
-      headers: getAuthHeaders(), 
+       headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
 
@@ -223,7 +205,7 @@ export const fetchUserBookmarks = async () => {
 export const DeleteUserBookmarks = async (id: string) => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-bookmark/${id}`, {
-      headers: getAuthHeaders(), 
+       headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     return response.data;
@@ -235,7 +217,7 @@ export const DeleteUserBookmarks = async (id: string) => {
 export const DeleteUserLikes = async (id: string): Promise<DeleteLikesResponse> => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-likes/${id}`, {
-      headers: getAuthHeaders(), 
+      headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     return response.data;
@@ -250,8 +232,8 @@ export const LikeStoryAPI = async (id: string) => {
       `${API_URL}/api/v1/stories/like-Story/${id}`,
       {},
       {
-        headers: getAuthHeaders(), 
-        withCredentials: true
+         headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
       }
     );
     
@@ -264,7 +246,7 @@ export const LikeStoryAPI = async (id: string) => {
 export const fetchUserLikes = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-user-likes`, {
-      headers: getAuthHeaders(), 
+       headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     return response.data.likes;
@@ -279,8 +261,8 @@ export const viewStoryAPI = async (id: string) => {
       `${API_URL}/api/v1/stories/story-views/${id}`,
       {}, 
       { 
-        headers: getAuthHeaders(),
-        withCredentials: true, 
+        headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
       }
     ); 
     return response.data; 
@@ -292,8 +274,8 @@ export const viewStoryAPI = async (id: string) => {
 export const getStoryStatus = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-story-status/${id}`, {
-      headers: getAuthHeaders(), 
-      withCredentials: true,
+      headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
@@ -304,8 +286,8 @@ export const getStoryStatus = async (id: string) => {
 export const getBookmarkedbyStatus = async (id: string) => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/bookmarked-status/${id}`, {
-      headers: getAuthHeaders(), 
-      withCredentials: true,
+      headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
@@ -316,8 +298,8 @@ export const getBookmarkedbyStatus = async (id: string) => {
 export const handleSave = async (profileData: { name: string; email: string }) => {
   try {
     const response = await axios.patch(`${API_URL}/api/v1/users/updateMe`, profileData, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
+       headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
 
     if (response.status !== 200) {
@@ -332,13 +314,11 @@ export const handleSave = async (profileData: { name: string; email: string }) =
 
 export const uploadStory = async (formData: FormData) => {
   try {
-    
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { "Content-Type": _, ...headersWithoutContentType } = getAuthHeaders();
+  
 
     const response = await axios.post(`${API_URL}/api/v1/stories/upload-story`, formData, {
-      headers: headersWithoutContentType,
-      withCredentials: true,
+       headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data.story;
   } catch (error: any) {
@@ -349,8 +329,8 @@ export const uploadStory = async (formData: FormData) => {
 export const getUserUploadedStory = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-user-stories`, {
-      headers: getAuthHeaders(), 
-      withCredentials: true,
+   headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data.stories;
   } catch (error: any) {
@@ -361,8 +341,8 @@ export const getUserUploadedStory = async () => {
 export const DeleteUserUploads = async (storyId: string) => {
   try {
     const response = await axios.delete(`${API_URL}/api/v1/stories/delete-User-Story/${storyId}`, {
-      headers: getAuthHeaders(), 
-      withCredentials: true,
+    headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
     });
     return response.data;
   } catch (error: any) {
@@ -397,7 +377,7 @@ export const handlePasswordReset = async (userData: ResetPasswordRequest) => {
 export const handleAdminNotification = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/send-notification`, {
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     
@@ -410,7 +390,7 @@ export const handleAdminNotification = async () => {
 export const getPendingStories = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/v1/stories/get-all-pending-stories`, {
-      headers: getAuthHeaders(), 
+ headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
     return response.data.stories;
@@ -425,8 +405,8 @@ export const UpdateStoryStatus = async ({ storyId, status }: StoryStatus) => {
       `${API_URL}/api/v1/stories/update-story-status/${storyId}`,
       { status }, 
       {
-        headers: getAuthHeaders(), 
-        withCredentials: true,
+       headers: { "Content-Type": "application/json" }, 
+      withCredentials: true
       }
     );
 

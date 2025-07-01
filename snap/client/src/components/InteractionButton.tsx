@@ -11,6 +11,7 @@ type InteractionType = 'like' | 'bookmark';
 type MutationContext = {
   previousState: boolean;
 };
+
 interface User {
   _id: string;
 }
@@ -31,8 +32,6 @@ interface InteractionButtonProps {
   relatedQueryKeys?: string[][];
 }
 
-
-
 const InteractionButton: React.FC<InteractionButtonProps> = ({
   id,
   user,
@@ -46,18 +45,8 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [optimisticState, setOptimisticState] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && user?._id) {
-      const storageKey = `story_${type}_${id}_${user._id}`;
-      const storedValue = localStorage.getItem(storageKey);
-      return storedValue === 'true';
-    }
-    return false;
-  });
-
-  const getStorageKey = () => {
-    return user?._id ? `story_${type}_${id}_${user._id}` : null;
-  };
+  // Remove localStorage dependency for optimistic state
+  const [optimisticState, setOptimisticState] = useState<boolean>(false);
 
   // Fetch data from server
   const {
@@ -85,38 +74,14 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
     return false;
   }, [data, user, type]);
 
-  // Handle localStorage and server state synchronization
+  // Sync optimistic state with server data
   useEffect(() => {
-   
-    if (isAuthenticated && user?._id) {
-      const storageKey = getStorageKey();
-      if (!storageKey) return;
-
-      const storedStatus = localStorage.getItem(storageKey);
-
-      if (storedStatus === 'true') {
-      
-        setOptimisticState(true);
-      } else if (isActive && !optimisticState) {
-
-        setOptimisticState(true);
-        localStorage.setItem(storageKey, 'true');
-      } else if (storedStatus === null && isActive === false) {
-       
-        setOptimisticState(false);
-      }
+    if (data && user?._id) {
+      setOptimisticState(isActive);
     } else {
       setOptimisticState(false);
     }
-  }, [isActive, isAuthenticated, user, id, type]);
-
-  
-  useEffect(() => {
-    const storageKey = getStorageKey();
-    if (isAuthenticated && storageKey) {
-      localStorage.setItem(storageKey, optimisticState.toString());
-    }
-  }, [optimisticState, isAuthenticated, user, id, type]);
+  }, [isActive, data, user]);
 
   // Handle interaction toggle
   const { mutate: toggleInteraction } = useMutation<any, Error, void, MutationContext>({
@@ -124,12 +89,6 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
     onMutate: () => {
       const newState = !optimisticState;
       setOptimisticState(newState);
-
-      const storageKey = getStorageKey();
-      if (isAuthenticated && storageKey) {
-        localStorage.setItem(storageKey, newState.toString());
-      }
-
       return { previousState: optimisticState };
     },
     onSuccess: () => {
@@ -139,24 +98,27 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
         (type === 'like' ? 'Story Unliked' : 'Story Unbookmarked')
       );
 
-     
+      // Invalidate all related queries including user bookmarks/likes
       queryClient.invalidateQueries({ queryKey: [...queryKey, id] });
 
+      // Invalidate user bookmarks and likes queries
+      if (type === 'bookmark') {
+        queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
+      } else if (type === 'like') {
+        queryClient.invalidateQueries({ queryKey: ['get-user-likes'] });
+      }
+
+      // Invalidate any additional related query keys
       relatedQueryKeys.forEach(key => {
         queryClient.invalidateQueries({ queryKey: [...key, id] });
       });
 
+      // Refetch current story status
       refetch();
     },
     onError: (error: any, _, context) => {
       if (context) {
         setOptimisticState(context.previousState);
-
-        // Also roll back localStorage
-        const storageKey = getStorageKey();
-        if (isAuthenticated && storageKey) {
-          localStorage.setItem(storageKey, context.previousState.toString());
-        }
       }
 
       // Handle specific error cases

@@ -445,7 +445,7 @@ exports.deleteBookmark = catchAsync(async (req, res, next) => {
   const bookmark = await Story.findOneAndUpdate(
     { _id: id, bookmarkedBy: userId },  
     { $pull: { bookmarkedBy: userId } },
-    { new: true }  // Return the updated document
+    { new: true }  
   );
 
   if (!bookmark) {
@@ -525,12 +525,12 @@ exports.getUserLikedStories = catchAsync(async (req, res, next) => {
 
   const likes = await Story.find({ likedBy: userId });
   if (!likes.length) {
-    return res.status(200).json({ success: false, message: 'No bookmarks found' });
+    return res.status(200).json({ success: false, message: 'No user Liked stories found' });
   }
 
   res.status(200).json({
     success: true,
-    message: 'Bookmarked stories retrieved successfully',
+    message: 'Liked stories retrieved successfully',
      likes,
   });
 });
@@ -558,21 +558,21 @@ exports.deleteLikes = catchAsync(async (req, res, next) => {
   const userId = req.user?._id;
 
   const likes = await Story.findOneAndUpdate(
-    { _id: id, bookmarkedBy: userId },  
-    { $pull: { bookmarkedBy: userId } },
+    { _id: id, likedBy: userId },  
+    { $pull: { likedBy: userId } }, 
     { new: true } 
   );
 
   if (!likes) {
     return res.status(404).json({
       status: 'fail',
-      message: 'Bookmark not found or you do not have permission to delete it'
+      message: 'Liked Stories not found or you do not have permission to delete it'
     });
   }
 
   res.status(200).json({
     status: 'success',
-    message: 'Bookmark deleted successfully'
+    message: 'Liked Stories deleted successfully'
   });
 });
 

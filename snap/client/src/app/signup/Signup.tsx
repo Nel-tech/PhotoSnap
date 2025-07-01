@@ -88,7 +88,7 @@ if (!user._id || !user.email) {
 }
 
 
-login(user, response.token); 
+login(user); 
 
 
 toast.success("Account created successfully! Welcome aboard!");

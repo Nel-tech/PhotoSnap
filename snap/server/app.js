@@ -26,13 +26,11 @@ const corsOptions = {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    // Remove trailing slash for comparison
     const cleanOrigin = origin.replace(/\/$/, '');
     
     if (allowedOrigins.includes(cleanOrigin)) {
       callback(null, true);
     } else {
-      console.log(`❌ CORS blocked origin: ${origin}`);
       callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
@@ -81,7 +79,6 @@ app.use(compression());
 // Add logging middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(`${req.method} ${req.originalUrl} - Origin: ${req.get('Origin') || 'No Origin'}`);
   next();
 });
 
@@ -113,7 +110,6 @@ app.get('/health', (req, res) => {
 
 // Catch-all route
 app.all('*path', (req, res, next) => {
-  console.log('🚫 CATCH-ALL HIT:', req.originalUrl);
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

@@ -39,7 +39,7 @@ export const useGetStory = (): UseQueryResult<Story[], Error> => {
   return useQuery({
     queryKey: ["public-stories"],
     queryFn: getAllStory,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     refetchOnWindowFocus: false,
   });
 };
@@ -50,7 +50,7 @@ export const useProfile = () => {
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
     enabled: !!user,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
   });
 };
 
@@ -82,7 +82,7 @@ export const useStoryId = () => {
       return getStory(storyId);
     },
     enabled: !!storyId,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     retry: 3,
     refetchOnWindowFocus: false,
   });
@@ -112,7 +112,7 @@ export const useStoriesDetails = (id: string) =>{
         queryKey: ["get-story-by-id", id],
         queryFn: () => storyDetails(id),
        enabled: !!user && !!isAuthenticated && !!id,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 2,
         retry: 3,
         refetchOnWindowFocus: false,
       });
@@ -166,7 +166,7 @@ export const useFeaturedStories = () => {
     queryKey: ['featured-stories'],
     queryFn: featuredStory,
     enabled: !!user,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 2, 
     retry: 2,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -194,88 +194,105 @@ export const useUploadedStories = () => {
     queryKey: ["userStories"],
     queryFn: getUserUploadedStory,
     enabled: !!user,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     retry: 3,
     refetchOnWindowFocus: false,
   });
 };
 
 export const useUserBookmarkedStories = () => {
-   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return useQuery<Story[], Error>({
-        queryKey: ['get-user-bookmarks'],
-        queryFn: fetchUserBookmarks,
-        enabled: isAuthenticated,
-        staleTime: 1000 * 60 * 5,
-        retry: 3,
-        refetchOnWindowFocus: false,
-    });
-}
+    queryKey: ['get-user-bookmarks'],
+    queryFn: fetchUserBookmarks,
+    enabled: isInitialized && isAuthenticated,
+    staleTime: 1000 * 60 * 2, 
+    retry: 3,
+    refetchOnWindowFocus: true, 
+  });
+};
 
 export const useUserLikedStories = () => {
-   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return useQuery<Story[], Error>({
-        queryKey: ['get-user-bookmarks'],
-        queryFn: fetchUserLikes,
-        enabled: isAuthenticated,
-        staleTime: 1000 * 60 * 5,
-        retry: 3,
-        refetchOnWindowFocus: false,
-    });
-}
+    queryKey: ['get-user-likes'],
+    queryFn: fetchUserLikes,
+    enabled: isInitialized && isAuthenticated,
+    staleTime: 1000 * 60 * 2, 
+    retry: 3,
+    refetchOnWindowFocus: true,
+  });
+};
 
-export const useDeleteUserBookmarks=()=> {
-   const queryClient = useQueryClient();
+export const useDeleteUserBookmarks = () => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
-        mutationFn: (id: string) => DeleteUserLikes(id),
-        onMutate: async (id: string) => {
-            await queryClient.cancelQueries({ queryKey: ['get-user-likes'] });
-            const previousBookmarks = queryClient.getQueryData<Story[]>(['get-user-bookmarks']);
-            queryClient.setQueryData<Story[]>(['get-user-bookmarks'], (old) =>
-                old ? old.filter((bookmark) => bookmark._id !== id) : []
-            );
+    mutationFn: (id: string) => DeleteUserBookmarks(id),
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['get-user-bookmarks'] });
+      
+      const previousBookmarks = queryClient.getQueryData<Story[]>(['get-user-bookmarks']);
+      
+      queryClient.setQueryData<Story[]>(['get-user-bookmarks'], (old) =>
+        old ? old.filter((bookmark) => bookmark._id !== id) : []
+      );
+      
+      return { previousBookmarks };
+    },
+    onError: (error: any, id: string, context) => {
+      toast.error("Failed to delete bookmark.");
+      
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(['get-user-bookmarks'], context.previousBookmarks);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Bookmark deleted successfully.");
+    },
+    onSettled: () => {
+     
+      queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
+    },
+  });
+};
 
-            return { previousBookmarks };
-        },
-        onError: (error: any, _, context) => {
-            toast.error("Failed to delete bookmark.");
-            queryClient.setQueryData(['get-user-bookmarks'], context?.previousBookmarks);
-        },
-        onSuccess: () => {
-            toast.success("Bookmark deleted successfully.");
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['get-user-likes'] });
-        },
-    });
-}
-
-export const useDeleteUserLikes =()=> {
-    const queryClient = useQueryClient();
-return useMutation({
-        mutationFn: (id: string) =>  DeleteUserBookmarks(id),
-        onMutate: async (id: string) => {
-            await queryClient.cancelQueries({ queryKey: ['get-user-bookmarks'] });
-
-            const previousBookmarks = queryClient.getQueryData<Story[]>(['get-user-bookmarks']);
-            queryClient.setQueryData<Story[]>(['get-user-bookmarks'], (old) =>
-                old ? old.filter((bookmark) => bookmark._id !== id) : []
-            );
-
-            return { previousBookmarks };
-        },
-        onError: (error: any, _, context) => {
-            toast.error("Failed to delete bookmark.");
-            queryClient.setQueryData(['get-user-bookmarks'], context?.previousBookmarks);
-        },
-        onSuccess: () => {
-            toast.success("Bookmark deleted successfully.");
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
-        },
-    });
-}
+export const useDeleteUserLikes = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: string) => DeleteUserLikes(id),
+    onMutate: async (id: string) => {
+      
+      await queryClient.cancelQueries({ queryKey: ['get-user-likes'] });
+      
+      const previousLikes = queryClient.getQueryData<Story[]>(['get-user-likes']);
+      
+      queryClient.setQueryData<Story[]>(['get-user-likes'], (old) =>
+        old ? old.filter((like) => like._id !== id) : []
+      );
+      
+      return { previousLikes };
+    },
+    onError: (error: any, id: string, context) => {
+      toast.error("Failed to delete like.");
+      
+      if (context?.previousLikes) {
+        queryClient.setQueryData(['get-user-likes'], context.previousLikes);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Like removed successfully.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-user-likes'] });
+    },
+  });
+};
 
 export const useHandleRequestToken = () => {
   return useMutation({
@@ -319,7 +336,7 @@ export const useNotification = () => {
     queryKey: ["admin-notification"],
     queryFn: handleAdminNotification,
     enabled: !!isAuthenticated && isAdmin,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 2,
     retry: 3,
     refetchOnWindowFocus: false,
   });
@@ -335,7 +352,7 @@ export const usePendingStories = () => {
     queryKey: ["pending-stories"],
     queryFn:  getPendingStories,
     enabled: !!isAuthenticated && isAdmin,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 2,
     retry: 3,
     refetchOnWindowFocus: false,
   });

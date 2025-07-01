@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Loader2 } from "lucide-react";
 
@@ -11,57 +11,57 @@ interface ProtectedProps {
 }
 
 const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
-    const [isInitialized, setIsInitialized] = useState(false);
+    const [isReady, setIsReady] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     const user = useAuthStore((state) => state.user);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isInitialized = useAuthStore((state) => state.isInitialized);
     const initializeAuth = useAuthStore((state) => state.initializeAuth);
-    const getToken = useAuthStore((state) => state.getToken);
+  
 
     useEffect(() => {
-        initializeAuth();
-        setIsInitialized(true);
-    }, [initializeAuth]);
-
-    useEffect(() => {
-        if (!isInitialized) return;
-
-        const token = getToken();
-        const hasNoAccess =
-            !isAuthenticated ||
-            !user ||
-            !token ||
-            (allowedRoles.length > 0 && !allowedRoles.includes(user.role));
-
-        if (hasNoAccess) {
-            router.push("/unauthorized");
+        if (!isInitialized) {
+            initializeAuth();
         }
-    }, [isInitialized, isAuthenticated, user, allowedRoles, router, getToken]);
+    }, [isInitialized, initializeAuth]);
 
-    
-    if (!isInitialized) {
+    useEffect(() => {
+        if (pathname === '/unauthorized' || pathname === '/login' || pathname === '/signup') {
+            setIsReady(true);
+            return;
+        }
+        if (!isInitialized) {
+            return;
+        }
+
+        
+        if (!isAuthenticated || !user) {
+            router.replace("/login");
+            return;
+        }
+
+        // Check role permissions
+        if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+            router.replace("/unauthorized");
+            return;
+        }
+
+        setIsReady(true);
+
+    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname, initializeAuth]);
+
+    // Show loading while checking auth
+    if (!isReady) {
         return (
-            <div className="flex flex-col items-center justify-center h-60">
-                <Loader2 className="h-8 w-8 text-gray-500 mb-2 animate-spin" />
-                <p>Loading Please Wait...</p>
-            </div>
-        );
-    }
-
-
-    const token = getToken();
-    const hasNoAccess =
-        !isAuthenticated ||
-        !user ||
-        !token ||
-        (allowedRoles.length > 0 && !allowedRoles.includes(user.role));
-
-    if (hasNoAccess) {
-        return (
-            <div className="flex flex-col items-center justify-center h-60">
-                <Loader2 className="h-8 w-8 text-gray-500 mb-2 animate-spin" />
-                <p>Redirecting...</p>
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <Loader2 className="animate-spin h-8 w-8 mx-auto mb-4" />
+                    <p className="text-gray-600">
+                        {!isInitialized ? "Initializing..." : "Checking authentication..."}
+                    </p>
+                </div>
             </div>
         );
     }
