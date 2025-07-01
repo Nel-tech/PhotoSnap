@@ -15,7 +15,7 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    const { user, isAuthenticated, isInitialized, isLoading, initializeAuth } = useAuthStore();
+    const { user, isAuthenticated, isInitialized, initializeAuth } = useAuthStore();
 
     // Public routes that don't require authentication
     const publicRoutes = ['/login', '/signup', '/unauthorized', '/'];
