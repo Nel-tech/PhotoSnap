@@ -1,5 +1,3 @@
-
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import Cookies from 'js-cookie';
@@ -19,11 +17,9 @@ interface AuthState {
   isInitialized: boolean;
   login: (user: User) => void;
   logout: () => Promise<void>;
-  initializeAuth: () => void;
+  initializeAuth: () => Promise<void>;
   clearAuth: () => void;
 }
-
-
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -33,19 +29,17 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isInitialized: false,
 
-
       logout: async () => {
         set({ isLoading: true });
 
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_AUTH_API_URL}/api/v1/users/logout`, {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-          
+          await fetch(`${process.env.NEXT_PUBLIC_AUTH_API_URL}/api/v1/users/logout`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
         } catch (error) {
           console.error('Logout API call failed:', error);
         }
@@ -54,36 +48,35 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: false });
       },
 
-     
-
-
       initializeAuth: async () => {
+        const state = get();
         
-        if (get().isInitialized) {
+        if (state.isInitialized) {
           return;
         }
 
+        set({ isLoading: true });
+
         try {
-          
           const response = await fetchUserProfile();
-          if (response && response.data.user) {
+          
+          if (response && response.data && response.data.user) {
             set({
               user: response.data.user,
               isAuthenticated: true,
               isInitialized: true,
+              isLoading: false,
             });
           } else {
-           
-            throw new Error("Invalid session.");
+            throw new Error("No valid session");
           }
         } catch (error) {
-          console.error( error);
-          get().clearAuth(); 
+          console.error('Auth initialization failed:', error);
+          get().clearAuth();
         }
       },
 
-      login: (user) => { 
-       
+      login: (user) => {
         set({
           user: user,
           isAuthenticated: true,
@@ -98,11 +91,10 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           isAuthenticated: false,
-          isInitialized: true, 
+          isInitialized: true,
+          isLoading: false,
         });
       },
-
-
     }),
     {
       name: 'auth-storage',
@@ -113,5 +105,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-
-

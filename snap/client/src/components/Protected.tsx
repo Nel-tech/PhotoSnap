@@ -15,11 +15,11 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    const user = useAuthStore((state) => state.user);
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-    const isInitialized = useAuthStore((state) => state.isInitialized);
-    const initializeAuth = useAuthStore((state) => state.initializeAuth);
-  
+    const { user, isAuthenticated, isInitialized, isLoading, initializeAuth } = useAuthStore();
+
+    // Public routes that don't require authentication
+    const publicRoutes = ['/login', '/signup', '/unauthorized', '/'];
+    const isPublicRoute = publicRoutes.includes(pathname);
 
     useEffect(() => {
         if (!isInitialized) {
@@ -28,12 +28,11 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     }, [isInitialized, initializeAuth]);
 
     useEffect(() => {
-        if (pathname === '/unauthorized' || pathname === '/login' || pathname === '/signup') {
+        if (isPublicRoute) {
             setIsReady(true);
             return;
         }
 
-       
         if (!isInitialized) return;
 
         if (!isAuthenticated || !user) {
@@ -47,11 +46,9 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
         }
 
         setIsReady(true);
-    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname]);
+    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname, isPublicRoute]);
 
-
-    // Show loading while checking auth
-    if (!isReady) {
+    if (!isReady && !isPublicRoute) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
