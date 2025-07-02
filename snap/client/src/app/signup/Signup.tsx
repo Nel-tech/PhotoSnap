@@ -31,7 +31,6 @@ export default function SignUpPage() {
     const { getAuthUrls, handleAuthSuccess } = useAuthRedirect();
     const { loginUrl } = getAuthUrls();
 
-
     const {
         register,
         handleSubmit,
@@ -39,52 +38,51 @@ export default function SignUpPage() {
         formState: { errors, isSubmitting },
     } = useForm<SignupData>();
 
-
     const onSubmit = async (formData: SignupData) => {
         const { email } = formData;
         if (email.trim()) {
-                const validation = validateEmailClient(email);
-                if (!validation.isValid) {
-                     toast.error(validation.message);
-                     setIsLoading(false); 
-                     return;
-                 }
+            const validation = validateEmailClient(email);
+            if (!validation.isValid) {
+                toast.error(validation.message);
+                setIsLoading(false);
+                return;
+            }
+        }
+
         try {
             const response = await Signup(formData);
 
             if (handleSignupSuccess(response, login)) {
                 toast.success("Signup successful");
                 handleAuthSuccess()
-            
             } else {
                 toast.error("Signup failed: Invalid data received");
             }
-        } catch (err:any) {
+        } catch (err: any) {
             console.error("Signup error:", err);
 
             let message = "Something went wrong";
 
             if (err.response?.status === 409 || err.response?.status === 400) {
-            const errorMessage = err.response?.data?.message || "";
-            if (errorMessage.toLowerCase().includes('email') &&
-            (errorMessage.toLowerCase().includes('exist') ||
-             errorMessage.toLowerCase().includes('taken') ||
-             errorMessage.toLowerCase().includes('registered'))) {
-             message = "An account with this email already exists. Please use a different email or try signing in.";
-             } else {
-             message = errorMessage || "Invalid registration details";
-              }
-              } else if (err.response?.data?.message) {
-             message = err.response.data.message;
-             } else if (err.message) {
-            message = err.message;
-             }
-             toast.error(message);
-            } finally {
+                const errorMessage = err.response?.data?.message || "";
+                if (errorMessage.toLowerCase().includes('email') &&
+                    (errorMessage.toLowerCase().includes('exist') ||
+                        errorMessage.toLowerCase().includes('taken') ||
+                        errorMessage.toLowerCase().includes('registered'))) {
+                    message = "An account with this email already exists. Please use a different email or try signing in.";
+                } else {
+                    message = errorMessage || "Invalid registration details";
+                }
+            } else if (err.response?.data?.message) {
+                message = err.response.data.message;
+            } else if (err.message) {
+                message = err.message;
+            }
+            toast.error(message);
+        } finally {
             setIsLoading(false);
-                   }
+        }
     };
-
 
     const password = watch("password");
 
@@ -211,8 +209,6 @@ export default function SignUpPage() {
                                 {isSubmitting ? 'Creating...' : 'Create Account'}
                             </button>
                         </div>
-
-
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
@@ -227,5 +223,4 @@ export default function SignUpPage() {
             <Footer />
         </>
     );
-}
 }
