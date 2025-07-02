@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
             throw new Error("No valid session");
           }
         } catch (error) {
-         
+          console.error('❌ Auth initialization failed:', error);
           get().clearAuth();
         }
       },
