@@ -129,7 +129,6 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
 
       // Only sync if there's a significant difference and no pending mutation
       if (serverState !== currentLocalState) {
-        console.log(`Syncing ${type} state for story ${id}: server=${serverState}, local=${currentLocalState}`);
         setLocalInteractionState(type, user._id, id, serverState);
         setLocalState(serverState);
       }
@@ -154,7 +153,6 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
       const previousLocalState = localState;
       const newLocalState = !localState;
 
-      console.log(`Optimistic update for ${type}: ${localState} -> ${newLocalState}`);
 
       // Immediately update local state and localStorage
       if (user?._id) {
@@ -219,7 +217,6 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
 
       // Revert all changes on error
       if (context && user?._id) {
-        console.log(`Reverting ${type} state due to error`);
 
         // Revert local state
         setLocalState(context.previousLocalState);
