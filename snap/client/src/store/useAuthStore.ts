@@ -1,3 +1,4 @@
+// useAuthStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { fetchUserProfile } from '@/lib/api';
@@ -14,12 +15,12 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   isInitialized: boolean;
+  sessionValidated: boolean; // New flag to track if session is validated
   login: (user: User) => void;
   logout: () => Promise<void>;
   initializeAuth: () => Promise<void>;
   clearAuth: () => void;
 }
-
 
 const logError = (message: string, error?: any) => {
   if (process.env.NODE_ENV === 'development') {
@@ -36,6 +37,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       isInitialized: false,
+      sessionValidated: false,
 
       logout: async () => {
         set({ isLoading: true });
@@ -54,7 +56,6 @@ export const useAuthStore = create<AuthState>()(
           }
         } catch (error) {
           logError('Logout API call failed', error);
-         
         }
 
         get().clearAuth();
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthState>()(
       initializeAuth: async () => {
         const state = get();
         
+        // Don't re-initialize if already done
         if (state.isInitialized) {
           return;
         }
@@ -71,13 +73,16 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
 
         try {
+          // Always validate session with server, regardless of persisted state
           const response = await fetchUserProfile();
           
           if (response && response.data && response.data.user) {
+            // Server confirms user is authenticated
             set({
               user: response.data.user,
               isAuthenticated: true,
               isInitialized: true,
+              sessionValidated: true,
               isLoading: false,
             });
           } else {
@@ -85,7 +90,15 @@ export const useAuthStore = create<AuthState>()(
           }
         } catch (error) {
           logError('Auth initialization failed', error);
-          get().clearAuth();
+          
+          // Clear everything if server session is invalid
+          set({
+            user: null,
+            isAuthenticated: false,
+            isInitialized: true,
+            sessionValidated: false,
+            isLoading: false,
+          });
         }
       },
 
@@ -94,6 +107,7 @@ export const useAuthStore = create<AuthState>()(
           user: user,
           isAuthenticated: true,
           isInitialized: true,
+          sessionValidated: true, // Mark as validated since we just logged in
         });
       },
 
@@ -102,22 +116,23 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           isAuthenticated: false,
           isInitialized: true,
+          sessionValidated: false,
           isLoading: false,
         });
       },
     }),
     {
       name: 'auth-storage',
+      // Don't persist isAuthenticated - let server validation determine this
       partialize: (state) => ({
         user: state.user,
-        isAuthenticated: state.isAuthenticated
+        // Remove isAuthenticated from persistence
       }),
     }
   )
 );
 
 export const handleSignupSuccess = (response: any, loginStore: (user: User) => void) => {
-
   if (response?.status === 'success' && response?.data?.user) {
     const user = {
       _id: response.data.user._id,
@@ -129,12 +144,10 @@ export const handleSignupSuccess = (response: any, loginStore: (user: User) => v
     loginStore(user);
     return true;
   }
- 
   return false;
 };
 
 export const handleLoginSuccess = (response: any, loginStore: (user: User) => void) => {
-
   if (response?.status === 'success' && response?.data?.user) {
     const user = {
       _id: response.data.user._id,
@@ -142,7 +155,6 @@ export const handleLoginSuccess = (response: any, loginStore: (user: User) => vo
       email: response.data.user.email,
       role: response.data.user.role || 'user'
     };
-    
 
     loginStore(user);
     return true;

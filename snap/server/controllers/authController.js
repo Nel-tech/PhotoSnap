@@ -8,11 +8,6 @@ const PasswordReset = require('../models/PasswordResetModel');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs')
 
-const signToken = (id, role) => 
-  jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id, user.role);
   
@@ -22,11 +17,10 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     httpOnly: true,
     secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // This is the key change
+    sameSite: 'none', 
   });
 
   user.password = undefined;
-
   res.status(statusCode).json({
     status: 'success',
     data: { user },
