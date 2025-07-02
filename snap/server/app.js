@@ -15,10 +15,10 @@ const app = express();
 
 app.enable('trust proxy');
 
-// CORS configuration - Simplified and more reliable
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://photo-snap-gallery.vercel.app'
+  'https://photo-snap-gallery.vercel.app',
+  'https://photo-snap-8cqbpr6n4-neltechs-projects.vercel.app' 
 ];
 
 const corsOptions = {

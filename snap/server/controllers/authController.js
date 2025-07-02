@@ -8,21 +8,21 @@ const PasswordReset = require('../models/PasswordResetModel');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs')
 
-const signToken = (id, role) =>
+const signToken = (id, role) => 
   jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id, user.role);
-
+  
   res.cookie('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
     secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // This is the key change
   });
 
   user.password = undefined;
