@@ -11,6 +11,7 @@ import { Signup } from "@/lib/api"
 import { validateEmailClient } from "@/components/ValidateEmail";
 import { SignupData } from "../types/typed";
 import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { handleSignupSuccess } from "@/store/useAuthStore";
 
 
 export default function SignUpPage() {
@@ -38,90 +39,50 @@ export default function SignUpPage() {
         formState: { errors, isSubmitting },
     } = useForm<SignupData>();
 
+
     const onSubmit = async (formData: SignupData) => {
-        setIsLoading(true);
-
-        const { name, email, password, passwordConfirm } = formData;
-
-        try {
-            // Email validation
-            if (email.trim()) {
+        const { email } = formData;
+        if (email.trim()) {
                 const validation = validateEmailClient(email);
                 if (!validation.isValid) {
-                    toast.error(validation.message);
-                    setIsLoading(false); 
-                    return;
-                }
+                     toast.error(validation.message);
+                     setIsLoading(false); 
+                     return;
+                 }
+        try {
+            const response = await Signup(formData);
+
+            if (handleSignupSuccess(response, login)) {
+                toast.success("Signup successful");
+            
+            } else {
+                toast.error("Signup failed: Invalid data received");
             }
-
-        
-const response = await Signup({
-    name,
-    email,
-    password,
-    passwordConfirm
-});
-
-if (!response || response.status !== "success") {
-    const errorMessage = response?.message || "Signup failed";
-    toast.error(errorMessage);
-    return;
-}
-
-const userData = response.data?.user || response.user || response;
-
-if (!userData || !userData._id) {
-    toast.error("Signup failed: No user data received");
-    return;
-}
-
-const user = {
-    _id: userData._id,
-    name: userData.name,
-    email: userData.email,
-    role: userData.role || 'user'
-};
-
-if (!user._id || !user.email) {
-    toast.error("Signup failed: Invalid user data");
-    return;
-}
-
-
-login(user); 
-
-
-toast.success("Account created successfully! Welcome aboard!");
-handleAuthSuccess()
-
-        } catch (err: any) {
+        } catch (err:any) {
             console.error("Signup error:", err);
 
             let message = "Something went wrong";
 
             if (err.response?.status === 409 || err.response?.status === 400) {
-                const errorMessage = err.response?.data?.message || "";
-                if (errorMessage.toLowerCase().includes('email') &&
-                    (errorMessage.toLowerCase().includes('exist') ||
-                        errorMessage.toLowerCase().includes('taken') ||
-                        errorMessage.toLowerCase().includes('registered'))) {
-                    message = "An account with this email already exists. Please use a different email or try signing in.";
-                } else {
-                    message = errorMessage || "Invalid registration details";
-                }
-            } else if (err.response?.data?.message) {
-                message = err.response.data.message;
-            } else if (err.message) {
-                message = err.message;
-            }
-
-            toast.error(message);
-
-        } finally {
+            const errorMessage = err.response?.data?.message || "";
+            if (errorMessage.toLowerCase().includes('email') &&
+            (errorMessage.toLowerCase().includes('exist') ||
+             errorMessage.toLowerCase().includes('taken') ||
+             errorMessage.toLowerCase().includes('registered'))) {
+             message = "An account with this email already exists. Please use a different email or try signing in.";
+             } else {
+             message = errorMessage || "Invalid registration details";
+              }
+              } else if (err.response?.data?.message) {
+             message = err.response.data.message;
+             } else if (err.message) {
+            message = err.message;
+             }
+             toast.error(message);
+            } finally {
             setIsLoading(false);
-        }
+                   }
     };
-
 
 
     const password = watch("password");
@@ -266,4 +227,4 @@ handleAuthSuccess()
         </>
     );
 }
-
+}

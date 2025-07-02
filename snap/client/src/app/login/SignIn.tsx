@@ -10,39 +10,25 @@ import Footer from "@/components/Footer";
 import { LoginData } from "../types/typed";
 import { Login } from "@/lib/api";
 import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { handleLoginSuccess } from "@/store/useAuthStore";
 
 
 export default function SignIn() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginData>();
-    const loginStore = useAuthStore((state) => state.login)
+    const login = useAuthStore((state) => state.login)
     const router = useRouter();
     const { getAuthUrls, handleAuthSuccess } = useAuthRedirect();
     const { signupUrl } = getAuthUrls();
+
+    
     const onSubmit = async (formData: LoginData) => {
         const { email, password } = formData;
 
         try {
             const response = await Login({ email, password });
 
-            if (!response || response.status !== "success") {
-                const errorMessage = response?.message || "Login failed";
-
-                if (
-                    response?.status === 401 ||
-                    errorMessage.toLowerCase().includes("incorrect")
-                ) {
-                    toast.error("Incorrect email or password.", { duration: 4000 });
-                } else {
-                    toast.error(errorMessage, { duration: 4000 });
-                }
-                return;
-            }
-            if (response?.data?.user) {
-                
-                loginStore(response?.data?.user);
-
-                const role = response?.data?.user?.role;
-
+            if (handleLoginSuccess(response, login)) {
+                const role = response.data.user.role;
                 if (role === "admin") {
                     toast.success("Admin logged in successfully");
                     router.push("/admin");
@@ -51,7 +37,7 @@ export default function SignIn() {
                     handleAuthSuccess();
                 }
             } else {
-                toast.error("Login failed: No user data or token received");
+                toast.error("Login failed: Invalid credentials");
             }
         } catch (error) {
             console.error("Login error:", error);

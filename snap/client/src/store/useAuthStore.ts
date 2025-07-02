@@ -105,3 +105,35 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+export const handleLoginSuccess = (response: any, loginStore: (user: User) => void) => {
+  if (response?.status === 'success' && response?.data?.user) {
+    const user = {
+      _id: response.data.user._id,
+      name: response.data.user.name,
+      email: response.data.user.email,
+      role: response.data.user.role || 'user'
+    };
+    
+    loginStore(user);
+    return true;
+  }
+  return false;
+};
+
+export const handleSignupSuccess = (response: any, loginStore: (user: User) => void) => {
+  if (response?.status === 'success' && (response?.data?.user || response?.user)) {
+    const userData = response.data?.user || response.user;
+    
+    const user = {
+      _id: userData._id,
+      name: userData.name,
+      email: userData.email,
+      role: userData.role || 'user'
+    };
+    
+    loginStore(user);
+    return true;
+  }
+  return false;
+};
