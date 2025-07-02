@@ -249,7 +249,7 @@ export const fetchUserLikes = async () => {
        headers: { "Content-Type": "application/json" }, 
       withCredentials: true
     });
-    return response.data.likes;
+    return response.data.likes || [];
   } catch (error: any) {
     throw new Error(error?.response?.data?.message || "Error Fetching user likes");
   }

@@ -10,6 +10,7 @@ type InteractionType = 'like' | 'bookmark';
 
 type MutationContext = {
   previousState: boolean;
+  previousData: StoryStatusResponse | undefined;
 };
 
 interface User {
@@ -45,63 +46,79 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Remove localStorage dependency for optimistic state
-  const [optimisticState, setOptimisticState] = useState<boolean>(false);
-
   // Fetch data from server
   const {
     data,
-    refetch,
     isLoading
   } = useQuery({
     queryKey: [...queryKey, id],
     enabled: !!id && isAuthenticated,
     queryFn: () => getStatusFn(id),
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes - prevent too frequent refetches
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
     refetchOnMount: true,
     retry: 2
   });
 
   const isActive = useMemo(() => {
+    if (!user?._id || !data) return false;
+
     if (type === 'like') {
-      if (!data?.likedBy || !user?._id) return false;
-      return data.likedBy.includes(user._id);
+      return data.likedBy?.includes(user._id) || false;
     } else if (type === 'bookmark') {
-      if (!data?.bookmarkedBy || !user?._id) return false;
-      return data.bookmarkedBy.includes(user._id);
+      return data.bookmarkedBy?.includes(user._id) || false;
     }
     return false;
   }, [data, user, type]);
 
-  // Sync optimistic state with server data
-  useEffect(() => {
-    if (data && user?._id) {
-      setOptimisticState(isActive);
-    } else {
-      setOptimisticState(false);
-    }
-  }, [isActive, data, user]);
-
-  // Handle interaction toggle
-  const { mutate: toggleInteraction } = useMutation<any, Error, void, MutationContext>({
+  // Handle interaction toggle with proper optimistic updates
+  const { mutate: toggleInteraction, isPending } = useMutation<any, Error, void, MutationContext>({
     mutationFn: () => toggleFn(id),
-    onMutate: () => {
-      const newState = !optimisticState;
-      setOptimisticState(newState);
-      return { previousState: optimisticState };
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: [...queryKey, id] });
+
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData<StoryStatusResponse>([...queryKey, id]);
+      const previousState = isActive;
+
+      // Optimistically update the cache
+      if (previousData && user?._id) {
+        const newData = { ...previousData };
+
+        if (type === 'like') {
+          if (previousState) {
+            // Remove user from likedBy array
+            newData.likedBy = (newData.likedBy || []).filter(userId => userId !== user._id);
+          } else {
+            // Add user to likedBy array
+            newData.likedBy = [...(newData.likedBy || []), user._id];
+          }
+        } else if (type === 'bookmark') {
+          if (previousState) {
+            // Remove user from bookmarkedBy array
+            newData.bookmarkedBy = (newData.bookmarkedBy || []).filter(userId => userId !== user._id);
+          } else {
+            // Add user to bookmarkedBy array
+            newData.bookmarkedBy = [...(newData.bookmarkedBy || []), user._id];
+          }
+        }
+
+        // Update the cache with optimistic data
+        queryClient.setQueryData([...queryKey, id], newData);
+      }
+
+      return { previousState, previousData };
     },
     onSuccess: () => {
       // Show success message
-      toast.success(optimisticState ?
+      const newState = !isActive; // This will be the new state after toggle
+      toast.success(newState ?
         (type === 'like' ? 'Story Liked' : 'Story Bookmarked') :
         (type === 'like' ? 'Story Unliked' : 'Story Unbookmarked')
       );
 
-      // Invalidate all related queries including user bookmarks/likes
-      queryClient.invalidateQueries({ queryKey: [...queryKey, id] });
-
-      // Invalidate user bookmarks and likes queries
+      // Invalidate related queries (but not the current one immediately)
       if (type === 'bookmark') {
         queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
       } else if (type === 'like') {
@@ -113,12 +130,17 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
         queryClient.invalidateQueries({ queryKey: [...key, id] });
       });
 
-      // Refetch current story status
-      refetch();
+      // Refetch after a short delay to ensure server has processed the update
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: [...queryKey, id] });
+      }, 1000);
     },
     onError: (error: any, _, context) => {
+      // Revert the optimistic update
       if (context) {
-        setOptimisticState(context.previousState);
+        if (context.previousData) {
+          queryClient.setQueryData([...queryKey, id], context.previousData);
+        }
       }
 
       // Handle specific error cases
@@ -135,11 +157,11 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
   // Determine icon and text based on type
   const getIcon = () => {
     if (type === 'like') {
-      return optimisticState ?
+      return isActive ?
         <Heart className="h-5 w-5 fill-current" /> :
         <Heart className="h-5 w-5" />;
     } else if (type === 'bookmark') {
-      return optimisticState ?
+      return isActive ?
         <Bookmark className="h-5 w-5 fill-current" /> :
         <Bookmark className="h-5 w-5" />;
     }
@@ -147,17 +169,17 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
 
   const getText = () => {
     if (type === 'like') {
-      return optimisticState ? "Liked" : "Like";
+      return isActive ? "Liked" : "Like";
     } else if (type === 'bookmark') {
-      return optimisticState ? "Bookmarked" : "Bookmark";
+      return isActive ? "Bookmarked" : "Bookmark";
     }
   };
 
   const getColorClass = () => {
     if (type === 'like') {
-      return optimisticState ? "text-red-500 hover:text-red-600" : "text-[#6b6b6b] hover:text-[#3c3c3c]";
+      return isActive ? "text-red-500 hover:text-red-600" : "text-[#6b6b6b] hover:text-[#3c3c3c]";
     } else if (type === 'bookmark') {
-      return optimisticState ? "text-blue-500 hover:text-blue-600" : "text-[#6b6b6b] hover:text-[#3c3c3c]";
+      return isActive ? "text-blue-500 hover:text-blue-600" : "text-[#6b6b6b] hover:text-[#3c3c3c]";
     }
     return "";
   };
@@ -168,7 +190,7 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
       size="sm"
       onClick={() => toggleInteraction()}
       className={`${getColorClass()} hover:bg-[#f8f3ea] cursor-pointer transition-colors duration-200`}
-      disabled={isLoading || !isAuthenticated}
+      disabled={isLoading || isPending || !isAuthenticated}
     >
       {getIcon()}
       <span className="ml-2 hidden sm:inline">

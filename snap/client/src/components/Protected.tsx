@@ -22,7 +22,6 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
 
     useEffect(() => {
         if (!isInitialized && !isLoading) {
-            console.log('🔄 Initializing auth from Protected component');
             initializeAuth();
         }
     }, [isInitialized, isLoading, initializeAuth]);
@@ -33,24 +32,20 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
             return;
         }
 
-        // Wait for initialization to complete
         if (!isInitialized || isLoading) {
             return;
         }
 
         if (!isAuthenticated || !user) {
-            console.log('🚫 Not authenticated, redirecting to login');
             router.replace("/login");
             return;
         }
 
         if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-            console.log('🚫 Insufficient permissions, redirecting to unauthorized');
             router.replace("/unauthorized");
             return;
         }
 
-        console.log('✅ Authentication check passed');
         setIsReady(true);
     }, [isAuthenticated, user, isInitialized, isLoading, allowedRoles, router, pathname, isPublicRoute]);
 

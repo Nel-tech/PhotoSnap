@@ -272,9 +272,10 @@ export const useDeleteUserLikes = () => {
       
       const previousLikes = queryClient.getQueryData<Story[]>(['get-user-likes']);
       
-      queryClient.setQueryData<Story[]>(['get-user-likes'], (old) =>
-        old ? old.filter((like) => like._id !== id) : []
-      );
+      queryClient.setQueryData<Story[]>(['get-user-likes'], (old) => {
+        if (!old) return [];
+        return old.filter((like) => like._id !== id);
+      });
       
       return { previousLikes };
     },
