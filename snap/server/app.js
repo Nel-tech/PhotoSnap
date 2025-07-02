@@ -37,12 +37,13 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With',
-    'Accept',
-    'Origin'
-  ],
+  'Content-Type', 
+  'Authorization', 
+  'X-Requested-With',
+  'Accept',
+  'Origin',
+  'Cookie' 
+],
   exposedHeaders: ['Set-Cookie'],
   preflightContinue: false,
   optionsSuccessStatus: 204
@@ -73,6 +74,18 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
+
+// Add logging middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
+
+
+// API ROUTES (these stay the same)
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/stories', storyRouter);
 app.use(hpp());
 app.use(compression());
 
