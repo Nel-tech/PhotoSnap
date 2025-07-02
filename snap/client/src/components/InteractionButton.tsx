@@ -1,4 +1,4 @@
-import {  useMemo } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Heart, Bookmark } from 'lucide-react';
 import { Button } from './ui/button';
@@ -11,6 +11,7 @@ type InteractionType = 'like' | 'bookmark';
 type MutationContext = {
   previousState: boolean;
   previousData: StoryStatusResponse | undefined;
+  previousLocalState: boolean;
 };
 
 interface User {
@@ -33,6 +34,47 @@ interface InteractionButtonProps {
   relatedQueryKeys?: string[][];
 }
 
+// Helper functions for localStorage
+const getLocalStorageKey = (type: InteractionType, userId: string) => {
+  return `user_${userId}_${type}s`;
+};
+
+const getLocalInteractionState = (type: InteractionType, userId: string, storyId: string): boolean => {
+  try {
+    const key = getLocalStorageKey(type, userId);
+    const stored = localStorage.getItem(key);
+    if (!stored) return false;
+    const interactions = JSON.parse(stored);
+    return Array.isArray(interactions) && interactions.includes(storyId);
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    return false;
+  }
+};
+
+const setLocalInteractionState = (type: InteractionType, userId: string, storyId: string, isActive: boolean) => {
+  try {
+    const key = getLocalStorageKey(type, userId);
+    const stored = localStorage.getItem(key);
+    let interactions = [];
+
+    if (stored) {
+      interactions = JSON.parse(stored);
+      if (!Array.isArray(interactions)) interactions = [];
+    }
+
+    if (isActive && !interactions.includes(storyId)) {
+      interactions.push(storyId);
+    } else if (!isActive && interactions.includes(storyId)) {
+      interactions = interactions.filter(id => id !== storyId);
+    }
+
+    localStorage.setItem(key, JSON.stringify(interactions));
+  } catch (error) {
+    console.error('Error writing to localStorage:', error);
+  }
+};
+
 const InteractionButton: React.FC<InteractionButtonProps> = ({
   id,
   user,
@@ -45,22 +87,31 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
 }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const hasPendingMutation = useRef(false);
+
+  // Local state for immediate UI feedback
+  const [localState, setLocalState] = useState<boolean>(() => {
+    if (!user?._id || !isAuthenticated) return false;
+    return getLocalInteractionState(type, user._id, id);
+  });
 
   // Fetch data from server
   const {
     data,
-    isLoading
+    isLoading,
+    isError
   } = useQuery({
     queryKey: [...queryKey, id],
     enabled: !!id && isAuthenticated,
     queryFn: () => getStatusFn(id),
-    staleTime: 5 * 60 * 1000, // 5 minutes - prevent too frequent refetches
-    refetchOnWindowFocus: false, // Prevent unnecessary refetches
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     retry: 2
   });
 
-  const isActive = useMemo(() => {
+  // Server state
+  const serverState = useMemo(() => {
     if (!user?._id || !data) return false;
 
     if (type === 'like') {
@@ -71,36 +122,65 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
     return false;
   }, [data, user, type]);
 
+  // Sync localStorage with server state when data loads (but not during mutations)
+  useEffect(() => {
+    if (data && user?._id && !isLoading && !isError && !hasPendingMutation.current) {
+      const currentLocalState = getLocalInteractionState(type, user._id, id);
+
+      // Only sync if there's a significant difference and no pending mutation
+      if (serverState !== currentLocalState) {
+        console.log(`Syncing ${type} state for story ${id}: server=${serverState}, local=${currentLocalState}`);
+        setLocalInteractionState(type, user._id, id, serverState);
+        setLocalState(serverState);
+      }
+    }
+  }, [data, serverState, user?._id, type, id, isLoading, isError]);
+
+  // Use local state for display
+  const isActive = localState;
+
   // Handle interaction toggle with proper optimistic updates
   const { mutate: toggleInteraction, isPending } = useMutation<any, Error, void, MutationContext>({
     mutationFn: () => toggleFn(id),
     onMutate: async () => {
+      hasPendingMutation.current = true;
+
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: [...queryKey, id] });
 
-      // Snapshot the previous value
+      // Snapshot the previous values
       const previousData = queryClient.getQueryData<StoryStatusResponse>([...queryKey, id]);
-      const previousState = isActive;
+      const previousState = serverState;
+      const previousLocalState = localState;
+      const newLocalState = !localState;
 
-      // Optimistically update the cache
+      console.log(`Optimistic update for ${type}: ${localState} -> ${newLocalState}`);
+
+      // Immediately update local state and localStorage
+      if (user?._id) {
+        setLocalState(newLocalState);
+        setLocalInteractionState(type, user._id, id, newLocalState);
+      }
+
+      // Optimistically update the server cache
       if (previousData && user?._id) {
         const newData = { ...previousData };
 
         if (type === 'like') {
-          if (previousState) {
-            // Remove user from likedBy array
-            newData.likedBy = (newData.likedBy || []).filter(userId => userId !== user._id);
-          } else {
+          if (newLocalState) {
             // Add user to likedBy array
             newData.likedBy = [...(newData.likedBy || []), user._id];
+          } else {
+            // Remove user from likedBy array
+            newData.likedBy = (newData.likedBy || []).filter(userId => userId !== user._id);
           }
         } else if (type === 'bookmark') {
-          if (previousState) {
-            // Remove user from bookmarkedBy array
-            newData.bookmarkedBy = (newData.bookmarkedBy || []).filter(userId => userId !== user._id);
-          } else {
+          if (newLocalState) {
             // Add user to bookmarkedBy array
             newData.bookmarkedBy = [...(newData.bookmarkedBy || []), user._id];
+          } else {
+            // Remove user from bookmarkedBy array
+            newData.bookmarkedBy = (newData.bookmarkedBy || []).filter(userId => userId !== user._id);
           }
         }
 
@@ -108,17 +188,16 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
         queryClient.setQueryData([...queryKey, id], newData);
       }
 
-      return { previousState, previousData };
+      return { previousState, previousData, previousLocalState };
     },
     onSuccess: () => {
       // Show success message
-      const newState = !isActive; // This will be the new state after toggle
-      toast.success(newState ?
+      toast.success(localState ?
         (type === 'like' ? 'Story Liked' : 'Story Bookmarked') :
         (type === 'like' ? 'Story Unliked' : 'Story Unbookmarked')
       );
 
-      // Invalidate related queries (but not the current one immediately)
+      // Invalidate related queries but don't refetch immediately
       if (type === 'bookmark') {
         queryClient.invalidateQueries({ queryKey: ['get-user-bookmarks'] });
       } else if (type === 'like') {
@@ -130,14 +209,23 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
         queryClient.invalidateQueries({ queryKey: [...key, id] });
       });
 
-      // Refetch after a short delay to ensure server has processed the update
+      // Reset the pending mutation flag after a delay to allow for natural refetch
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: [...queryKey, id] });
+        hasPendingMutation.current = false;
       }, 1000);
     },
     onError: (error: any, _, context) => {
-      // Revert the optimistic update
-      if (context) {
+      hasPendingMutation.current = false;
+
+      // Revert all changes on error
+      if (context && user?._id) {
+        console.log(`Reverting ${type} state due to error`);
+
+        // Revert local state
+        setLocalState(context.previousLocalState);
+        setLocalInteractionState(type, user._id, id, context.previousLocalState);
+
+        // Revert server cache
         if (context.previousData) {
           queryClient.setQueryData([...queryKey, id], context.previousData);
         }
@@ -149,8 +237,14 @@ const InteractionButton: React.FC<InteractionButtonProps> = ({
         router.push('/login');
       } else {
         toast.error(`Failed to update ${type} status`);
-        console.error(error);
+        console.error('Interaction error:', error);
       }
+    },
+    onSettled: () => {
+      // Reset pending flag when mutation is completely done
+      setTimeout(() => {
+        hasPendingMutation.current = false;
+      }, 500);
     }
   });
 
