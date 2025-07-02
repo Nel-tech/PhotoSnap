@@ -15,7 +15,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   isInitialized: boolean;
-  sessionValidated: boolean; // New flag to track if session is validated
+  sessionValidated: boolean; 
   login: (user: User) => void;
   logout: () => Promise<void>;
   initializeAuth: () => Promise<void>;
