@@ -16,14 +16,23 @@ const signToken = (id, role) =>
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id, user.role);
   
-  res.cookie('jwt', token, {
+  const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: false, 
-    sameSite: 'lax',
-  });
+  };
+
+  // Production settings
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = 'none';
+  } else {
+    cookieOptions.secure = false;
+    cookieOptions.sameSite = 'lax';
+  }
+
+  res.cookie('jwt', token, cookieOptions);
 
   user.password = undefined;
   res.status(statusCode).json({
@@ -31,7 +40,6 @@ const createSendToken = (user, statusCode, req, res) => {
     data: { user },
   });
 };
-
 
 const validateEmail = (email) => {
   if (!email) {
