@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -15,17 +14,18 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     const router = useRouter();
     const pathname = usePathname();
 
-    const { user, isAuthenticated, isInitialized, initializeAuth } = useAuthStore();
+    const { user, isAuthenticated, isInitialized, isLoading, initializeAuth } = useAuthStore();
 
     // Public routes that don't require authentication
     const publicRoutes = ['/login', '/signup', '/unauthorized', '/'];
     const isPublicRoute = publicRoutes.includes(pathname);
 
     useEffect(() => {
-        if (!isInitialized) {
+        if (!isInitialized && !isLoading) {
+            console.log('🔄 Initializing auth from Protected component');
             initializeAuth();
         }
-    }, [isInitialized, initializeAuth]);
+    }, [isInitialized, isLoading, initializeAuth]);
 
     useEffect(() => {
         if (isPublicRoute) {
@@ -33,20 +33,26 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
             return;
         }
 
-        if (!isInitialized) return;
+        // Wait for initialization to complete
+        if (!isInitialized || isLoading) {
+            return;
+        }
 
         if (!isAuthenticated || !user) {
+            console.log('🚫 Not authenticated, redirecting to login');
             router.replace("/login");
             return;
         }
 
         if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+            console.log('🚫 Insufficient permissions, redirecting to unauthorized');
             router.replace("/unauthorized");
             return;
         }
 
+        console.log('✅ Authentication check passed');
         setIsReady(true);
-    }, [isAuthenticated, user, isInitialized, allowedRoles, router, pathname, isPublicRoute]);
+    }, [isAuthenticated, user, isInitialized, isLoading, allowedRoles, router, pathname, isPublicRoute]);
 
     if (!isReady && !isPublicRoute) {
         return (
@@ -64,4 +70,4 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
     return <>{children}</>;
 };
 
-export default Protected;
+export default Protected
