@@ -54,6 +54,7 @@ export default function SignUpPage() {
 
             if (handleSignupSuccess(response, login)) {
                 toast.success("Signup successful");
+                handleAuthSuccess()
             
             } else {
                 toast.error("Signup failed: Invalid data received");
