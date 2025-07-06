@@ -1,43 +1,45 @@
-📸 PhotoSnap – Visual Storytelling Platform
-A photo-sharing and storytelling platform built with Next.js, React, and Tailwind CSS, designed for photographers to share impactful visual stories.
+# 📸 PhotoSnap – Visual Storytelling Platform
 
-🚀 Live Demo
-👉 https://photo-snap-gallery.vercel.app/
+**A photo-sharing and storytelling platform built with Next.js, React, and Tailwind CSS, designed for photographers to share impactful visual stories.**
 
-⚙️ Tech Stack
-Frontend: Next.js, React, Tailwind CSS
-Backend: Express Js
-DataBase: MongoDB
+---
 
-Image Handling: Cloudinary
+## 🚀 Live Demo
 
-Auth:
-- JWT-based authentication and protected routes  
-- User login, register, logout  
-- Token verification with middleware (server-side)
+👉 [https://photo-snap-gallery.vercel.app/](https://photo-snap-gallery.vercel.app/)
 
+---
 
-Deployment: Vercel
+## ⚙️ Tech Stack
 
-🎯 Features
-Upload, edit, and delete visual stories
+- **Frontend:** Next.js, React, Tailwind CSS  
+- **Backend:** Express.js  
+- **Database:** MongoDB  
+- **Image Handling:** Cloudinary  
+- **Authentication:**  
+  - JWT-based authentication and protected routes  
+  - User login, registration, and logout  
+  - Token verification via middleware  
+- **Deployment:** Vercel
 
-Like and bookmark posts
+---
 
-Admin dashboard for content approval
+## 🎯 Features
 
-Weekly featured stories algorithm
+- 📤 Upload, edit, and delete visual stories  
+- ❤️ Like and 🔖 bookmark posts  
+- 🔐 Admin dashboard for content moderation  
+- 🌟 Weekly featured stories algorithm  
+- 📱 Mobile-first, fully responsive design  
+- 🔍 SEO-optimized with meta tags and structured data
 
-Mobile-first, responsive UI
+---
 
-SEO-optimized with meta tags
+## 🧠 What I Learned
 
-🧠 What I Learned
-Working with Cloudinary APIs and media transformations
+- Integrating and transforming media with Cloudinary APIs  
+- Building advanced layouts using Tailwind CSS  
+- Managing state efficiently with React hooks  
+- Designing admin approval workflows and protected routes
 
-Advanced layout with Tailwind CSS
-
-State management with React hooks
-
-Dealing with admin approval workflows
 
