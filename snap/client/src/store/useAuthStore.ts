@@ -123,10 +123,8 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      // Don't persist isAuthenticated - let server validation determine this
       partialize: (state) => ({
         user: state.user,
-        // Remove isAuthenticated from persistence
       }),
     }
   )

@@ -126,14 +126,15 @@ function StoryDetails() {
     }
 
 
-    const formatDate = (dateString: string): string => {
+    const formatDate = (dateString?: string): string => {
+        if (!dateString) return "";
         const options: Intl.DateTimeFormatOptions = {
             year: "numeric",
             month: "long",
             day: "numeric"
-        }
-        return new Date(dateString).toLocaleDateString(undefined, options)
-    }
+        };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
 
     return (
 

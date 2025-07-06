@@ -74,7 +74,7 @@ const Protected = ({ children, allowedRoles = [] }: ProtectedProps) => {
                 <div className="text-center">
                     <Loader2 className="animate-spin h-8 w-8 mx-auto mb-4" />
                     <p className="text-gray-600">
-                        {!isInitialized ? "Validating session..." : "Checking authentication..."}
+                        {!isInitialized ? "Just a moment..." : "Almost there..."}
                     </p>
                 </div>
             </div>
