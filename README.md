@@ -6,7 +6,7 @@ A photo-sharing and storytelling platform built with Next.js, React, and Tailwin
 
 ⚙️ Tech Stack
 Frontend: Next.js, React, Tailwind CSS
-Backend: Express
+Backend: Express Js
 DataBase: MongoDB
 
 Image Handling: Cloudinary
