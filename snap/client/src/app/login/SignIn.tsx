@@ -103,7 +103,7 @@ export default function SignIn() {
                         <div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-md cursor-pointer bg-black px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs  transition-all duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+                                className="flex w-full  justify-center rounded-md cursor-pointer bg-black px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs  transition-all duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign in'}

@@ -50,7 +50,7 @@ function Nav() {
         <div className="flex items-center lg:hidden md:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="-m-2.5 cursor-pointer  inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
             onClick={() => setMobileMenuOpen(true)}
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
@@ -83,7 +83,7 @@ function Nav() {
                 </div>
                 <span>Dashboard</span>
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""}`}
+                  className={`h-4 w-4 cursor-pointer transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -156,7 +156,7 @@ function Nav() {
                             setDropdownOpen(false)
                             handleLogout()
                           }}
-                          className="group flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="group cursor-pointer flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                         >
                           <LogOut className="h-4 w-4 text-red-500" />
                           Logout
@@ -169,7 +169,7 @@ function Nav() {
             </div>
           ) : (
             <>
-              <Link href="/signup" className="lg:text-base lg:font-semibold lg:leading-6 lg:text-gray-900">
+              <Link href="/signup" className=" lg:text-base lg:font-semibold lg:leading-6 lg:text-gray-900">
                 <Button
                   variant={"outline"}
                   className="cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md"
@@ -211,7 +211,7 @@ function Nav() {
               <div className="flex items-center justify-between">
                 <button
                   type="button"
-                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
+                  className="-m-2.5 cursor-pointer rounded-md p-2.5 text-gray-700"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <span className="sr-only">Close menu</span>
@@ -270,7 +270,7 @@ function Nav() {
                               setMobileMenuOpen(false)
                               handleLogout()
                             }}
-                            className="flex flex-col items-center text-red-500"
+                            className="flex flex-col cursor-pointer items-center text-red-500"
                           >
                             <LogOut className="h-5 w-5" />
                             <span className="text-xs mt-1">Logout</span>
@@ -327,7 +327,7 @@ function Nav() {
             <Upload className={`h-5 w-5 ${pathname === "/upload-story" ? "text-blue-500" : ""}`} />
             <span className="text-xs mt-1">Upload</span>
           </Link>
-          <button onClick={handleLogout} className="flex flex-col items-center text-red-500">
+          <button onClick={handleLogout} className="flex flex-col cursor-pointer items-center text-red-500">
             <LogOut className="h-5 w-5" />
             <span className="text-xs mt-1">Logout</span>
           </button>

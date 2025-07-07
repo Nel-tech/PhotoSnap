@@ -87,7 +87,7 @@ function RequestResetForm() {
                 <button
                     type="submit"
                     disabled={mutation.isPending || !email.trim()}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+                    className="w-full bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                 >
                     {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                     {mutation.isPending ? 'Generating Token...' : 'Generate Reset Token'}
@@ -131,10 +131,10 @@ function RequestResetForm() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={handleCopy}
-                                                    className="absolute top-2 right-2 h-8 w-8"
+                                                    className="absolute cursor-pointer top-2 right-2 h-8 w-8"
                                                     title="Copy token"
                                                 >
-                                                    <Copy className="w-4 h-4" />
+                                                    <Copy className="w-4 h-4 cursor-pointer" />
                                                 </Button>
                                             </div>
                                         </div>
@@ -145,15 +145,14 @@ function RequestResetForm() {
                                                 Copy it now and use it to reset your password.
                                             </p>
                                         </div>
-                                    </div>
 
-                                    <DialogFooter className="flex-col gap-2">
+                                          <DialogFooter className="flex-col gap-2">
                                         <Link
                                             href="/reset-password"
                                             className="w-full"
                                             onClick={() => setIsDialogOpen(false)}
                                         >
-                                            <Button className="w-full">
+                                            <Button className="w-full cursor-pointer">
                                                 Go to Reset Password
                                             </Button>
                                         </Link>
@@ -165,6 +164,9 @@ function RequestResetForm() {
                                             Close
                                         </Button>
                                     </DialogFooter>
+                                    </div>
+
+                                  
                                 </DialogContent>
                             </Dialog>
                     </div>

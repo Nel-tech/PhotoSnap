@@ -23,34 +23,35 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div>
-            <form onSubmit={handleSubmit} className="space-y-4 p-4">
-                <h2 className="text-lg font-medium">Reset Your Password</h2>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white shadow-md rounded w-full max-w-sm">
+        <h2 className="text-lg font-medium text-center">Reset Your Password</h2>
 
-                <input
-                    type="text"
-                    placeholder="Enter your reset token"
-                    value={resetToken}
-                    onChange={e => setResetToken(e.target.value)}
-                    className="border p-2 w-full rounded"
-                />
+        <input
+            type="text"
+            placeholder="Enter your reset token"
+            value={resetToken}
+            onChange={e => setResetToken(e.target.value)}
+            className="border p-2 w-full rounded"
+        />
 
-                <input
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    className="border p-2 w-full rounded"
-                />
+        <input
+            type="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={e => setNewPassword(e.target.value)}
+            className="border p-2 w-full rounded"
+        />
 
-                <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Reset Password
-                </button>
-            </form>
-        </div>
+        <button
+            type="submit"
+            className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+        >
+            Reset Password
+        </button>
+    </form>
+</div>
+
     )
 }
 

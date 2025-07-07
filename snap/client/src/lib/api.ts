@@ -359,7 +359,7 @@ export const handleRequest = async (data: RequestToken) => {
     });
     return response.data;
   } catch (error: any) {
-    throw new Error(extractErrorMessage(error, "Failed to request password reset"));
+    throw new Error(extractErrorMessage(error, "Incorrect Email address"));
   }
 };
 

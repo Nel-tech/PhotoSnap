@@ -115,7 +115,7 @@ function StoryDetails() {
                     <p className="text-[#6b6b6b] mb-6 font-light">{error.message || "We couldn’t load the story. Try again later."}</p>
                     <Button
                         onClick={() => router.back()}
-                        className="px-6 py-2 bg-black text-white hover:bg-gray-800 transition-colors rounded-md font-medium"
+                        className="px-6 py-2 cursor-pointer bg-black text-white hover:bg-gray-800 transition-colors rounded-md font-medium"
                     >
                         Go Back
                     </Button>
@@ -148,7 +148,7 @@ function StoryDetails() {
                             <Button
                                 type="button"
                                 onClick={() => router.back()}
-                                className="flex items-center gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors cursor-pointer"
+                                className="flex items-center cursor-pointer gap-2 text-[#3c3c3c] hover:text-[#c7a17a] transition-colors cursor-pointer"
                             >
                                 <ChevronLeft className="h-5 w-5" />
                                 <span className="font-medium">Back</span>
@@ -187,7 +187,7 @@ function StoryDetails() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         onClick={scrollToTop}
-                        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-black text-white shadow-lg hover:bg-gray-200 transition-colors"
+                        className="fixed cursor-pointer bottom-6 right-6 z-50 p-3 rounded-full bg-black text-white shadow-lg hover:bg-gray-200 transition-colors"
                     >
                         <ArrowUp className="h-5 w-5" />
                     </motion.button>

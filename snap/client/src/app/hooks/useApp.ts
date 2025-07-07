@@ -306,7 +306,7 @@ export const useHandleRequestToken = () => {
       }
     },
     onError: (error: any) => {
-      const errorMessage = error.response?.data?.error || "Failed to request reset token.";
+      const errorMessage = error.response?.data?.error || "Incorrect Email Address.";
       toast.error(errorMessage);
     },
   });
