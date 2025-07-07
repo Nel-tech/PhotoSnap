@@ -127,10 +127,17 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
-    expires: new Date(Date.now() + 10 * 10000),
+  const cookieOptions = {
     httpOnly: true,
-  });
+  };
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = 'none';
+  } else {
+    cookieOptions.secure = false;
+    cookieOptions.sameSite = 'lax';
+  }
+  res.clearCookie('jwt', cookieOptions);
 
   res.status(200).json({ status: 'success' });
 };

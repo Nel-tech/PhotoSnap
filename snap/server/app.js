@@ -13,40 +13,34 @@ const AppError = require('./utils/appError');
 
 const app = express();
 
-// Trust proxy for rate limiting and IP detection
+
 app.enable('trust proxy');
 
-// CORS Configuration with smart pattern matching
+
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
+    
     if (!origin) return callback(null, true);
     
     const cleanOrigin = origin.replace(/\/$/, '');
     
-    // Development - allow localhost
     if (process.env.NODE_ENV === 'development' && cleanOrigin.includes('localhost')) {
       return callback(null, true);
     }
     
-    // Allow localhost in any environment (for testing)
     if (cleanOrigin.match(/^https?:\/\/localhost:\d+$/)) {
       return callback(null, true);
     }
-    
-    // Allow your main production domain
+  
     if (cleanOrigin === 'https://photo-snap-gallery.vercel.app') {
       return callback(null, true);
     }
     
-    // Allow all Vercel preview deployments for your project
-    // This matches: photo-snap-[anything].vercel.app and photo-snap-[anything]-neltechs-projects.vercel.app
+    
     if (cleanOrigin.match(/^https:\/\/photo-snap.*\.vercel\.app$/)) {
       return callback(null, true);
     }
     
-    // Log rejected origins for debugging
-    console.log(`🚫 CORS rejected origin: ${origin}`);
     callback(new Error(`Not allowed by CORS: ${origin}`));
   },
   credentials: true,
@@ -65,13 +59,13 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// Apply CORS before other middleware
+
 app.use(cors(corsOptions));
 
-// Handle preflight requests explicitly
+
 app.options('*path', cors(corsOptions));
 
-// Security middleware
+
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: false
@@ -105,13 +99,11 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Request timestamp middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
-// Debug middleware to log cookies and headers
 app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🍪 Cookies:', req.cookies);
@@ -135,7 +127,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
@@ -145,7 +137,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API ROUTES (only define once)
+
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/stories', storyRouter);
 

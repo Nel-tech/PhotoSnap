@@ -8,8 +8,6 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
-    DialogFooter
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -87,7 +85,7 @@ function RequestResetForm() {
                 <button
                     type="submit"
                     disabled={mutation.isPending || !email.trim()}
-                    className="w-full bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+                    className="w-full bg-blue-600  text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                 >
                     {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                     {mutation.isPending ? 'Generating Token...' : 'Generate Reset Token'}
@@ -106,24 +104,21 @@ function RequestResetForm() {
 
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                 <DialogTrigger asChild>
-                                    <Button className="w-full">View Reset Token</Button>
+                                    <Button className="w-full cursor-pointer">View Reset Token</Button>
                                 </DialogTrigger>
 
-                                <DialogContent className="max-w-md bg-white">
+                                <DialogContent className="max-w-md  bg-white dark:bg-gray-900 dark:text-white rounded-lg border-0">
                                     <DialogHeader>
                                         <DialogTitle>Your Reset Token</DialogTitle>
-                                        <DialogDescription>
-                                            Copy this token to reset your password. This token expires in 15 minutes.
-                                        </DialogDescription>
                                     </DialogHeader>
 
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 Reset Token:
                                             </label>
                                             <div className="relative">
-                                                <code className="block break-all bg-gray-50 p-3 rounded-md border text-sm pr-12 font-mono">
+                                                <code className="block break-all bg-gray-50 dark:bg-gray-800 p-3 rounded-md border dark:border-gray-700 text-sm pr-12 font-mono text-gray-900 dark:text-gray-100">
                                                     {tokenValue}
                                                 </code>
                                                 <Button
@@ -134,41 +129,35 @@ function RequestResetForm() {
                                                     className="absolute cursor-pointer top-2 right-2 h-8 w-8"
                                                     title="Copy token"
                                                 >
-                                                    <Copy className="w-4 h-4 cursor-pointer" />
+                                                    <Copy className="w-4 h-4" />
                                                 </Button>
                                             </div>
                                         </div>
 
-                                        <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
-                                            <p className="text-amber-800 text-xs">
+                                        <div className="bg-amber-50 dark:bg-amber-900 border border-amber-200 dark:border-amber-700 rounded-md p-3">
+                                            <p className="text-amber-800 dark:text-amber-100 text-xs">
                                                 <strong>Important:</strong> This token will expire in 15 minutes.
                                                 Copy it now and use it to reset your password.
                                             </p>
                                         </div>
+                                    </div>
 
-                                          <DialogFooter className="flex-col gap-2">
+                                    {/* Footer section with clean background */}
+                                    <div className="mt-6 bg-white dark:bg-gray-800 pt-4 space-y-2">
                                         <Link
                                             href="/reset-password"
                                             className="w-full"
                                             onClick={() => setIsDialogOpen(false)}
                                         >
-                                            <Button className="w-full cursor-pointer">
-                                                Go to Reset Password
-                                            </Button>
+                                            <Button className="w-full cursor-pointer">Go to Reset Password</Button>
                                         </Link>
-                                        <Button
-                                            variant="outline"
-                                            className="w-full"
-                                            onClick={() => setIsDialogOpen(false)}
-                                        >
-                                            Close
-                                        </Button>
-                                    </DialogFooter>
                                     </div>
 
-                                  
+
                                 </DialogContent>
                             </Dialog>
+
+
                     </div>
                 )}
 

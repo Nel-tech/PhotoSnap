@@ -54,12 +54,18 @@ export const useAuthStore = create<AuthState>()(
           if (!response.ok) {
             throw new Error(`Logout failed: ${response.status}`);
           }
+
+          get().clearAuth();
+          
         } catch (error) {
           logError('Logout API call failed', error);
+          
+        
+          get().clearAuth();
+          
+        } finally {
+          set({ isLoading: false });
         }
-
-        get().clearAuth();
-        set({ isLoading: false });
       },
 
       initializeAuth: async () => {
@@ -73,11 +79,9 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
 
         try {
-          // Always validate session with server, regardless of persisted state
           const response = await fetchUserProfile();
           
           if (response && response.data && response.data.user) {
-            // Server confirms user is authenticated
             set({
               user: response.data.user,
               isAuthenticated: true,
@@ -91,7 +95,6 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           logError('Auth initialization failed', error);
           
-          // Clear everything if server session is invalid
           set({
             user: null,
             isAuthenticated: false,
@@ -107,7 +110,7 @@ export const useAuthStore = create<AuthState>()(
           user: user,
           isAuthenticated: true,
           isInitialized: true,
-          sessionValidated: true, // Mark as validated since we just logged in
+          sessionValidated: true, 
         });
       },
 
